@@ -1,0 +1,217 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #app {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+body::before {
+  content: "";
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  /*background: url("https://cfcfcs.oss-cn-beijing.aliyuncs.com/public/bg.png") center/cover no-repeat;*/
+  background: rgb(33,15,11);
+  z-index: -1;
+
+}
+@layer utilities {
+  /* 隐藏 Chrome, Safari 和 Opera 的滚动条 */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* 隐藏 IE, Edge 和 Firefox 的滚动条 */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE 和 Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
+
+#app {
+  /*background: url("/bg.png") no-repeat center bottom fixed;*/
+  /*background-image: url("/bg@2x.png");*/
+  /*background-size: 100% auto;*/
+
+  color: white;
+
+}
+div,span{
+  z-index: 1;
+  font-family: "Source Han Sans CN",sans-serif;
+}
+.bg{
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  left: 0;
+  top: 0;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.ellipsis {
+  overflow: hidden; /* 确保超出容器的内容被裁剪 */
+  white-space: nowrap; /* 确保文本在一行内显示 */
+  text-overflow: ellipsis; /* 超出部分显示省略号 */
+}
+
+@font-face {
+  font-family: 'titleFont';
+  src: url('https://cfcfcs.oss-cn-beijing.aliyuncs.com/public/font/1.ttf');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'FZZJ-JHTJW';
+  src: url('https://cfcfcs.oss-cn-beijing.aliyuncs.com/public/font/FZZJ-JHTJW.ttf');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'PingFang Regular';
+  src: url('https://cfcfcs.oss-cn-beijing.aliyuncs.com/public/font/PingFang Regular.ttf');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'PingFang Medium';
+  src: url('https://cfcfcs.oss-cn-beijing.aliyuncs.com/public/font/PingFang Medium.ttf');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Fontquan';
+  src: url('https://cfcfcs.oss-cn-beijing.aliyuncs.com/public/fonthttps://cfcfcs.oss-cn-beijing.aliyuncs.com/public/fontquan.ttf');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'ZhenyanGB';
+  src: url('https://cfcfcs.oss-cn-beijing.aliyuncs.com/public/font/ZhenyanGB Regular.ttf');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Microsoft YaHei';
+  src: url('https://cfcfcs.oss-cn-beijing.aliyuncs.com/public/font/Microsoft Yahei.ttf');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Source Han Sans CN';
+  src: url('https://cfcfcs.oss-cn-beijing.aliyuncs.com/public/font/Source Han Sans CN Regular.ttf');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'YouSheBiaoTiHei Regular';
+  src: url('https://cfcfcs.oss-cn-beijing.aliyuncs.com/public/font/YouSheBiaoTiHei Regular.ttf');
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'REEJI-PinboGB';
+  src: url('https://cfcfcs.oss-cn-beijing.aliyuncs.com/public/font/RuiZiAoYunJingShenPinBoJianMianFei-Shan(REEJI-PinboGB-Flash)-2.ttf');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Hiragino-sans-gb';
+  src: url('https://cfcfcs.oss-cn-beijing.aliyuncs.com/public/font/hiragino-sans-gb.otf');
+  font-weight: 400;
+  font-style: normal;
+}
+.el-message{
+  z-index: 99999;
+}
+.el-loading-mask{
+  background-color: rgba(0, 0, 0, 0.45) !important;
+}
+.card{
+  width: 95%;
+  height: fit-content;
+  max-width: 1450px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 20px auto 80px;
+
+}
+.card .top_mark {
+  width: 100%;
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0;
+}
+.card .title{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+  z-index: 3;
+}
+.card .title h1{
+  font-family: "titleFont", 'sans-serif';
+  margin: 0 25px;
+  font-size: 42px;
+}
+.card .title img{
+  width: 72px;
+  height: 30px;
+}
+.card .title img:first-child {
+  transform: rotate(180deg);
+}
+@media screen and (max-width: 1024px) {
+  .card .title{
+    margin-top: 10px;
+  }
+  .card .title h1{
+    font-size: 30px;
+  }
+  .card .title img{
+    width: 48px;
+    height: 18px;
+  }
+}
+
+.gradient-text-open{
+  /* text-shadow: 0px 1px 6px #954FFF; */
+  background: linear-gradient(45deg, #ff6df8 0%, #4064ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.gradient-text-price{
+text-shadow: 0px 3px 3px rgba(84,5,5,0.56);
+background: linear-gradient(139deg, #FF9A6D 0%, #FF4940 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+.gradient-text-openBtn{
+  text-shadow: 0px 3px 3px rgba(5,8,84,0.56);
+background: linear-gradient(139deg, #9B8AFF 0%, #5A5EFF 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+
+.gradient-CA3E27{
+  background: linear-gradient(90deg, rgba(202, 62, 39, 0.00) 0.31%, rgba(234, 87, 42, 0.44) 51.13%, rgba(201, 61, 38, 0.00) 100.98%);
+}
+.gradient-DE1717{
+  background: linear-gradient(117deg, rgba(255, 225, 225, 0.20) 32.92%, rgba(255, 0, 0, 0.20) 87.52%);
+}
+
+
+img{
+  user-select: none;
+  -webkit-user-drag: none;
+}

@@ -1,0 +1,12 @@
+@mixin mobile() {
+    @media screen and (max-width: 1024px) {
+      @content;
+    }
+}
+
+
+@mixin maxWidth($with: 1024px) {
+    @media screen and (max-width: $with) {
+      @content;
+    }
+}
