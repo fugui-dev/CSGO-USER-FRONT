@@ -36,6 +36,7 @@ export default defineConfig({
     open: true, // 自动打开浏览器
     headers: {
       "Cache-Control": "no-store",
+      "Referrer-Policy": "no-referrer-when-downgrade"
     },
   },
 });

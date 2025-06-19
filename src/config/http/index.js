@@ -6,19 +6,18 @@ import {useStore} from "@/store";
 import {goto} from "@/utils/common";
 
 const api = {
-    dev: import.meta.env.VITE_APP_URL,
-    dev2: 'https://api.991skins.com/prod-api',
-    prod: 'https://api.991skins.com/prod-api'
+    prod: '/prod-api'
 }
 
 
-export let baseUrl = (import.meta.env.PROD ? api.prod : api.dev2)
+export let baseUrl = (import.meta.env.PROD ? api.prod : api.prod)
 let instance = axios.create({
     // baseURL: import.meta.env.VITE_APP_URL, //接口统一域名
     baseURL: baseUrl,
     timeout: 6000, //设置超时
     headers: {
         'Content-Type': 'application/json;charset=UTF-8;',
+        'Referrer-Policy': 'no-referrer'
     }
 })
 let loading;
