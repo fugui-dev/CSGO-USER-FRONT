@@ -86,6 +86,14 @@ const routes = [
                 }
             },
             {
+              path: "/battle",
+              component: () => import("../views/battle/Index.vue"),
+                name: "Battle",
+                meta: {
+                    title:'对战大厅'
+                }
+            },
+            {
                 path: "/smelt",
                 component: () => import("../views/smelt/Index.vue"),
                 name: "Smelt",

@@ -20,6 +20,12 @@ const menus = ref([
     path: "/roll",
     ico: requireImg("/nav/a2.png", false),
     icoActive: requireImg("/nav/a2a.png", false)
+  },{
+    name: '对战大厅',
+    routeName: 'Battle',
+    path: "/battle",
+    ico: requireImg("/nav/a1.png", false),
+    icoActive: requireImg("/nav/a1a.png", false)
   }, {
     name: '装备升级',
     routeName: 'upgradeShopping',
