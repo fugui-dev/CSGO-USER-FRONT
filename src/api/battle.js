@@ -34,3 +34,30 @@ export const getBattleRankingApi = (data) => {
       data: data
   })
 }
+
+// 获取我参与的历史对战记录
+export const getMyOwnFightListApi = (data) => {
+    return request({
+        url: "/api/fight/fightOnMyOwn",
+        method: "post",
+        data: data
+    })
+}
+
+// 创建房间
+export const createRoomApi = (data) => {
+  return request({
+      url: "/api/fight/createFight",
+      method: "post",
+      data: data
+  })
+}
+
+// 创建房间
+export const joinRoomApi = (data) => {
+  return request({
+      url: "/api/fight/joinFightRoom",
+      method: "post",
+      data: data
+  })
+}

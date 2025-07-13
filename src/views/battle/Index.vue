@@ -1,15 +1,25 @@
 <script setup>
 import Layout from "@/components/Layout.vue";
-import {onMounted, ref} from "vue";
-import {getBattleBoxListApi, getBattleBoxDetailApi, getBattleRankingApi} from "@/api/battle";
+import {onMounted, onUnmounted, ref} from "vue";
+import {getBattleBoxListApi, getBattleBoxDetailApi, getBattleRankingApi, getMyOwnFightListApi} from "@/api/battle";
 import {requireImg} from "@/utils/common";
 import {useDebounceFn} from "@vueuse/core";
+import {ElMessage} from "element-plus";
 import BoxDetailModal from './components/BoxDetail.vue'
+import BattleCard from './components/BattleCard.vue'
 import Rank from './components/Rank.vue'
+import CreateRoomDialog from "./components/CreateRoomDialog.vue";
+import {useRouter} from 'vue-router';
+import {useStore} from "@/store";
+
+const router = useRouter()
+const store = useStore()
 
 const loading = ref(true)
 const boxTypeList = ref([])
+const allBoxList = ref([])
 const boxDetailModalRef = ref(null)
+const createRoomDialogRef = ref(null)
 const boxDetailData = ref([])
 const currBoxName = ref('')
 const rankData = ref({})
@@ -30,6 +40,14 @@ const navList = ref([{
   'name': '我参与的',
   'value': 1
 }])
+const ws = ref(null)
+const tempList = ref([])
+
+const flattenBoxData = (boxData) => {
+  return boxData.reduce((prev, curr) => {
+    return [...prev, ...curr.boxList]
+  }, [])
+}
 
 // 获取宝箱列表
 const getBoxTypeList = () => {
@@ -37,6 +55,7 @@ const getBoxTypeList = () => {
   getBattleBoxListApi().then(res => {
     if (res.data && res.data.length) {
       boxTypeList.value = res.data
+      allBoxList.value = flattenBoxData(res.data);
     }
   }).finally(() => {
     loading.value = false
@@ -71,12 +90,14 @@ const getRankData = () => {
 const changeActive = (val) => {
   active.value = val
   if (active.value === 0) {
+    list.value = []
   } else if (active.value === 1) {
+    // tempList.value = list
+    form.value.page = 1
+    list.value = []
+    isComplete.value = false
+    getList()
   }
-  form.value.page = 1
-  list.value = []
-  isComplete.value = false
-  getList()
 }
 
 const debouncedGetList = useDebounceFn(() => {
@@ -87,33 +108,70 @@ const debouncedGetList = useDebounceFn(() => {
 }, 300)
 
 const getList = () => {
-  // loading.value = true
-  // getRollListApi(form.value).then(res => {
-  //   if (res.data && res.data.length) {
-  //     if (form.value.page === 1) {
-  //       list.value = []
-  //     }
-  //     list.value.push(...res.data)
-  //   } else {
-  //     isComplete.value = true
-  //   }
-  // }).finally(() => {
-  //   loading.value = false
-  // })
+  loading.value = true
+  getMyOwnFightListApi(form.value).then(res => {
+    if (res.data && res.data.length) {
+      if (form.value.page === 1) {
+        list.value = []
+      }
+      list.value.push(...res.data)
+    } else {
+      isComplete.value = true
+    }
+  }).finally(() => {
+    loading.value = false
+  })
 }
 
 const onScroll = (e) => {
-  // let scrollBarHeight = scrollRef.value.$el.querySelector(".el-scrollbar__bar:last-child .el-scrollbar__thumb").clientHeight || 200
-  // if (listRef.value && e.scrollTop) {
-  //   if (e.scrollTop + scrollBarHeight + 500 >= listRef.value.clientHeight) {
-  //     debouncedGetList()
-  //   }
-  // }
+  if (active.value !== 0) {
+    let scrollBarHeight = scrollRef.value.$el.querySelector(".el-scrollbar__bar:last-child .el-scrollbar__thumb").clientHeight || 200
+    if (listRef.value && e.scrollTop) {
+      if (e.scrollTop + scrollBarHeight + 500 >= listRef.value.clientHeight) {
+        debouncedGetList()
+      }
+    }
+  }
+}
+
+// 点击打开创建房间弹窗
+const handleClickCreateRoom = () => {
+  createRoomDialogRef.value.open()
+}
+
+const handleClickBattleCard = (id) => {
+  router.push(`/battle/${id}`)
+}
+
+const createWs = () => {
+  const userId = store.userInfo.userId;
+  if (userId) {
+    ws.value = new WebSocket(`ws://121.229.204.223:8090/ws/fight/hall/${userId}`);
+    ws.value.addEventListener('open', (res)=> {
+      console.log('ws已连接')
+    })
+    ws.value.addEventListener('message', (res)=> {
+      console.log(res)
+      const data = JSON.parse(res.data)
+      if (data.data && data.data.total > 1) {
+        // list.value
+      }
+    })
+  }
+}
+
+const closeWs = () => {
+  ws.value.close()
 }
 
 onMounted(() => {
   getBoxTypeList()
   getRankData()
+  createWs()
+})
+
+onUnmounted(() => {
+  closeWs()
 })
 
 </script>
@@ -152,11 +210,13 @@ onMounted(() => {
           </el-tabs>
         </div>
         <div class="content-wrap">
-          <div class="content-left">
+          <!-- 排行榜 -->
+          <Rank :rankData="rankData"/>
+          <div class="content-right">
             <!-- 创建房间 -->
             <div class="create-room">
               <img :src="requireImg('/home/ygr.png',false)" alt="">
-              <p class="create-room-text">创建房间</p>
+              <p class="create-room-text" @click="handleClickCreateRoom">创建房间</p>
               <p class="rule"><span>?</span>游戏规则</p>
             </div>
             <!-- 列表 -->
@@ -175,23 +235,20 @@ onMounted(() => {
               <div class="battle-list" v-loading="loading" style="flex: 1">
                 <div class="content">
                   <el-scrollbar max-height="800px" @scroll="onScroll" ref="scrollRef">
-                    <div ref="listRef" class="list">
-                      <div class="list-item" v-for="(i,index) in list" :key="index">
-
-                      </div>
+                    <div ref="listRef" class="battle-list-container">
+                      <BattleCard :cardData="i" v-for="(i,index) in list" :key="index" @click="handleClickBattleCard(i.id)"/>
                     </div>
                   </el-scrollbar>
                 </div>
               </div>
             </div>
           </div>
-          <!-- 排行榜 -->
-          <Rank :rankData="rankData"/>
         </div>
       </div>
     </template>
   </Layout>
   <BoxDetailModal ref="boxDetailModalRef" :boxData="boxDetailData" :title="currBoxName" />
+  <CreateRoomDialog ref="createRoomDialogRef" :boxData="allBoxList" />
 </template>
 
 <style scoped lang="scss">
@@ -207,6 +264,7 @@ onMounted(() => {
   max-width: 1024px;
   margin: 6px auto;
   box-sizing: border-box;
+  // 宝箱列表
   .box-list {
     width: 100%;
     ::v-deep .el-tabs__content {
@@ -236,12 +294,90 @@ onMounted(() => {
         }
       }
     }
+    .box-list-container {
+      display: flex;
+      width: fit-content;
+      .box-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: .5s;
+        width: 100px;
+        box-sizing: border-box;
+
+        &:hover {
+          .bx {
+            animation: smooth 2s infinite;
+            .wq{
+              //使用动画 循环播放 up_and_down
+              animation: up_and_down 2s infinite;
+            }
+          }
+        }
+
+        .bx {
+          width: 100%;
+          max-width: 191px;
+          max-height: 182px;
+          margin-bottom: 3px;
+          position: relative;
+          z-index: 2;
+          display: flex;
+          justify-content: center;
+          img{
+            width: 60%;
+          }
+          .wq{
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            width: 45%;
+            height: 45%;
+          }
+        }
+        .mz {
+          display: flex;
+          align-items: center;
+          padding: 0;
+          background: linear-gradient(90.47deg, rgba(202, 62, 39, 0) 0.31%, rgba(234, 87, 42, 0.44) 51.13%, rgba(201, 61, 38, 0) 100.98%);
+          width: 100%;
+          font-size: 13px;
+          height: 21px;
+          line-height: 21px;
+          margin: 0 0 4px 0;
+          justify-content: center;
+          .name {
+            font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+          }
+        }
+
+
+        .btn {
+          font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+          width: 80%;
+          line-height: 1.5em;
+          font-size: 13px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: row-reverse;
+          img{
+            width: 10px;
+            margin-right: 3px;
+          }
+        }
+      }
+    }
   }
   .content-wrap {
     display: flex;
-    .content-left {
+    .content-right {
       flex: 1;
-      margin-right: 8px;
+      margin-left: 8px;
       .create-room {
         width: 100%;
         background-image: var(--bg-create-room);
@@ -296,162 +432,93 @@ onMounted(() => {
           }
         }
       }
-    }
-  }
-  .main-list {
-    .nav {
-      display: flex;
-      align-items: center;
-      margin-top: 30px;
-      @include mobile{
-        justify-content: space-evenly;
-      }
+      .main-list {
+        .nav {
+          display: flex;
+          align-items: center;
+          margin-top: 30px;
+          @include mobile{
+            justify-content: space-evenly;
+          }
 
 
-      &-item {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "PingFang Regular", sans-serif;
-        cursor: pointer;
-        background: #FFF5F5;
-        flex-shrink: 0;
+          &-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "PingFang Regular", sans-serif;
+            cursor: pointer;
+            background: #FFF5F5;
+            flex-shrink: 0;
 
-        width: 153px;
-        height: 48px;
-        border-radius: 30px;
-        font-size: 16px;
-        margin-right: 32px;
+            width: 153px;
+            height: 48px;
+            border-radius: 30px;
+            font-size: 16px;
+            margin-right: 32px;
 
-        @include mobile{
-          width: 104px;
-          margin-right: 0;
-        }
+            @include mobile{
+              width: 104px;
+              margin-right: 0;
+            }
 
-        span {
-          filter: drop-shadow(0px 0px 4.3px #FF4545A6);
-          font-size: 16px;
-        }
+            span {
+              filter: drop-shadow(0px 0px 4.3px #FF4545A6);
+              font-size: 16px;
+            }
 
 
-        @include mobile {
-          height: 40px;
-        }
+            @include mobile {
+              height: 40px;
+            }
 
-        &:first-child {
-          background: linear-gradient(90.15deg, #FF3C2A -4.19%, rgba(149, 0, 0, 0) 99.85%);
+            &:first-child {
+              background: linear-gradient(90.15deg, #FF3C2A -4.19%, rgba(149, 0, 0, 0) 99.85%);
 
-        }
+            }
 
-        &:nth-child(2) {
-          background: linear-gradient(90.15deg, #FF952A -4.19%, rgba(149, 87, 0, 0) 99.85%);
+            &:nth-child(2) {
+              background: linear-gradient(90.15deg, #FF952A -4.19%, rgba(149, 87, 0, 0) 99.85%);
 
-        }
+            }
 
-        &:nth-child(3) {
-          background: linear-gradient(90.15deg, #A27A7A -4.19%, rgba(152, 116, 116, 0) 99.85%);
+            &:nth-child(3) {
+              background: linear-gradient(90.15deg, #A27A7A -4.19%, rgba(152, 116, 116, 0) 99.85%);
 
-        }
+            }
 
-        &.active {
-          position: relative;
+            &.active {
+              position: relative;
 
-          &::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 4px;
-            border-radius: 34px;
-            background: white;
-            bottom: -2px;
-            left: 50%;
-            transform: translateX(-50%);
+              &::after {
+                content: '';
+                position: absolute;
+                width: 40px;
+                height: 4px;
+                border-radius: 34px;
+                background: white;
+                bottom: -2px;
+                left: 50%;
+                transform: translateX(-50%);
+
+              }
+            }
 
           }
         }
-
-      }
-    }
-  }
-}
-.box-list-container {
-  display: flex;
-  width: fit-content;
-  .box-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: .5s;
-    width: 100px;
-    box-sizing: border-box;
-
-    &:hover {
-      .bx {
-        animation: smooth 2s infinite;
-        .wq{
-          //使用动画 循环播放 up_and_down
-          animation: up_and_down 2s infinite;
+        .battle-list {
+          .battle-list-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-gap: 12px;
+            padding: 16px 0;
+          }
         }
       }
     }
-
-    .bx {
-      width: 100%;
-      max-width: 191px;
-      max-height: 182px;
-      margin-bottom: 3px;
-      position: relative;
-      z-index: 2;
-      display: flex;
-      justify-content: center;
-      img{
-        width: 60%;
-      }
-      .wq{
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 3;
-        width: 45%;
-        height: 45%;
-      }
-    }
-    .mz {
-      display: flex;
-      align-items: center;
-      padding: 0;
-      background: linear-gradient(90.47deg, rgba(202, 62, 39, 0) 0.31%, rgba(234, 87, 42, 0.44) 51.13%, rgba(201, 61, 38, 0) 100.98%);
-      width: 100%;
-      font-size: 13px;
-      height: 21px;
-      line-height: 21px;
-      margin: 0 0 4px 0;
-      justify-content: center;
-      .name {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-      }
-    }
-
-
-    .btn {
-      font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-      width: 80%;
-      line-height: 1.5em;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: row-reverse;
-      img{
-        width: 10px;
-        margin-right: 3px;
-      }
-    }
   }
 }
+
 @keyframes up_and_down {
   0% {
     transform: translate(-50%,-50%);
@@ -477,6 +544,16 @@ onMounted(() => {
 
   100% {
     filter: drop-shadow(0px 0px 0px rgba(255, 255, 255, 0.3));
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .content-wrap {
+    flex-direction: column;
+    .battle-list-container {
+      grid-template-columns: 1fr 1fr !important;
+    }
   }
 }
 </style>

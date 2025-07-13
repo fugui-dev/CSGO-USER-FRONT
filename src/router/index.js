@@ -94,6 +94,14 @@ const routes = [
                 }
             },
             {
+              path: "/battle/:id",
+              component: () => import("../views/battle/Room.vue"),
+                name: "BattleRoom",
+                meta: {
+                    title:'对战房间'
+                }
+            },
+            {
                 path: "/smelt",
                 component: () => import("../views/smelt/Index.vue"),
                 name: "Smelt",
