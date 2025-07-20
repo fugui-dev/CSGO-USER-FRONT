@@ -88,11 +88,15 @@ const handleClickCreateRoom = () => {
   })
   form.value.boxIdAndNumber = {...obj}
   createRoomApi(form.value).then(res => {
-    if (res.data) {
-      store.setBattleRoomData(res.data)
-      ElMessage.success('创建成功')
+    if (res.code === 200) {
+      ElMessage.success('房间创建成功')
       closeModal()
-      router.push(`/battle/${res.data.id}`)
+      // 模式1：创建房间后进入 模式2：进入等待中或进行中的房间 模式3：进入已结束的房间
+      const roomId = res.data.fight.id
+      router.push({
+        path: `/battle/${roomId}`,
+        query: { model: 1 }
+      })
     }
   })
 }

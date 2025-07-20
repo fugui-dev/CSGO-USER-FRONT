@@ -4,8 +4,7 @@ export const useStore = defineStore('myStore', { // 第一个参数是 id
     state: () => ({
         userInfo: {},
         isPC: false,
-        needLogin:false,
-        battleRoomData: {}
+        needLogin:false
     }),
     getters: {
         getUserInfo(state) {
@@ -13,9 +12,6 @@ export const useStore = defineStore('myStore', { // 第一个参数是 id
         },
         isLogin(state) {
             return state.userInfo && state.userInfo.userId;
-        },
-        getBattleRoomData(state) {
-            return state.battleRoomData;
         }
     },
     actions: {
@@ -26,9 +22,6 @@ export const useStore = defineStore('myStore', { // 第一个参数是 id
         setIsPc(isPC) {
             this.isPC = isPC;
         },
-        setBattleRoomData(battleRoomData) {
-            this.battleRoomData = battleRoomData;
-        },
         logout() {
             this.userInfo = {};
             localStorage.removeItem('userInfo');
@@ -38,6 +31,5 @@ export const useStore = defineStore('myStore', { // 第一个参数是 id
         setNeedLogin(needLogin) {
             this.needLogin = needLogin;
         }
-
     },
 });

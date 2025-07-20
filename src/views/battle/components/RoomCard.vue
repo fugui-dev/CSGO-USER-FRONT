@@ -1,7 +1,10 @@
 <script setup>
-import {computed, ref, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {requireImg} from "@/utils/common";
-import {joinRoomApi} from "@/api/battle"
+import { useStore } from "@/store";
+import {ElMessage} from "element-plus";
+import {joinRoomApi, prepareFightApi, beginFightApi} from "@/api/battle"
+import FightBox from "./FightBox.vue"
 
 const props = defineProps({
   cardData: {
@@ -11,8 +14,31 @@ const props = defineProps({
   roomId: {
     type: Number,
     required: true
+  },
+  roomOwnerId: {
+    type: Number,
+    required: true
+  },
+  isAllReady: {
+    type: Boolean,
+    required: true
+  },
+  roomStatus: {
+    type: Number,
+    required: true
+  },
+  currOrnaments: {
+    type: Array
+  },
+  winnerIds: {
+    type: Array
   }
 });
+
+const store = useStore()
+const currUserId = computed(() => store.userInfo.userId)
+const allReady = computed(() => props.isAllReady)
+const emit = defineEmits(['start'])
 
 const statusMap = {
   '0': '等待中',
@@ -21,10 +47,38 @@ const statusMap = {
 }
 
 const handleJoin = () => {
+  if (props.roomOwnerId === currUserId.value) {
+    ElMessage.warning('房主无法加入自己创建的对战！')
+    return
+  }
   joinRoomApi({fightId: props.roomId}).then(res => {
-    console.log(res.data)
+    if (res.code === 200) {
+      ElMessage.success(res.msg)
+    }
   })
 }
+
+const handlePrepare = () => {
+  prepareFightApi({fightId: props.roomId}).then(res => {
+    if (res.code === 200) {
+      ElMessage.success(res.msg)
+    }
+  })
+}
+
+const handleStartGame = () => {
+  beginFightApi({fightId: props.roomId}).then(res => {
+    if (res.code === 200) {
+      ElMessage.success(res.msg)
+      emit('start')
+    }
+  })
+}
+
+watch(props.isAllReady, (newVal) => {
+  alert('watch: ' + newVal)
+  allReady.value = newVal
+})
 
 </script>
 <template>
@@ -49,11 +103,25 @@ const handleJoin = () => {
         </div>
       </div>
       <!-- 中间 -->
-      <div class="card-main">
+      <FightBox v-if="roomStatus === 1 && currOrnaments" :ornaments-data="currOrnaments" />
+      <div class="card-main" v-if="roomStatus === 0">
         <div class="player-status">
           <div class="join-btn" v-if="cardData.status === 0" @click="handleJoin">加入</div>
-          <p v-else-if="cardData.status === 1">已入座</p>
-          <p v-else>已准备就绪</p>
+          <div v-else-if="cardData.status === 1">
+            <div class="join-btn" v-if="cardData.playerId === currUserId" @click="handlePrepare">准备</div>
+            <p v-else>已入座</p>
+          </div>
+          <div v-else-if="cardData.status === 2">
+            <!-- 当前用户为房主，且所有座位都已准备就绪 -->
+            <div class="join-btn" v-if="(roomOwnerId === currUserId) && (currUserId === cardData.playerId) && (roomStatus === 0) && allReady" @click="handleStartGame">开始游戏</div>
+            <p v-else>已准备就绪</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-main" v-if="roomStatus === 2">
+        <div class="player-status">
+          <p v-if="winnerIds && winnerIds.includes(cardData.playerId)" class="winner">胜利</p>
+          <p v-else class="loser">失败</p>
         </div>
       </div>
     </div>
@@ -136,6 +204,15 @@ const handleJoin = () => {
       font-size: 14px;
       text-align: center;
       background: linear-gradient(90.15deg, #b43304 -4.19%, #FF952A 99.85%);
+    }
+    .winner {
+      font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+      font-size: 28px;
+    }
+    .loser {
+      font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+      color: #eee;
+      font-size: 28px;
     }
   }
 }

@@ -67,10 +67,6 @@ const props = defineProps({
     localSet: {
         type: Object,
         required: true
-    },
-    price: {
-        type: Number,
-        required: true
     }
 });
 const visible = ref(false)
@@ -155,11 +151,8 @@ const openAnimation = () => {
     let arrlist = []
     const allValue = 120
     const stopValue = 97
-    if (!props.localSet.animation) {
-        show.value = false
-        return
-    }
     // 根据 oddsResult 比例填充 arrlist 到 120 个元素
+    console.log(xiangzibaohan)
     if (xiangzibaohan.length > 0) {
         // 计算总权重
         let totalWeight = 0;
@@ -260,7 +253,6 @@ const openAnimation = () => {
 // 添加监听
 watch(() => visible.value, (newVal) => {
     if (newVal) {
-        console.log(props.boxData)
         xiangzibaohan = props.boxData.boxOrnamentsList
         // 设置默认选中所有物品
         selectedItems.value = props.openData.map((_, index) => index)
@@ -398,18 +390,6 @@ const parseOrnamentName = (name) => {
 
 // 添加分解相关变量和计算属性
 const selectedItems = ref([]);
-const showDecomposeModal = ref(false);
-
-// 计算分解后的总价格
-const totalDecomposePrice = computed(() => {
-    if (!props.openData || props.openData.length === 0) return '0.00';
-
-    // 只计算选中项的总价格
-    return selectedItems.value.reduce((total, index) => {
-        const item = props.openData[index];
-        return total + (item?.ornamentsPrice || 0);
-    }, 0).toFixed(2);
-});
 
 // 处理物品选择事件
 const toggleSelectItem = (index) => {
@@ -421,33 +401,6 @@ const toggleSelectItem = (index) => {
     }
 };
 
-// 分解确认函数
-const confirmDecompose = async () => {
-    // 直接调用接口，无需打开模态框
-    const itemsToDecompose = selectedItems.value.map(index => props.openData[index].id)
-    if (itemsToDecompose.length === 0) return ElMessage.error('请选择要分解的物品');
-    // 这里直接调用分解API
-    const res = await postDecompose({
-        isAll: false,
-        packSackIds: itemsToDecompose
-    })
-    if (res.code === 200) {
-        ElMessage.success('分解成功')
-        // API调用成功后可以清空选择
-        selectedItems.value = [];
-        // 这里可以添加成功提示
-        // 完成后可以调用关闭或刷新页面等操作
-        close();
-    }
-};
-
-const handleOpenAgain = () => {
-    close()
-    setTimeout(() => {
-        emit('openAgain')
-    }, 400)
-}
-
 defineExpose({
     open,
     close
@@ -458,108 +411,6 @@ defineExpose({
         <van-popup class="dialog no-scrollbar tw-font-SourceHanSansCN" v-model:show="visible"
             :close-on-click-overlay="false" :lock-scroll="true" teleport="body">
             <div class="">
-                <div class="tw-relative tw-w-full tw-h-screen md:tw-gap-32 tw-flex tw-flex-col  md:tw-justify-center tw-items-center tw-bg-black tw-bg-opacity-[0.74] "
-                    v-if="!show">
-                    <img :src="endCenter" alt=""
-                        class="tw-absolute tw-top-1/2 tw-translate-x-[-50%] md:tw-w-auto tw-w-3/4 tw-translate-y-[-50%] tw-left-1/2 ">
-                    <img :src="endLeft" alt="" class=" tw-absolute md:tw-w-auto tw-w-1/2 tw-top-0 tw-left-0 ">
-                    <img :src="endRight" alt="" class=" tw-absolute md:tw-w-auto tw-w-1/2 tw-top-0 tw-right-0 ">
-                    <div class="tw-flex tw-items-center tw-gap-3 md:tw-gap-6 tw-mt-[6.25rem] md:tw-mt-0 ">
-                        <div class="md:tw-w-[12.5rem] tw-h-[0.3125rem] tw-w-[6.25rem] md:tw-h-2.5 tw-rotate-180"
-                            style="background: linear-gradient(90deg, #F34A34 0%, rgba(141, 43, 30, 0.00) 100%);">
-                        </div>
-                        <div class="tw-text-[#FFF5F5] tw-text-lg md:tw-text-[1.75rem] tw-font-bold"
-                            style="text-shadow: 0px 0px 4.3px rgba(255, 69, 69, 0.65);">恭喜获得</div>
-                        <div class="md:tw-w-[12.5rem] tw-h-[0.3125rem] tw-w-[6.25rem] md:tw-h-2.5 tw-relative"
-                            style="background: linear-gradient(90deg, #F34A34 0%, rgba(141, 43, 30, 0.00) 100%);">
-
-                        </div>
-
-                    </div>
-
-                    <div class="tw-flex tw-justify-center tw-gap-3 tw-flex-wrap tw-mt-[3.125rem] md:tw-gap-6">
-                        <div v-for="(item, index) in openData" :key="index"
-                            class="tw-relative tw-cursor-pointer md:tw-w-[13.75rem] tw-w-[8.75rem] tw-h-[7.5rem] md:tw-h-[11.875rem] tw-flex tw-flex-col tw-justify-end tw-items-center"
-                            :class="{
-                                'tw-transform tw-scale-105 tw-transition-all tw-duration-200': selectedItems.includes(index),
-                                'tw-transition-all tw-duration-200 hover:tw-shadow-lg hover:tw-scale-[1.02]': !selectedItems.includes(index)
-                            }" @click="toggleSelectItem(index)">
-                            <div class="tw-absolute tw-w-full tw-h-[4.5rem] md:tw-h-[7.125rem] tw-border-b-2"
-                                :style="{ borderColor: leavel[item.openBox2Gift ? 5 : item.ornamentsLevelId].color, background: leavel[item.openBox2Gift ? 5 : item.ornamentsLevelId].background }">
-                            </div>
-                            <img :src="leavel[item.openBox2Gift ? 5 : item.ornamentsLevelId].img"
-                                class="tw-absolute tw-w-full tw-h-full" alt="">
-                            <div class="tw-flex tw-justify-center tw-gap-1 tw-mb-1 tw-absolute tw-top-2 tw-right-1">
-                                <span
-                                    class="  tw-text-xs  tw-text-white tw-px-2 tw-py-px  tw-border tw-border-[#1FEBC4]  tw-rounded-full tw-bg-[#1FEBC4]"
-                                    v-if="item.openBox2Gift">赠品</span>
-                                <span
-                                    class="tw-text-xs tw-text-white tw-px-2 tw-py-px tw-flex tw-items-center tw-border-[#FF7A21] tw-bg-[#FF7A21] tw-border tw-rounded-full tw-gap-px"
-                                    v-if="item.ornamentsPrice"> <img :src="Money"
-                                        class="tw-h-[16px] md:tw-h-[1.25rem]" /> {{ item.ornamentsPrice }}</span>
-                            </div>
-
-                            <img :src="item.imageUrl"
-                                class="tw-w-[70%] tw-absolute tw-top-1/2 tw-left-1/2 tw-transform-gpu tw-animate-float"
-                                alt="">
-                            <div
-                                class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-pb-1 tw-w-[80%] tw-relative">
-                                <span class="tw-text-base" style="color: rgba(255, 245, 245, 0.80);">{{
-                                    parseOrnamentName(item.ornamenName).sub }}</span>
-                                <span class="tw-font-bold tw-text-[#FFF5F5] tw-w-full tw-line-clamp-1 tw-text-center"
-                                    :title="parseOrnamentName(item.ornamenName).main">{{
-                                        parseOrnamentName(item.ornamenName).main
-                                    }}</span>
-                            </div>
-                            <!-- 选中标记 -->
-                            <div v-if="selectedItems.includes(index)"
-                                class="tw-absolute tw-top-2 tw-left-2 tw-bg-gradient-to-r tw-from-[#2DD4BF] tw-to-[#14B8A6] tw-rounded-full tw-w-6 tw-h-6 tw-flex tw-items-center tw-justify-center tw-text-white tw-shadow-md tw-animate-pulse">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4" viewBox="0 0 20 20"
-                                    fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                    <div
-                        class="tw-flex tw-my-auto md:tw-my-4 tw-justify-center tw-gap-2 md:tw-gap-4  tw-max-w-[32.125rem] tw-w-[80%] tw-relative">
-                        <div @click="close()"
-                            class="tw-text-white/50 tw-text-xl tw-absolute tw-left-[-0.375rem] md:tw-left-[-1rem] -tw-translate-x-full -tw-translate-y-[50%] tw-top-1/2 tw-cursor-pointer">
-                            <svg t="1745850734448" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                                xmlns="http://www.w3.org/2000/svg" p-id="1463" width="32" height="32">
-                                <path
-                                    d="M512 929.959184c-230.4 0-417.959184-187.559184-417.959184-417.959184s187.559184-417.959184 417.959184-417.959184 417.959184 187.559184 417.959184 417.959184-187.559184 417.959184-417.959184 417.959184z m0-794.122449c-207.412245 0-376.163265 168.75102-376.163265 376.163265s168.75102 376.163265 376.163265 376.163265 376.163265-168.75102 376.163265-376.163265-168.75102-376.163265-376.163265-376.163265z"
-                                    fill="#e6e6e6" p-id="1464"></path>
-                                <path
-                                    d="M355.265306 689.632653c-5.22449 0-10.44898-2.089796-14.628571-6.269388-8.359184-8.359184-8.359184-21.420408 0-29.779592l313.469387-313.469387c8.359184-8.359184 21.420408-8.359184 29.779592 0 8.359184 8.359184 8.359184 21.420408 0 29.779592l-313.469387 313.469387c-4.702041 4.179592-9.926531 6.269388-15.151021 6.269388z"
-                                    fill="#e6e6e6" p-id="1465"></path>
-                                <path
-                                    d="M668.734694 689.632653c-5.22449 0-10.44898-2.089796-14.628572-6.269388l-313.469387-313.469387c-8.359184-8.359184-8.359184-21.420408 0-29.779592 8.359184-8.359184 21.420408-8.359184 29.779592 0l313.469387 313.469387c8.359184 8.359184 8.359184 21.420408 0 29.779592-4.702041 4.179592-9.926531 6.269388-15.15102 6.269388z"
-                                    fill="#e6e6e6" p-id="1466"></path>
-                            </svg>
-                        </div>
-                        <div @click="handleOpenAgain"
-                            class="md:tw-relative tw-w-1/2 tw-py-3 tw-rounded-full tw-flex tw-justify-center tw-items-center md:tw-text-lg tw-font-bold tw-cursor-pointer tw-text-white tw-text-center"
-                            style="background: linear-gradient(93deg, #FF553C 7.24%, #A70202 98.65%);box-shadow: 0px 4px 13.4px 0px rgba(214, 47, 34, 0.49);">
-                            再开一次 <img :src="Money" class="tw-h-[1rem] md:tw-h-[1.75rem]" /> <span class="tw-text-sm">{{
-                                props.price }}</span>
-                        </div>
-                        <div @click="confirmDecompose"
-                            class="md:tw-relative tw-w-1/2 tw-py-3 tw-rounded-full md:tw-text-lg tw-font-bold tw-cursor-pointer tw-text-white tw-text-center tw-flex tw-justify-center tw-items-center tw-gap-1"
-                            style="background: linear-gradient(93deg, #2DD4BF 0%, #0F766E 100%); box-shadow: 0px 4px 13.4px 0px rgba(15, 118, 110, 0.49);">
-                            <span>分解</span>
-                            <span v-if="selectedItems.length > 0 || openData.length > 0"
-                                class="tw-font-bold tw-flex tw-items-center tw-text-sm">
-                                <img :src="Money" class="tw-h-[16px] md:tw-h-[1.75rem]" /> {{ totalDecomposePrice }}
-                            </span>
-                        </div>
-
-                    </div>
-
-                </div>
-
                 <div v-if="show && curindex > 1"
                     class="  tw-w-full tw-bg-[#000] tw-bg-opacity-[0.7]  tw-h-screen tw-overflow-hidden">
                     <div class="tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-screen  tw-flex tw-flex-col  tw-z-20 ">
@@ -697,11 +548,7 @@ defineExpose({
                         </div>
                     </div>
                 </div>
-
-
             </div>
-
-
         </van-popup>
     </div>
 

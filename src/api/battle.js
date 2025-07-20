@@ -53,10 +53,55 @@ export const createRoomApi = (data) => {
   })
 }
 
-// 创建房间
+// 加入对战
 export const joinRoomApi = (data) => {
   return request({
       url: "/api/fight/joinFightRoom",
+      method: "post",
+      data: data
+  })
+}
+
+// 玩家准备
+export const prepareFightApi = (data) => {
+  return request({
+      url: "/api/fight/seatrReady",
+      method: "post",
+      data: data
+  })
+}
+
+// 开始游戏
+export const beginFightApi = (data) => {
+  return request({
+      url: "/api/fight/fightBegin",
+      method: "post",
+      data: data
+  })
+}
+
+// 存储对战回合数据
+export const saveFightBoutApi = (data) => {
+  return request({
+      url: "/api/fight/saveFightBoutData",
+      method: "post",
+      data: data
+  })
+}
+
+// 结束游戏
+export const endFightApi = (data) => {
+  return request({
+      url: "/api/fight/fightEnd",
+      method: "post",
+      data: data
+  })
+}
+
+// 历史对战详情
+export const getHistoryDetailApi = (data) => {
+  return request({
+      url: "/api/fight/fightDetail",
       method: "post",
       data: data
   })

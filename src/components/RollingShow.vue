@@ -132,7 +132,7 @@ const handleClickNav = (index) => {
   <div class="rolling" :class="{'pc':store.isPC}">
     <TransitionGroup name="list" tag="div" class="rolling-container" :class="{'pc':store.isPC}" @mouseenter="hoverIn"
                      @mouseleave="hoverOut">
-      <div class="navs">
+      <div class="navs" key="navs">
         <div class="navs-item" v-for="(i,index) in navs" :key="index" :class="{active:active===index}"
              @click="handleClickNav(index)">{{ i.name }}
         </div>

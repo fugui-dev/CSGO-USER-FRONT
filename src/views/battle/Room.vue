@@ -1,10 +1,13 @@
 <script setup>
 import Layout from "@/components/Layout.vue";
-import {onMounted, ref, computed} from "vue";
-import {getBattleBoxListApi, getBattleBoxDetailApi, getBattleRankingApi, getMyOwnFightListApi} from "@/api/battle";
-import {goto, requireImg} from "@/utils/common";
-import {useStore} from "@/store";
+import {ref, computed, reactive, onBeforeMount} from "vue";
+import {goto, requireImg, deepClone} from "@/utils/common";
+import {getHistoryDetailApi, saveFightBoutApi, endFightApi} from "@/api/battle";
+import { useRoute } from 'vue-router';
+import { useStore } from "@/store";
 import RoomCard from './components/RoomCard.vue'
+import OpenModal from './components/OpenModal.vue'
+import CountdownModal from './components/CountdownModal.vue'
 
 const modelMap = {
   '0': '欧皇模式',
@@ -16,10 +19,17 @@ const statusMap = {
   '2': '已结束'
 }
 
+const route = useRoute()
 const store = useStore()
-const currentRound = ref(1)
+const currRound = ref(1)
+const roomData = ref({})
+const ws = ref(null)
+const fightBoxVOList = ref([])
+const isAllReady = ref(false) // 是否所有座位都已准备就绪
+const OpenModalRef = ref(null)
+const CountdownModalRef = ref(null)
+const winnerIds = ref([])
 
-const roomData = computed(() => store.battleRoomData )
 const statusColor = computed(() => {
   switch (roomData.value.status) {
     case 0: return '#FF952A';
@@ -30,14 +40,12 @@ const statusColor = computed(() => {
 })
 const boxList = computed(() => {
   let arr = []
-  const boxDataMap = roomData.value.boxDataMap
-  for (const key in boxDataMap) {
-    if (boxDataMap.hasOwnProperty(key)) {
-      const num = boxDataMap[key].number;
-      if (typeof num === 'number' && num >= 1) {
-        for (let i = 0; i < num; i++) {
-          arr.push(boxDataMap[key]);
-        }
+  const fightBoxList = fightBoxVOList.value
+  for (const item of fightBoxList) {
+    const num = item.number;
+    if (typeof num === 'number' && num >= 1) {
+      for (let i = 0; i < num; i++) {
+        arr.push(deepClone(item));
       }
     }
   }
@@ -48,20 +56,162 @@ const handleClickBack = () => {
   goto('/battle')
 }
 
-const createWs = () => {
-  const userId = roomData.value.userId;
-  const fightId = roomData.value.id;
-  if (userId && fightId) {
-    // const ws = new WebSocket(`ws://121.229.204.223:8090/ws/fight/room/${userId}/${fightId}`);
-    // ws.addEventListener('open', ()=> {
-    //     alert('已连接服务器')
-    // })
+const showBeginAnimation = () => {
+  CountdownModalRef.value.open()
+}
+
+const calcFightResult = () => {
+
+}
+
+const reCalcBoxList = (fightResult) => {
+  const userId = fightResult[0].userId
+  const onePersonFightResult = fightResult.filter(item => item.userId === userId)
+  const map = new Map()
+  if (onePersonFightResult.length === boxList.value.length) {
+    boxList.value.forEach(box => {
+      const findItem = onePersonFightResult.find(item => {
+        const arr = map.has(box.boxId) ? map.get(box.boxId) : []
+        const isInclude = arr.includes(item.fightRoundNumber)
+        if (!isInclude) {
+          arr.push(item.fightRoundNumber)
+          map.set(box.boxId, arr)
+        }
+        return item.boxId === box.boxId && !isInclude
+      })
+      if (findItem) {
+        box.fightRoundNumber = findItem.fightRoundNumber
+      }
+    })
+    boxList.value.sort((a, b) => a.fightRoundNumber - b.fightRoundNumber)
+    console.log(boxList.value)
   }
 }
 
-onMounted(() => {
-  createWs()
+const closeWs = () => {
+  ws.value.close()
+  console.log('ws已关闭')
+}
+
+const createWs = () => {
+  const userId = store.userInfo.userId;
+  const fightId = route.params.id;
+  if (!userId || !fightId) return
+
+  ws.value = new WebSocket(`ws://121.229.204.223:8090/ws/fight/room/${userId}/${fightId}`);
+  ws.value.addEventListener('open', ()=> {
+      console.log('已连接服务器')
+  })
+  ws.value.addEventListener('message', (res)=> {
+    const data = JSON.parse(res.data)
+    console.log(data)
+    if (data.code === 200 && data.data) {
+      roomData.value = data.data.fight
+      fightBoxVOList.value = data.data.fightBoxVOList
+      winnerIds.value = data.data.winnerIds
+      // 检查是否所有座位都已准备就绪
+      isAllReady.value = data.data.fight.seatList.every(seat => seat.status === 2)
+      
+      const currentRound = data.data.currentRound
+      const fightResult = data.data.fightResult
+      // 有对战结果说明2种情况：（1）游戏开始（2）对战进行中，有人进入观战，此时currentRound有值
+      if (Array.isArray(fightResult) && fightResult.length > 0) {
+        reCalcBoxList(fightResult)
+        if (!currentRound) {
+          // 非房主，游戏现在开始
+          if (userId !== data.data.fight.userId) {
+            showBeginAnimation()
+          }
+        }
+      }
+      
+      if (!currentRound) return
+      if (currentRound < 0) {
+        currRound.value = data.data.fight.roundNumber
+        // 对战已结束
+        closeWs()
+        return
+      } else {
+        // 对战进行中（有人进入观战）
+        currRound.value = currentRound
+      }
+    }
+  })
+}
+
+// 获取历史对战信息
+const getFinishedData = () => {
+  const fightId = route.params.id;
+  getHistoryDetailApi({ fightId }).then(res => {
+    roomData.value = res.data.fight
+    fightBoxVOList.value = res.data.fightBoxVOList
+    winnerIds.value = res.data.winnerIds
+    const fightResult = res.data.fightResult
+    if (Array.isArray(fightResult) && fightResult.length > 0) {
+      reCalcBoxList(fightResult)
+    }
+  })
+}
+
+// 开始倒计时
+const handleStartCountdown = () => {
+  isAllReady.value = false
+  showBeginAnimation()
+}
+
+// 开始游戏
+const handleStartGame = () => {
+  
+}
+
+onBeforeMount(() => {
+  const model = Number(route.query.model)
+  // 模式1：创建房间后进入 模式2：进入等待中或进行中的房间 模式3：进入已结束的房间
+  if (model === 1 || model === 2) {
+    createWs()
+  } else {
+    getFinishedData()
+  }
 })
+
+const localSet = reactive({
+  music: true
+})
+const handleOpen = () => {
+  OpenModalRef.value.open()
+}
+const handleModalClose = () => {
+}
+
+const test = () => {
+  const fightId = route.params.id;
+  // 存储当前回合数据
+  saveFightBoutApi({
+    fightId: fightId,
+    boutNum: currRound.value
+  }).then(res => {
+    if (res.code === 200) {
+      if (currRound.value < roomData.value.roundNumber) {
+        currRound.value++
+      } else {
+        // 结束游戏
+        endFightApi({ fightId }).then(res => {
+          if (res.code === 200) {
+            roomData.value = res.data.fight
+            fightBoxVOList.value = res.data.fightBoxVOList
+            winnerIds.value = res.data.winnerIds
+            const fightResult = res.data.fightResult
+            if (Array.isArray(fightResult) && fightResult.length > 0) {
+              reCalcBoxList(fightResult)
+            }
+            closeWs()
+            alert('游戏结束')
+          }
+        })
+      }
+    }
+  })
+}
 
 </script>
 
@@ -82,16 +232,17 @@ onMounted(() => {
               返回
             </div>
             <div class="room-status" :style="{ backgroundColor: statusColor }">{{ statusMap[roomData.status] }}</div>
-            <div>111</div>
+            <div @click="handleOpen">111</div>
           </div>
           <div class="room-banner-center">
             <div class="round-num">
               <div class="round-num-bg rotate1"></div>
               <div class="round-num-bg rotate2"></div>
               <div class="round-num-bg rotate3"></div>
-              <h3>{{ currentRound }} / {{ roomData.roundNumber }}</h3>
+              <h3>{{ currRound }} / {{ roomData.roundNumber }}</h3>
             </div>
             <div class="room-model">{{ modelMap[roomData.model] }}</div>
+            <button @click="test">试试</button>
             <!-- 总金额 -->
             <div class="total-price">
               <img :src="requireImg('/coin1.png',false)" alt="">
@@ -113,11 +264,25 @@ onMounted(() => {
         </div>
         <!-- 对战卡片 -->
         <div class="card-list">
-          <RoomCard :cardData="i" :roomId="roomData.id" v-for="(i,index) in roomData.seatList" :key="index" class="card-item" />
+          <RoomCard
+            :cardData="i" 
+            :roomId="roomData.id" 
+            :roomOwnerId="roomData.userId"
+            :isAllReady="isAllReady"
+            :roomStatus="roomData.status"
+            :winnerIds="winnerIds"
+            :currOrnaments="boxList[currRound-1].ornaments"
+            v-for="(i,index) in roomData.seatList" 
+            :key="index" 
+            class="card-item"
+            @start="handleStartCountdown" />
         </div>
       </div>
     </template>
   </Layout>
+  <!-- <OpenModal ref="OpenModalRef" :openData="[]" :boxData="[]" :curindex="1" :localSet="localSet"
+    @close="handleModalClose" @openAgain="handleOpen" /> -->
+  <CountdownModal ref="CountdownModalRef" @close="handleStartGame" />
 </template>
 
 <style scoped lang="scss">

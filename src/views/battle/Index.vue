@@ -2,7 +2,7 @@
 import Layout from "@/components/Layout.vue";
 import {onMounted, onUnmounted, ref} from "vue";
 import {getBattleBoxListApi, getBattleBoxDetailApi, getBattleRankingApi, getMyOwnFightListApi} from "@/api/battle";
-import {requireImg} from "@/utils/common";
+import {requireImg, deepClone} from "@/utils/common";
 import {useDebounceFn} from "@vueuse/core";
 import {ElMessage} from "element-plus";
 import BoxDetailModal from './components/BoxDetail.vue'
@@ -90,9 +90,9 @@ const getRankData = () => {
 const changeActive = (val) => {
   active.value = val
   if (active.value === 0) {
-    list.value = []
+    list.value = deepClone(tempList.value)
   } else if (active.value === 1) {
-    // tempList.value = list
+    tempList.value = deepClone(list.value)
     form.value.page = 1
     list.value = []
     isComplete.value = false
@@ -139,8 +139,22 @@ const handleClickCreateRoom = () => {
   createRoomDialogRef.value.open()
 }
 
-const handleClickBattleCard = (id) => {
-  router.push(`/battle/${id}`)
+const handleClickBattleCard = (item) => {
+  // 模式1：创建房间后进入 模式2：进入等待中或进行中的房间 模式3：进入已结束的房间
+  const model = (item.status === '0' || item.status === '1') ? 2 : 3
+  router.push({
+    path: `/battle/${item.id}`,
+    query: { model }
+  })
+}
+
+// 卡片替换：如果存在目标卡片，则删除并插入第一条，如果不存在则直接删除
+const replaceBattleCard = (newData) => {
+  const index = tempList.value.findIndex(item => item.id === newData.id)
+  if (index >= 0) {
+    tempList.value.splice(index, 1)
+  }
+  tempList.value.unshift(newData)
 }
 
 const createWs = () => {
@@ -151,11 +165,14 @@ const createWs = () => {
       console.log('ws已连接')
     })
     ws.value.addEventListener('message', (res)=> {
-      console.log(res)
       const data = JSON.parse(res.data)
       if (data.data && data.data.total > 1) {
-        // list.value
+        list.value = data.data.rows
       }
+      if (Array.isArray(data.data) && data.data.length === 1) {
+        replaceBattleCard(data.data[0])
+      }
+      console.log(list.value)
     })
   }
 }
@@ -236,7 +253,7 @@ onUnmounted(() => {
                 <div class="content">
                   <el-scrollbar max-height="800px" @scroll="onScroll" ref="scrollRef">
                     <div ref="listRef" class="battle-list-container">
-                      <BattleCard :cardData="i" v-for="(i,index) in list" :key="index" @click="handleClickBattleCard(i.id)"/>
+                      <BattleCard :cardData="i" v-for="(i,index) in list" :key="index" @click="handleClickBattleCard(i)"/>
                     </div>
                   </el-scrollbar>
                 </div>
