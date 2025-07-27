@@ -4,7 +4,10 @@ export const useStore = defineStore('myStore', { // 第一个参数是 id
     state: () => ({
         userInfo: {},
         isPC: false,
-        needLogin:false
+        needLogin:false,
+        currRound: 1,
+        currRoundFlag: {},
+        animationLock: false
     }),
     getters: {
         getUserInfo(state) {
@@ -12,6 +15,15 @@ export const useStore = defineStore('myStore', { // 第一个参数是 id
         },
         isLogin(state) {
             return state.userInfo && state.userInfo.userId;
+        },
+        getCurrRound(state) {
+          return state.currRound;
+        },
+        getCurrRoundFlag(state) {
+          return state.currRoundFlag;
+        },
+        getAnimationLock(state) {
+          return state.animationLock;
         }
     },
     actions: {
@@ -30,6 +42,18 @@ export const useStore = defineStore('myStore', { // 第一个参数是 id
         },
         setNeedLogin(needLogin) {
             this.needLogin = needLogin;
+        },
+        setCurrRound(currRound) {
+          this.currRound = currRound;
+        },
+        setCurrRoundFlag(id, flag) {
+          this.currRoundFlag[id] = flag;
+        },
+        clearCurrRoundFlag() {
+          this.currRoundFlag = {};
+        },
+        setAnimationLock(animationLock) {
+          this.animationLock = animationLock;
         }
     },
 });

@@ -62,11 +62,11 @@ watch(() => props.rankData, (newValue) => {
       <div class="rank-list-wrap">
         <el-tabs type="border-card" class="rank-list-container" @tab-change="handleTabChange">
           <el-tab-pane label="今日战力排行">
-            <RankList :rank-list="rankData.todayFightRanking"/>
+            <RankList :rank-list="rankData.todayFightRanking || []"/>
             <p class="my-total-price">我的今日战力：{{ rankData.todayTotalBoxPrice ? rankData.todayTotalBoxPrice : 0 }}</p>
           </el-tab-pane>
           <el-tab-pane label="昨日战力排行">
-            <RankList :rank-list="rankData.yesterdayFightRanking"/>
+            <RankList :rank-list="rankData.yesterdayFightRanking || []"/>
             <p class="my-total-price">我的昨日战力：{{ rankData.yesterdayTotalBoxPrice ? rankData.yesterdayTotalBoxPrice : 0 }}</p>
           </el-tab-pane>
         </el-tabs>

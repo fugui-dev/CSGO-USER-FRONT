@@ -1,15 +1,24 @@
 <script setup>
-import {onUnmounted, onMounted, ref} from "vue";
+import {onMounted, nextTick, ref, computed, inject} from "vue";
 import {requireImg} from "@/utils/common";
+import { useStore } from "@/store";
 import end1 from '@/assets/boxroom/end1.svg'
 import end2 from '@/assets/boxroom/end2.svg'
 import end3 from '@/assets/boxroom/end3.svg'
 import end4 from '@/assets/boxroom/end4.svg'
 import end5 from '@/assets/boxroom/end5.svg'
+import m1 from "@/assets/music/m1.wav";
 
 const props = defineProps({
-  ornamentsData: {
-    type: Array,
+  fightResult: {
+    type: Object,
+    required: true
+  },
+  roundNumber: {
+    type: Number
+  },
+  currPlayerId: {
+    type: Number,
     required: true
   }
 });
@@ -41,17 +50,120 @@ const leavel = {
         img: end5
     }
 }
+const emit = defineEmits(['scrollEnd'])
+const store = useStore()
+const boxList = inject('boxList', [])
+const musica = new Audio(m1) //滚动音频
+
+// 多个饰品列表拼接
+const tempMultiOrnamentsData = computed(() => {
+  const currRound = store.currRound
+  const ornamentsData = boxList.value[currRound-1].ornaments
+  let arr = []
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < ornamentsData.length; j++) {
+      arr.push(ornamentsData[j])
+    }
+  }
+  return arr
+})
+
+// 计算滚动最终在第几个饰品盒子上
+const calcScrollEndIndex = () => {
+  const currPlayerId = props.currPlayerId
+  const currRound = store.currRound
+  let result = {}
+  if (currPlayerId && currRound) {
+    const fightResult = props.fightResult
+    result = fightResult?.find(item => item.userId === currPlayerId && item.fightRoundNumber === currRound)
+  }
+  // 找到倒数第一组的目标元素
+  const multiOrnamentsData = Array.isArray(tempMultiOrnamentsData.value) ? tempMultiOrnamentsData.value : []
+  if (result?.ornamentId && multiOrnamentsData.length) {
+    console.log(multiOrnamentsData.findLastIndex(item => item.ornamentId === result.ornamentId))
+    return multiOrnamentsData.findLastIndex(item => item.ornamentId === result.ornamentId)
+  } else {
+    return -1
+  }
+}
+
+const FightBoxRef = ref(null)
+const scrollEndPosition = ref('0');
+const scrollAnimation = ref(false)
+const calculateScrollPosition = () => {
+  nextTick(() => {
+    try {
+        // 获取容器和单个元素
+        const container = FightBoxRef.value;
+        const items = container.querySelectorAll('.ornament-list-item');
+
+        if (!container || items.length === 0) return;
+        // 计算单个元素高度（包括边距等）
+        const itemHeight = items[0].offsetHeight;
+        // 考虑间距 3px
+        const gapHeight = 3;
+        // 容器高度
+        const containerHeight = itemHeight * items.length + gapHeight * items.length;
+        console.log(containerHeight)
+        // 目标是第 index 个元素居中，计算需要的位移
+        // 计算目标元素的位置（第 index 个，索引为index-1）- 考虑间距
+        const index = calcScrollEndIndex()
+        const targetPosition = (itemHeight * (index - 1)) + (gapHeight * (index - 2));
+        // 计算需要的位移量，使目标元素位于容器中央
+        // 减去容器宽度的一半，再加上元素宽度的一半
+        const scrollTo = targetPosition - (containerHeight / 2) + (itemHeight / 2);
+        // 设置滚动距离
+        scrollEndPosition.value = `-${scrollTo}px`;
+        // 动态设置CSS变量
+        container.style.setProperty('--scroll-end-position', `-${scrollTo}px`);
+        console.log('垂直滚动位置计算完成:', scrollEndPosition.value);
+        // 开始动画
+        scrollAnimation.value = true
+        musica.play()
+    } catch (error) {
+        console.error('计算滚动位置时出错:', error);
+    }
+  })
+};
+
+const startAnimation = () => {
+  const index = calcScrollEndIndex()
+  if (index > 0) {
+    calculateScrollPosition()
+  }
+}
+
+const handleScrollAnimationEnd = () => {
+  console.log('滚动结束')
+  scrollAnimation.value = false
+  pauseMusic()
+  emit('scrollEnd')
+}
+
+const pauseMusic = () => {
+  musica.pause()
+  musica.currentTime = 0
+}
+
+onMounted(() => {
+    musica.src = m1
+    musica.load()
+})
+
+defineExpose({
+  startAnimation
+})
 
 </script>
 <template>
     <el-scrollbar max-height="360px">
-      <div class="fight-box-container">
+      <div :class="['fight-box-container', scrollAnimation ? 'scroll-animation' : 'scroll-start-point']" ref="FightBoxRef" @animationend="handleScrollAnimationEnd">
         <div
           class="ornament-list-item"
           :style="{ borderColor: leavel[item.ornamentsLevelId].color }"
           style="background:linear-gradient(180deg, rgba(56, 49, 49, 0.50) 0%, #383131 100%); "
-          v-for="item in ornamentsData"
-          :key="item.id">
+          v-for="(item, index) in tempMultiOrnamentsData"
+          :key="index">
           <img :src="leavel[item.ornamentsLevelId].img" alt="" class="img-bg">
           <div class="btn">
             <div>{{item.usePrice}}</div>
@@ -107,5 +219,25 @@ const leavel = {
       }
     }
   }
+}
+.scroll-animation {
+  animation-duration: 13s;
+  animation-iteration-count: 1;
+  animation-name: scroll-end;
+  animation-timing-function: cubic-bezier(0.1, 0.1, 0.3, 0.4, 0.6, 0.8, 0.9, 0.9, 0.9, 1);
+  animation-fill-mode: forwards;
+}
+.scroll-start-point {
+  transform: translateY(0);
+}
+
+@keyframes scroll-end {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(var(--scroll-end-position));
+    }
 }
 </style>

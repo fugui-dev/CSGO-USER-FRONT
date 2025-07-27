@@ -92,6 +92,7 @@ const handleClickCreateRoom = () => {
       ElMessage.success('房间创建成功')
       closeModal()
       // 模式1：创建房间后进入 模式2：进入等待中或进行中的房间 模式3：进入已结束的房间
+      store.setCurrRound(1)
       const roomId = res.data.fight.id
       router.push({
         path: `/battle/${roomId}`,

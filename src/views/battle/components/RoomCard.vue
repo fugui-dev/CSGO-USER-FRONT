@@ -5,6 +5,7 @@ import { useStore } from "@/store";
 import {ElMessage} from "element-plus";
 import {joinRoomApi, prepareFightApi, beginFightApi} from "@/api/battle"
 import FightBox from "./FightBox.vue"
+import FightResult from "./FightResult.vue"
 
 const props = defineProps({
   cardData: {
@@ -27,10 +28,16 @@ const props = defineProps({
     type: Number,
     required: true
   },
-  currOrnaments: {
-    type: Array
+  roundNumber: {
+    type: Number
   },
   winnerIds: {
+    type: Array
+  },
+  playerIds: {
+    type: Array
+  },
+  fightResult: {
     type: Array
   }
 });
@@ -38,13 +45,37 @@ const props = defineProps({
 const store = useStore()
 const currUserId = computed(() => store.userInfo.userId)
 const allReady = computed(() => props.isAllReady)
-const emit = defineEmits(['start'])
+const emit = defineEmits(['start', 'roundEnd'])
+const FightBoxRef = ref(null)
+const FightResultRef = ref(null)
 
 const statusMap = {
   '0': '等待中',
   '1': '进行中',
   '2': '已结束'
 }
+
+// 组装所有轮次每个卡片的结果
+const playerResult = computed(() => {
+  const roundNumber = props.roundNumber
+  const fightResult = props.fightResult
+  const playerIds = [...new Set(fightResult.map(item => item.userId))]
+  const result = {}
+  for (let i = 0; i < roundNumber; i++) {
+    for (let j = 0; j < playerIds.length; j++) {
+      // 以用户为维度，找到当前回合的数据
+      const match = fightResult?.find(item => playerIds[j] === item.userId && item.fightRoundNumber === i + 1)
+      if (i === 0) {
+        result[playerIds[j]] = {}
+        result[playerIds[j]][i + 1] = [match]
+      } else {
+        result[playerIds[j]][i + 1] = result[playerIds[j]][i].concat(match)
+      }
+    }
+  }
+  console.log(result)
+  return result
+})
 
 const handleJoin = () => {
   if (props.roomOwnerId === currUserId.value) {
@@ -75,14 +106,27 @@ const handleStartGame = () => {
   })
 }
 
-watch(props.isAllReady, (newVal) => {
-  alert('watch: ' + newVal)
-  allReady.value = newVal
+const startAnimation = () => {
+  FightBoxRef.value?.startAnimation()
+}
+
+const handleScrollEnd = () => {
+  FightResultRef.value?.startAnimation()
+}
+
+const handleMagnifyEnd = () => {
+  store.setCurrRoundFlag(props.cardData.playerId, true)
+  emit('roundEnd')
+}
+
+defineExpose({
+  startAnimation
 })
 
 </script>
 <template>
-    <div class="room-card-container" :style="{
+  <div>
+    <div class="fight-card-container" :style="{
         '--bg-card':requireImg('/level/2.png',true)
       }">
       <!-- 头部 -->
@@ -103,7 +147,13 @@ watch(props.isAllReady, (newVal) => {
         </div>
       </div>
       <!-- 中间 -->
-      <FightBox v-if="roomStatus === 1 && currOrnaments" :ornaments-data="currOrnaments" />
+      <FightBox
+        ref="FightBoxRef"
+        v-if="roomStatus === 1"
+        :roundNumber="roundNumber"
+        :fightResult="fightResult"
+        :currPlayerId="cardData.playerId"
+        @scrollEnd="handleScrollEnd" />
       <div class="card-main" v-if="roomStatus === 0">
         <div class="player-status">
           <div class="join-btn" v-if="cardData.status === 0" @click="handleJoin">加入</div>
@@ -125,10 +175,21 @@ watch(props.isAllReady, (newVal) => {
         </div>
       </div>
     </div>
+    <div class="fight-result-container">
+      <FightResult
+        ref="FightResultRef"
+        :result="playerResult"
+        :currPlayerId="cardData.playerId"
+        :roundNumber="roundNumber"
+        :fightResult="fightResult"
+        :roomStatus="roomStatus"
+        @magnifyEnd="handleMagnifyEnd" />
+    </div>
+  </div>
 </template>
 
 <style scoped lang="scss">
-.room-card-container {
+.fight-card-container {
   background-image: var(--bg-card);
   background-color: rgba(50, 50, 50, 0.66);
   background-position: bottom;
