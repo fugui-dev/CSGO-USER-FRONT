@@ -7,6 +7,8 @@ import end2 from '@/assets/boxroom/end2.svg'
 import end3 from '@/assets/boxroom/end3.svg'
 import end4 from '@/assets/boxroom/end4.svg'
 import end5 from '@/assets/boxroom/end5.svg'
+import lightLeft from '@/assets/boxroom/dengLeft.png'
+import lightRight from '@/assets/boxroom/dengRight.png'
 import m1 from "@/assets/music/m1.wav";
 
 const props = defineProps({
@@ -65,6 +67,7 @@ const tempMultiOrnamentsData = computed(() => {
       arr.push(ornamentsData[j])
     }
   }
+  
   return arr
 })
 
@@ -98,13 +101,12 @@ const calculateScrollPosition = () => {
         const items = container.querySelectorAll('.ornament-list-item');
 
         if (!container || items.length === 0) return;
-        // 计算单个元素高度（包括边距等）
-        const itemHeight = items[0].offsetHeight;
+        // 单个元素高度，固定170px（包括边距等）
+        const itemHeight = 170;
         // 考虑间距 3px
         const gapHeight = 3;
         // 容器高度
-        const containerHeight = itemHeight * items.length + gapHeight * items.length;
-        console.log(containerHeight)
+        const containerHeight = container.offsetHeight;
         // 目标是第 index 个元素居中，计算需要的位移
         // 计算目标元素的位置（第 index 个，索引为index-1）- 考虑间距
         const index = calcScrollEndIndex()
@@ -156,7 +158,12 @@ defineExpose({
 
 </script>
 <template>
-    <el-scrollbar max-height="360px">
+    <el-scrollbar max-height="360px" class="scroll-wrap">
+      <div class="line">
+        <img :src="lightLeft" alt="">
+        <div class="yellow-line"></div>
+        <img :src="lightRight" alt="">
+      </div>
       <div :class="['fight-box-container', scrollAnimation ? 'scroll-animation' : 'scroll-start-point']" ref="FightBoxRef" @animationend="handleScrollAnimationEnd">
         <div
           class="ornament-list-item"
@@ -177,12 +184,47 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
+.scroll-wrap {
+  position: relative;
+  .line {
+    width: 56%;
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    .yellow-line {
+      width: 100%;
+      height: 1px;
+      background-color: #f0be29;
+    }
+    img:nth-of-type(1) {
+      position: absolute;
+      left: 0;
+      z-index: 3; 
+      transform: translate(-70%, -50%);
+    }
+    img:nth-of-type(2) {
+      position: absolute;
+      right: 0;
+      z-index: 3; 
+      transform: translate(70%, -50%);
+    }
+  }
+}
 .fight-box-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 50%;
+  border-left: 1px solid #b21414;
+  border-right: 1px solid #b21414;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin: 0 auto;
   .ornament-list-item {
-    width: 50%;
+    width: 100%;
+    height: 170px;
     position: relative;
     margin-bottom: 3px;
     display: flex;
@@ -221,7 +263,7 @@ defineExpose({
   }
 }
 .scroll-animation {
-  animation-duration: 13s;
+  animation-duration: 15s;
   animation-iteration-count: 1;
   animation-name: scroll-end;
   animation-timing-function: cubic-bezier(0.1, 0.1, 0.3, 0.4, 0.6, 0.8, 0.9, 0.9, 0.9, 1);
@@ -239,5 +281,28 @@ defineExpose({
     to {
         transform: translateY(var(--scroll-end-position));
     }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .fight-box-container {
+    width: 90%;
+  }
+  .scroll-wrap {
+    .line {
+    width: 80%;
+    .yellow-line {
+      width: 100%;
+      height: 1px;
+      background-color: #f0be29;
+    }
+    img:nth-of-type(1) {
+      transform: translate(-90%, -50%);
+    }
+    img:nth-of-type(2) {
+      transform: translate(90%, -50%);
+    }
+  }
+  }
 }
 </style>

@@ -203,7 +203,6 @@ const handleRoundEnd = () => {
     const playerIds = roomData.value.seatList.map(item => item.playerId)
     const res = playerIds.every(id => id && currRoundFlag[id])
     if (res) {
-      console.log('llll')
       saveDataAndGoNext()
     }
   })
@@ -214,7 +213,6 @@ const saveDataAndGoNext = () => {
   if (roomData.value.userId === store.userInfo.userId) {
     ownerCall()
   } else {
-    console.log('zzzz')
     ordinaryCall()
   }
 }
@@ -255,9 +253,7 @@ const ownerCall = () => {
 
 // 普通调用
 const ordinaryCall = () => {
-  console.log(roomData.value.roundNumber)
   let currRound = store.currRound
-  console.log(currRound)
   if (currRound < roomData.value.roundNumber) {
     store.clearCurrRoundFlag()
     store.setCurrRound(++currRound)
@@ -280,6 +276,7 @@ const ordinaryCall = () => {
     <template #item>
       <div class="bg bg-room"></div>
       <div class="room-container">
+        <CountdownModal ref="CountdownModalRef" @close="handleStartGame" />
         <!-- banner -->
         <div class="room-banner">
           <!-- 顶部 -->
@@ -307,8 +304,8 @@ const ordinaryCall = () => {
             </div>
           </div>
           <div class="box-list">
-            <div class="box-item" v-for="item in boxList" :key="item.boxId">
-              <div class="bx">
+            <div class="box-item" v-for="(item, index) in boxList" :key="item.boxId">
+              <div :class="['bx', (currRound === index + 1 && roomData.status !== 2) ? 'highlight' : '']">
                 <img :src="item.boxImg01" class="bj" alt="">
                 <img :src="item.boxImg02" class="wq" alt="">
               </div>
@@ -341,7 +338,6 @@ const ordinaryCall = () => {
       </div>
     </template>
   </Layout>
-  <CountdownModal ref="CountdownModalRef" @close="handleStartGame" />
 </template>
 
 <style scoped lang="scss">
@@ -357,6 +353,7 @@ const ordinaryCall = () => {
   max-width: 1024px;
   margin: 6px auto;
   box-sizing: border-box;
+  position: relative;
   .room-banner {
     background-color: rgba($color: #111, $alpha: 0.86);
     border-radius: 12px;
@@ -391,6 +388,7 @@ const ordinaryCall = () => {
       padding: 0 28px;
       border-bottom-left-radius: 12px;
       border-bottom-right-radius: 12px;
+      margin: 0 auto;
     }
   }
   .room-banner-center {
@@ -499,6 +497,11 @@ const ordinaryCall = () => {
           width: 45%;
           height: 45%;
         }
+      }
+
+      .highlight {
+        width: 120%;
+        animation: smooth 2s infinite;
       }
 
       .btn {

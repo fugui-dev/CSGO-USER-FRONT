@@ -92,7 +92,9 @@ const calcFinalResult = () => {
 onMounted(() => {
   // 已结束
   if (props.roomStatus === 2) {
-    calcFinalResult()
+    const currPlayerId = props.currPlayerId
+    const fightResult = props.fightResult
+    perResultList.value = fightResult.filter(item => item.holderUserId === currPlayerId && item.boxId)
   }
 })
 
@@ -182,5 +184,12 @@ defineExpose({
     to {
         transform: scale(1.0);
     }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .fight-result-item {
+    width: 49% !important;
+  }
 }
 </style>

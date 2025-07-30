@@ -280,6 +280,23 @@ defineExpose({
 
 /* 响应式调整 */
 @media (max-width: 768px) {
-  
+  .card-header {
+    .user-info {
+      flex-direction: column;
+      justify-content: center;
+      .user {
+        flex-direction: column;
+        justify-content: center;
+        .nick-name {
+          font-size: 16px;
+          margin-top: 4px;
+        }
+      }
+      .price {
+        margin-left: 0;
+        margin-top: 4px;
+      }
+    }
+  }
 }
 </style>

@@ -46,12 +46,12 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .countdown-modal {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: fixed;
+  position: absolute;
   left: 0;
   top: 0;
   z-index: 99;
@@ -60,13 +60,13 @@ onUnmounted(() => {
     height: 100px;
     border-radius: 50%;
     font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-    font-size: 22px;
+    font-size: 26px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 6px solid #ccc;
-    color: #ffffff;
-    background: linear-gradient(#e9e7e3, #646463);
+    border: 6px solid #f2a814;
+    color: #684412;
+    background: linear-gradient(#f8debb, #f1cf80);
   }
 }
 </style>
