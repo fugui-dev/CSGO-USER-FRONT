@@ -137,9 +137,12 @@ const startAnimation = () => {
 
 const handleScrollAnimationEnd = () => {
   console.log('滚动结束')
-  scrollAnimation.value = false
   pauseMusic()
-  emit('scrollEnd')
+  const timer = setTimeout(() => {
+    scrollAnimation.value = false
+    emit('scrollEnd')
+    timer && clearTimeout(timer)
+  }, 2000)
 }
 
 const pauseMusic = () => {
@@ -158,13 +161,20 @@ defineExpose({
 
 </script>
 <template>
-    <el-scrollbar max-height="360px" class="scroll-wrap">
+    <el-scrollbar
+      max-height="360px"
+      class="scroll-wrap"
+      @mousewheel.prevent
+      @touchmove.prevent>
       <div class="line">
         <img :src="lightLeft" alt="">
         <div class="yellow-line"></div>
         <img :src="lightRight" alt="">
       </div>
-      <div :class="['fight-box-container', scrollAnimation ? 'scroll-animation' : 'scroll-start-point']" ref="FightBoxRef" @animationend="handleScrollAnimationEnd">
+      <div
+        :class="['fight-box-container', scrollAnimation ? 'scroll-animation' : 'scroll-start-point']"
+        ref="FightBoxRef"
+        @animationend="handleScrollAnimationEnd">
         <div
           class="ornament-list-item"
           :style="{ borderColor: leavel[item.ornamentsLevelId].color }"
@@ -287,6 +297,17 @@ defineExpose({
 @media (max-width: 768px) {
   .fight-box-container {
     width: 90%;
+    .ornament-list-item {
+      h5 {
+        font-size: 12px;
+      }
+      img {
+        width: 96%;
+      }
+      .img-bg {
+        width: 100%;
+      }
+    }
   }
   .scroll-wrap {
     .line {

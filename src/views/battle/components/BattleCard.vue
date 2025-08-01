@@ -220,6 +220,20 @@ const statusColor = computed(() => {
 
 /* 响应式调整 */
 @media (max-width: 768px) {
-  
+  .card-header {
+    flex-direction: column;
+    align-items: center;
+    .card-status {
+      width: 50%;
+      font-size: 12px;
+      border-top-left-radius: 0;
+      border-bottom-right-radius: 12px;
+      border-bottom-left-radius: 12px;
+      text-align: center;
+    }
+    .card-header-right {
+      margin-top: 4px;
+    }
+  }
 }
 </style>

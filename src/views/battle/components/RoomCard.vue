@@ -3,6 +3,7 @@ import {computed, onMounted, ref, watch} from "vue";
 import {requireImg} from "@/utils/common";
 import { useStore } from "@/store";
 import {ElMessage} from "element-plus";
+import Decimal from 'decimal.js'
 import {joinRoomApi, prepareFightApi, beginFightApi} from "@/api/battle"
 import FightBox from "./FightBox.vue"
 import FightResult from "./FightResult.vue"
@@ -48,6 +49,7 @@ const allReady = computed(() => props.isAllReady)
 const emit = defineEmits(['start', 'roundEnd'])
 const FightBoxRef = ref(null)
 const FightResultRef = ref(null)
+const totalPrice = ref(0)
 
 const statusMap = {
   '0': '等待中',
@@ -76,6 +78,18 @@ const playerResult = computed(() => {
   console.log(result)
   return result
 })
+
+// 计算每轮的汇总金额
+const calcPerRoundTotalPrice = () => {
+  const playerId = props.cardData.playerId
+  const currRound = store.currRound
+  const arr = playerResult.value[playerId][currRound]
+  if (Array.isArray(arr) && arr.length) {
+    totalPrice.value = arr.reduce((prev, next) => {
+      return new Decimal(next.ornamentsPrice).plus(prev).toNumber()
+    }, 0)
+  }
+}
 
 const handleJoin = () => {
   if (props.roomOwnerId === currUserId.value) {
@@ -111,6 +125,7 @@ const startAnimation = () => {
 }
 
 const handleScrollEnd = () => {
+  calcPerRoundTotalPrice()
   FightResultRef.value?.startAnimation()
 }
 
@@ -140,7 +155,8 @@ defineExpose({
             </div>
             <div class="price">
               <img :src="requireImg('/coin1.png',false)" alt="">
-              <div>{{ cardData.awardTotalPrices }}</div>
+              <div v-if="roomStatus === 2">{{ cardData.awardTotalPrices }}</div>
+              <div v-else>{{ totalPrice }}</div>
             </div>
           </div>
           <div class="tw-absolute tw-h-[2px] tw-bg-gradient-to-r tw-from-transparent tw-via-[#FF7A21] tw-to-transparent tw-w-full tw-bottom-[-12px]"></div>

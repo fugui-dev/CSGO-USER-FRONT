@@ -6,7 +6,6 @@ import {getHistoryDetailApi, saveFightBoutApi, endFightApi} from "@/api/battle";
 import { useRoute } from 'vue-router';
 import { useStore } from "@/store";
 import RoomCard from './components/RoomCard.vue'
-import OpenModal from './components/OpenModal.vue'
 import CountdownModal from './components/CountdownModal.vue'
 
 const modelMap = {
@@ -203,19 +202,19 @@ const handleRoundEnd = () => {
     const playerIds = roomData.value.seatList.map(item => item.playerId)
     const res = playerIds.every(id => id && currRoundFlag[id])
     if (res) {
-      saveDataAndGoNext()
+      ownerCall()
     }
   })
 }
 
-const saveDataAndGoNext = () => {
-  // 当前用户是房主
-  if (roomData.value.userId === store.userInfo.userId) {
-    ownerCall()
-  } else {
-    ordinaryCall()
-  }
-}
+// const saveDataAndGoNext = () => {
+//   // 当前用户是房主
+//   if (roomData.value.userId === store.userInfo.userId) {
+//     ownerCall()
+//   } else {
+//     ordinaryCall()
+//   }
+// }
 
 // 房主调用
 const ownerCall = () => {
@@ -252,19 +251,19 @@ const ownerCall = () => {
 }
 
 // 普通调用
-const ordinaryCall = () => {
-  let currRound = store.currRound
-  if (currRound < roomData.value.roundNumber) {
-    store.clearCurrRoundFlag()
-    store.setCurrRound(++currRound)
-    handleStartGame()
-  } else {
-    store.setCurrRound(1)
-    // 更新为结束状态
-    roomData.value.status = 2
-    closeWs()
-  }
-}
+// const ordinaryCall = () => {
+//   let currRound = store.currRound
+//   if (currRound < roomData.value.roundNumber) {
+//     store.clearCurrRoundFlag()
+//     store.setCurrRound(++currRound)
+//     handleStartGame()
+//   } else {
+//     store.setCurrRound(1)
+//     // 更新为结束状态
+//     roomData.value.status = 2
+//     closeWs()
+//   }
+// }
 
 </script>
 
