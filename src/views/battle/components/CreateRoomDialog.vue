@@ -332,6 +332,10 @@ defineExpose({
   display: flex;
   flex-direction: column;
   align-items: center;
+  .box-choose-list {
+    max-height: 160px;
+    overflow: auto;
+  }
   .choosed-tips {
     display: flex;
     justify-content: center;
@@ -495,6 +499,13 @@ defineExpose({
       div {
         margin-bottom: 8px;
       }
+    }
+  }
+  .box-choose-list {
+    display: flex;
+    .box-item {
+      width: 20%;
+      font-size: 12px;
     }
   }
   .box-choose-title {

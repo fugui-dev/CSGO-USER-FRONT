@@ -20,8 +20,7 @@ const props = defineProps({
     type: Number
   },
   currPlayerId: {
-    type: Number,
-    required: true
+    type: Number
   }
 });
 
@@ -273,7 +272,7 @@ defineExpose({
   }
 }
 .scroll-animation {
-  animation-duration: 15s;
+  animation-duration: 13s;
   animation-iteration-count: 1;
   animation-name: scroll-end;
   animation-timing-function: cubic-bezier(0.1, 0.1, 0.3, 0.4, 0.6, 0.8, 0.9, 0.9, 0.9, 1);

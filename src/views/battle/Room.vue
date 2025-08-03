@@ -7,6 +7,7 @@ import { useRoute } from 'vue-router';
 import { useStore } from "@/store";
 import RoomCard from './components/RoomCard.vue'
 import CountdownModal from './components/CountdownModal.vue'
+import useWebSocketHeartbeat from '../../composables/useWebSocketHeartbeat'
 
 const modelMap = {
   '0': '欧皇模式',
@@ -22,11 +23,9 @@ const route = useRoute()
 const store = useStore()
 const currRound = computed(() => store.currRound)
 const roomData = ref({})
-const ws = ref(null)
 const fightBoxVOList = ref([])
 const fightResult = ref([])
 const isAllReady = ref(false) // 是否所有座位都已准备就绪
-const OpenModalRef = ref(null)
 const CountdownModalRef = ref(null)
 const winnerIds = ref([])
 
@@ -53,6 +52,55 @@ const boxList = computed(() => {
   return arr
 })
 provide('boxList', boxList)
+
+const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
+  pingInterval: 30000,
+  onOpen: () => {},
+  onMessage: (res) => {
+    const data = JSON.parse(res.data)
+    console.log(data)
+    if (data.data !== 'pong') {
+      if (data.code === 200 && data.data) {
+        roomData.value = data.data.fight
+        fightBoxVOList.value = data.data.fightBoxVOList
+        winnerIds.value = data.data.winnerIds
+        // 检查是否所有座位都已准备就绪
+        isAllReady.value = data.data.fight.seatList.every(seat => seat.status === 2)
+        
+        const currentRound = data.data.currentRound
+        fightResult.value = data.data.fightResult
+        // 有对战结果说明2种情况：（1）游戏开始（2）对战进行中，有人进入观战，此时currentRound有值
+        if (Array.isArray(fightResult.value) && fightResult.value.length > 0) {
+          reCalcBoxList()
+          if (!currentRound) {
+            // 非房主，游戏现在开始
+            const userId = store.userInfo.userId;
+            if (userId !== data.data.fight.userId) {
+              showBeginAnimation()
+            }
+          }
+        }
+        
+        if (!currentRound) return
+        if (currentRound < 0) {
+          store.setCurrRound(data.data.fight.roundNumber)
+          // 对战已结束
+          disconnect()
+          return
+        } else {
+          // 对战进行中（有人进入观战）
+          store.setCurrRound(1)
+          store.setCurrRound(currentRound)
+          nextTick(() => {
+            handleStartGame()
+          })
+        }
+      }
+    }
+  },
+  onClose: () => {},
+  onError: (error) => {}
+})
 
 const handleClickBack = () => {
   goto('/battle')
@@ -86,59 +134,12 @@ const reCalcBoxList = () => {
   }
 }
 
-const closeWs = () => {
-  ws.value?.close()
-  console.log('ws已关闭')
-}
-
 const createWs = () => {
   const userId = store.userInfo.userId;
   const fightId = route.params.id;
   if (!userId || !fightId) return
-
-  ws.value = new WebSocket(`ws://121.229.204.223:8090/ws/fight/room/${userId}/${fightId}`);
-  ws.value.addEventListener('open', ()=> {
-      console.log('已连接服务器')
-  })
-  ws.value.addEventListener('message', (res)=> {
-    const data = JSON.parse(res.data)
-    console.log(data)
-    if (data.code === 200 && data.data) {
-      roomData.value = data.data.fight
-      fightBoxVOList.value = data.data.fightBoxVOList
-      winnerIds.value = data.data.winnerIds
-      // 检查是否所有座位都已准备就绪
-      isAllReady.value = data.data.fight.seatList.every(seat => seat.status === 2)
-      
-      const currentRound = data.data.currentRound
-      fightResult.value = data.data.fightResult
-      // 有对战结果说明2种情况：（1）游戏开始（2）对战进行中，有人进入观战，此时currentRound有值
-      if (Array.isArray(fightResult.value) && fightResult.value.length > 0) {
-        reCalcBoxList()
-        if (!currentRound) {
-          // 非房主，游戏现在开始
-          if (userId !== data.data.fight.userId) {
-            showBeginAnimation()
-          }
-        }
-      }
-      
-      if (!currentRound) return
-      if (currentRound < 0) {
-        store.setCurrRound(data.data.fight.roundNumber)
-        // 对战已结束
-        closeWs()
-        return
-      } else {
-        // 对战进行中（有人进入观战）
-        store.setCurrRound(1)
-        store.setCurrRound(currentRound)
-        nextTick(() => {
-          handleStartGame()
-        })
-      }
-    }
-  })
+  // 连接ws
+  connect(`ws://121.229.204.223:8090/ws/fight/room/${userId}/${fightId}`)
 }
 
 // 获取历史对战信息
@@ -239,10 +240,12 @@ const ownerCall = () => {
             winnerIds.value = res.data.winnerIds
             fightResult.value = res.data.fightResult
             store.setCurrRound(1)
+            // 更新为结束状态
+            roomData.value.status = 2
             if (Array.isArray(fightResult.value) && fightResult.value.length > 0) {
               reCalcBoxList()
             }
-            closeWs()
+            disconnect()
           }
         })
       }

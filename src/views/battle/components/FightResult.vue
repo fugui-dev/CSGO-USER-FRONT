@@ -1,5 +1,5 @@
 <script setup>
-import {onUnmounted, nextTick, ref, computed, onMounted} from "vue";
+import {onUnmounted, nextTick, ref, watch, onMounted} from "vue";
 import {requireImg} from "@/utils/common";
 import {useStore} from "@/store";
 import end1 from '@/assets/boxroom/end1.svg'
@@ -14,8 +14,7 @@ const props = defineProps({
     required: true
   },
   currPlayerId: {
-    type: Number,
-    required: true
+    type: Number
   },
   roundNumber: {
     type: Number,
@@ -80,21 +79,30 @@ const handleMagnifyAnimationEnd = () => {
   emit('magnifyEnd')
 }
 
-const calcFinalResult = () => {
-  const currRound = store.currRound
+// 设置最终结果
+const setFinalReult = () => {
   const currPlayerId = props.currPlayerId
   const fightResult = props.fightResult
+  perResultList.value = fightResult.filter(item => item.holderUserId === currPlayerId && item.boxId)
+}
+
+const calcFinalResult = () => {
+  const currRound = store.currRound
   if (props.roundNumber === currRound) {
-    perResultList.value = fightResult.filter(item => item.holderUserId === currPlayerId && item.boxId)
+    setFinalReult()
   }
 }
 
 onMounted(() => {
   // 已结束
   if (props.roomStatus === 2) {
-    const currPlayerId = props.currPlayerId
-    const fightResult = props.fightResult
-    perResultList.value = fightResult.filter(item => item.holderUserId === currPlayerId && item.boxId)
+    setFinalReult()
+  }
+})
+
+watch(() => props.roomStatus, (newVal) => {
+  if (newVal === 2) {
+    setFinalReult()
   }
 })
 

@@ -1,6 +1,6 @@
 <script setup>
 import Layout from "@/components/Layout.vue";
-import {onMounted, onUnmounted, ref} from "vue";
+import {onMounted, ref} from "vue";
 import {getBattleBoxListApi, getBattleBoxDetailApi, getBattleRankingApi, getMyOwnFightListApi} from "@/api/battle";
 import {requireImg, deepClone} from "@/utils/common";
 import {useDebounceFn} from "@vueuse/core";
@@ -9,8 +9,10 @@ import BoxDetailModal from './components/BoxDetail.vue'
 import BattleCard from './components/BattleCard.vue'
 import Rank from './components/Rank.vue'
 import CreateRoomDialog from "./components/CreateRoomDialog.vue";
+import GameRuleDialog from "./components/GameRuleDialog.vue";
 import {useRouter} from 'vue-router';
 import {useStore} from "@/store";
+import useWebSocketHeartbeat from '../../composables/useWebSocketHeartbeat';
 
 const router = useRouter()
 const store = useStore()
@@ -20,6 +22,7 @@ const boxTypeList = ref([])
 const allBoxList = ref([])
 const boxDetailModalRef = ref(null)
 const createRoomDialogRef = ref(null)
+const gameRuleDialogRef = ref(null)
 const boxDetailData = ref([])
 const currBoxName = ref('')
 const rankData = ref({})
@@ -40,8 +43,26 @@ const navList = ref([{
   'name': '我参与的',
   'value': 1
 }])
-const ws = ref(null)
 const tempList = ref([])
+
+const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
+  pingInterval: 30000,
+  onOpen: () => {},
+  onMessage: (res) => {
+    const data = JSON.parse(res.data)
+    if (data.data !== 'pong') {
+      if (data.data && data.data.total > 1) {
+        list.value = data.data.rows
+      }
+      if (Array.isArray(data.data) && data.data.length === 1) {
+        replaceBattleCard(data.data[0])
+      }
+      console.log(list.value)
+    }
+  },
+  onClose: () => {},
+  onError: (error) => {}
+})
 
 const flattenBoxData = (boxData) => {
   return boxData.reduce((prev, curr) => {
@@ -139,6 +160,10 @@ const handleClickCreateRoom = () => {
   createRoomDialogRef.value.open()
 }
 
+const handleClickGameRule = () => {
+  gameRuleDialogRef.value.open()
+}
+
 const handleClickBattleCard = (item) => {
   // 模式1：创建房间后进入 模式2：进入等待中或进行中的房间 模式3：进入已结束的房间
   const model = (item.status === '0' || item.status === '1') ? 2 : 3
@@ -160,35 +185,14 @@ const replaceBattleCard = (newData) => {
 const createWs = () => {
   const userId = store.userInfo.userId;
   if (userId) {
-    ws.value = new WebSocket(`ws://121.229.204.223:8090/ws/fight/hall/${userId}`);
-    ws.value.addEventListener('open', (res)=> {
-      console.log('ws已连接')
-    })
-    ws.value.addEventListener('message', (res)=> {
-      const data = JSON.parse(res.data)
-      if (data.data && data.data.total > 1) {
-        list.value = data.data.rows
-      }
-      if (Array.isArray(data.data) && data.data.length === 1) {
-        replaceBattleCard(data.data[0])
-      }
-      console.log(list.value)
-    })
+    connect(`ws://121.229.204.223:8090/ws/fight/hall/${userId}`)
   }
-}
-
-const closeWs = () => {
-  ws.value.close()
 }
 
 onMounted(() => {
   getBoxTypeList()
   getRankData()
   createWs()
-})
-
-onUnmounted(() => {
-  closeWs()
 })
 
 </script>
@@ -234,7 +238,7 @@ onUnmounted(() => {
             <div class="create-room">
               <img :src="requireImg('/home/ygr.png',false)" alt="">
               <p class="create-room-text" @click="handleClickCreateRoom">创建房间</p>
-              <p class="rule"><span>?</span>游戏规则</p>
+              <p class="rule" @click="handleClickGameRule"><span>?</span>游戏规则</p>
             </div>
             <!-- 列表 -->
             <div class="main-list">
@@ -266,6 +270,7 @@ onUnmounted(() => {
   </Layout>
   <BoxDetailModal ref="boxDetailModalRef" :boxData="boxDetailData" :title="currBoxName" />
   <CreateRoomDialog ref="createRoomDialogRef" :boxData="allBoxList" />
+  <GameRuleDialog ref="gameRuleDialogRef" />
 </template>
 
 <style scoped lang="scss">

@@ -65,6 +65,10 @@ const props = defineProps({
       .nick-name {
         font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
         font-size: 15px;
+        white-space: nowrap; /* 防止文本换行 */
+        overflow: hidden; /* 隐藏溢出的内容 */
+        text-overflow: ellipsis; /* 显示省略符号来代表被修剪的文本 */
+        max-width: 120px;
       }
     }
     .rank-list-item-right {

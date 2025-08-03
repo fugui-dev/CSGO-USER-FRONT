@@ -1,20 +1,23 @@
 <script setup>
 import {onUnmounted, onMounted, ref} from "vue";
-import {requireImg} from "@/utils/common";
+import m1 from "@/assets/music/countdown.mp3";
 
 const visible = ref(false)
 const countdownValue = ref(3)
 const timer = ref(null)
 const emit = defineEmits(['close'])
+const musica = new Audio(m1)
 
 const open = () => {
   visible.value = true
+  musica.play()
   timer.value = setTimeout(function tick() {
     if (countdownValue.value > 1) {
       countdownValue.value--
       timer.value = setTimeout(tick, 1000)
     } else {
       countdownValue.value = '开始'
+      pauseMusic()
       close()
       clearTimeout(timer.value)
     }
@@ -29,6 +32,16 @@ const close = () => {
 defineExpose({
     open,
     close
+})
+
+const pauseMusic = () => {
+  musica.pause()
+  musica.currentTime = 0
+}
+
+onMounted(() => {
+  musica.src = m1
+  musica.load()
 })
 
 onUnmounted(() => {
