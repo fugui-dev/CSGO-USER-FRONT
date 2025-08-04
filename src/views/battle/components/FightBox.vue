@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, nextTick, ref, computed, inject} from "vue";
+import {onMounted, nextTick, ref, computed, inject, watch} from "vue";
 import {requireImg} from "@/utils/common";
 import { useStore } from "@/store";
 import end1 from '@/assets/boxroom/end1.svg'
@@ -10,6 +10,7 @@ import end5 from '@/assets/boxroom/end5.svg'
 import lightLeft from '@/assets/boxroom/dengLeft.png'
 import lightRight from '@/assets/boxroom/dengRight.png'
 import m1 from "@/assets/music/m1.wav";
+import m2 from "@/assets/music/gold_audio.mp3";
 
 const props = defineProps({
   fightResult: {
@@ -21,6 +22,9 @@ const props = defineProps({
   },
   currPlayerId: {
     type: Number
+  },
+  localSet: {
+    type: Object
   }
 });
 
@@ -55,6 +59,7 @@ const emit = defineEmits(['scrollEnd'])
 const store = useStore()
 const boxList = inject('boxList', [])
 const musica = new Audio(m1) //滚动音频
+const musicb = new Audio(m2) //滚动音频
 
 // 多个饰品列表拼接
 const tempMultiOrnamentsData = computed(() => {
@@ -120,7 +125,9 @@ const calculateScrollPosition = () => {
         console.log('垂直滚动位置计算完成:', scrollEndPosition.value);
         // 开始动画
         scrollAnimation.value = true
-        musica.play()
+        if (props.localSet.music) {
+          musica.play()
+        }
     } catch (error) {
         console.error('计算滚动位置时出错:', error);
     }
@@ -147,11 +154,25 @@ const handleScrollAnimationEnd = () => {
 const pauseMusic = () => {
   musica.pause()
   musica.currentTime = 0
+  if (props.localSet.music) {
+    musicb.play()
+  }
 }
 
 onMounted(() => {
     musica.src = m1
     musica.load()
+    musicb.src = m2
+    musicb.load()
+})
+
+watch(props.localSet, (newVal) => {
+  if (!newVal.music) {
+    musica.pause()
+    musica.currentTime = 0
+    musicb.pause()
+    musicb.currentTime = 0
+  }
 })
 
 defineExpose({

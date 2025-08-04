@@ -1,6 +1,12 @@
 <script setup>
-import {onUnmounted, onMounted, ref} from "vue";
+import {onUnmounted, onMounted, ref, watch} from "vue";
 import m1 from "@/assets/music/countdown.mp3";
+
+const props = defineProps({
+  localSet: {
+    type: Object
+  }
+});
 
 const visible = ref(false)
 const countdownValue = ref(3)
@@ -10,7 +16,9 @@ const musica = new Audio(m1)
 
 const open = () => {
   visible.value = true
-  musica.play()
+  if (props.localSet.music) {
+    musica.play()
+  }
   timer.value = setTimeout(function tick() {
     if (countdownValue.value > 1) {
       countdownValue.value--
@@ -47,6 +55,13 @@ onMounted(() => {
 onUnmounted(() => {
   if (timer.value) {
     clearTimeout(timer.value)
+  }
+})
+
+watch(props.localSet, (newVal) => {
+  if (!newVal.music) {
+    musica.pause()
+    musica.currentTime = 0
   }
 })
 

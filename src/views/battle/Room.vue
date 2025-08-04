@@ -1,6 +1,7 @@
 <script setup>
 import Layout from "@/components/Layout.vue";
-import {ref, computed, reactive, onBeforeMount, provide, nextTick} from "vue";
+import {ref, computed, reactive, onBeforeMount, provide, nextTick, onMounted, onUnmounted
+} from "vue";
 import {goto, requireImg, deepClone} from "@/utils/common";
 import {getHistoryDetailApi, saveFightBoutApi, endFightApi} from "@/api/battle";
 import { useRoute } from 'vue-router';
@@ -8,6 +9,7 @@ import { useStore } from "@/store";
 import RoomCard from './components/RoomCard.vue'
 import CountdownModal from './components/CountdownModal.vue'
 import useWebSocketHeartbeat from '../../composables/useWebSocketHeartbeat'
+import bgm from "@/assets/music/main_battle.mp3";
 
 const modelMap = {
   '0': '欧皇模式',
@@ -28,6 +30,7 @@ const fightResult = ref([])
 const isAllReady = ref(false) // 是否所有座位都已准备就绪
 const CountdownModalRef = ref(null)
 const winnerIds = ref([])
+const musica = new Audio(bgm)
 
 const playerIds = computed(() => roomData.value.seatList.map(item => item.playerId))
 const statusColor = computed(() => {
@@ -101,6 +104,22 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
   onClose: () => {},
   onError: (error) => {}
 })
+
+const localSet = reactive({
+  music: true
+})
+
+const changeSet = (set) => {
+  if (set === 'music') {
+    localSet.music = !localSet.music
+    if (!localSet.music) {
+      musica.pause()
+      musica.currentTime = 0
+    } else {
+      musica.play()
+    }
+  }
+}
 
 const handleClickBack = () => {
   goto('/battle')
@@ -193,8 +212,16 @@ onBeforeMount(() => {
   }
 })
 
-const localSet = reactive({
-  music: true
+onMounted(() => {
+    musica.src = bgm
+    musica.loop = true
+    musica.load()
+    musica.play()
+})
+
+onUnmounted(() => {
+  musica.pause()
+  musica.currentTime = 0
 })
 
 const handleRoundEnd = () => {
@@ -278,7 +305,7 @@ const ownerCall = () => {
     <template #item>
       <div class="bg bg-room"></div>
       <div class="room-container">
-        <CountdownModal ref="CountdownModalRef" @close="handleStartGame" />
+        <CountdownModal ref="CountdownModalRef" :localSet="localSet" @close="handleStartGame" />
         <!-- banner -->
         <div class="room-banner">
           <!-- 顶部 -->
@@ -288,7 +315,26 @@ const ownerCall = () => {
               返回
             </div>
             <div class="room-status" :style="{ backgroundColor: statusColor }">{{ statusMap[roomData.status] }}</div>
-            <div></div>
+            <span class="tw-flex tw-items-center tw-gap-1.5 tw-cursor-pointer" @click="changeSet('music')">
+              <span
+                class="tw-relative tw-inline-flex tw-h-[0.875rem] md:tw-h-6 tw-w-[1.75rem] md:tw-w-11 tw-items-center tw-rounded-full tw-bg-[#300000] tw-transition-colors tw-overflow-hidden">
+                <div class="tw-absolute tw-inset-0 tw-rounded-full tw-pointer-events-none" style="border: 2px solid transparent; background: #FFB8B8 ; 
+                mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+                -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+                -webkit-mask-composite: xor; mask-composite: exclude;">
+                </div>
+
+                <span
+                  class="tw-relative tw-inline-block tw-h-[0.625rem] md:tw-h-4 tw-w-[0.625rem] md:tw-w-4 tw-transform tw-rounded-full tw-transition-transform"
+                  :class="{
+                    'tw-translate-x-[1.125rem] md:tw-translate-x-[1.625rem]': !localSet.music,
+                    'tw-translate-x-[0.25rem] md:tw-translate-x-[0.375rem]': localSet.music,
+                    'tw-bg-white tw-border-2 tw-border-[#FFB8B8]': localSet.music
+                  }" :style="!localSet.music ? 'background: #FFB8B8;' : ''">
+                </span>
+              </span>
+              <span class="tw-text-xs md:tw-text-sm">关闭音效</span>
+            </span>
           </div>
           <div class="room-banner-center">
             <div class="round-num">
@@ -331,6 +377,7 @@ const ownerCall = () => {
             :winnerIds="winnerIds"
             :playerIds="playerIds"
             :fightResult="fightResult"
+            :localSet="localSet"
             v-for="(i,index) in roomData.seatList" 
             :key="index" 
             class="card-item"

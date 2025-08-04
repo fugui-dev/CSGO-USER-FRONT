@@ -40,6 +40,9 @@ const props = defineProps({
   },
   fightResult: {
     type: Array
+  },
+  localSet: {
+    type: Object
   }
 });
 
@@ -169,6 +172,7 @@ defineExpose({
         :roundNumber="roundNumber"
         :fightResult="fightResult"
         :currPlayerId="cardData.playerId"
+        :localSet="localSet"
         @scrollEnd="handleScrollEnd" />
       <div class="card-main" v-if="roomStatus === 0">
         <div class="player-status">
