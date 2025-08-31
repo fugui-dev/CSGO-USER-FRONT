@@ -27,6 +27,12 @@ const menus = ref([
     ico: requireImg("/nav/a1.png", false),
     icoActive: requireImg("/nav/a1a.png", false)
   }, {
+    name: '夺冠之路',
+    routeName: 'Champion',
+    path: "/champion",
+    ico: requireImg("/nav/a1.png", false),
+    icoActive: requireImg("/nav/a1a.png", false)
+  },{
     name: '装备升级',
     routeName: 'upgradeShopping',
     path: "/upgrade",

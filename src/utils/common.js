@@ -43,3 +43,18 @@ export const deepClone = (obj) => {
   }
   return newObj;
 }
+
+export const timestampToHMS = (timestamp) => {
+  // 计算时分秒
+  const diffSeconds = Math.floor(timestamp / 1000);
+  const hours = Math.floor(diffSeconds / 3600);
+  const minutes = Math.floor((diffSeconds % 3600) / 60);
+  const seconds = Math.floor(diffSeconds % 60);
+  
+  return {hours, minutes, seconds};
+}
+
+// 是否为非空对象
+export const isNotEmptyObj = (obj) => {
+  return obj && Object.prototype.toString.call(obj) === '[object Object]' && Object.keys(obj).length > 0
+}

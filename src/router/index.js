@@ -102,6 +102,55 @@ const routes = [
                 }
             },
             {
+              path: "/champion",
+              component: () => import("../views/champion/Index.vue"),
+                name: "Champion",
+                meta: {
+                    title:'夺冠之路'
+                }
+            },
+            {
+              path: "/detail",
+              component: () => import("../views/champion/Detail.vue"),
+                name: "Detail",
+                meta: {
+                    title:'比赛详情'
+                },
+                redirect: '/match-sign-up'
+            },
+            {
+              path: "/match-sign-up",
+              component: () => import("../views/champion/SignUp.vue"),
+                name: "SignUp",
+                meta: {
+                    title:'报名'
+                }
+            },
+            {
+              path: "/match-against",
+              component: () => import("../views/champion/Against.vue"),
+                name: "Against",
+                meta: {
+                    title:'对阵'
+                }
+            },
+            {
+              path: "/match-against-detail",
+              component: () => import("../views/champion/AgainstDetail.vue"),
+                name: "AgainstDetail",
+                meta: {
+                    title:'对阵详情'
+                }
+            },
+            {
+              path: "/match-against-fight",
+              component: () => import("../views/champion/Fight.vue"),
+                name: "AgainstFight",
+                meta: {
+                    title:'队伍对阵'
+                }
+            },
+            {
                 path: "/smelt",
                 component: () => import("../views/smelt/Index.vue"),
                 name: "Smelt",

@@ -6,8 +6,7 @@ export const useStore = defineStore('myStore', { // 第一个参数是 id
         isPC: false,
         needLogin:false,
         currRound: 1,
-        currRoundFlag: {},
-        animationLock: false
+        currRoundFlag: {}
     }),
     getters: {
         getUserInfo(state) {
@@ -21,9 +20,6 @@ export const useStore = defineStore('myStore', { // 第一个参数是 id
         },
         getCurrRoundFlag(state) {
           return state.currRoundFlag;
-        },
-        getAnimationLock(state) {
-          return state.animationLock;
         }
     },
     actions: {
@@ -38,6 +34,9 @@ export const useStore = defineStore('myStore', { // 第一个参数是 id
             this.userInfo = {};
             localStorage.removeItem('userInfo');
             localStorage.removeItem('token');
+            sessionStorage.removeItem('matchId');
+            sessionStorage.removeItem('againstType');
+            sessionStorage.removeItem('stageGroupFightId');
             window.location.reload();
         },
         setNeedLogin(needLogin) {
@@ -51,9 +50,6 @@ export const useStore = defineStore('myStore', { // 第一个参数是 id
         },
         clearCurrRoundFlag() {
           this.currRoundFlag = {};
-        },
-        setAnimationLock(animationLock) {
-          this.animationLock = animationLock;
         }
     },
 });
