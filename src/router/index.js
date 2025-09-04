@@ -151,6 +151,14 @@ const routes = [
                 }
             },
             {
+              path: "/match-cheer",
+              component: () => import("../views/champion/Cheer.vue"),
+                name: "Cheer",
+                meta: {
+                    title:'助威记录'
+                }
+            },
+            {
                 path: "/smelt",
                 component: () => import("../views/smelt/Index.vue"),
                 name: "Smelt",

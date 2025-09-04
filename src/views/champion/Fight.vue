@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onBeforeMount, onMounted, onUnmounted, ref, reactive} from "vue";
+import {computed, onBeforeMount, onMounted, onUnmounted, ref, reactive, nextTick} from "vue";
 import {requireImg} from "@/utils/common";
 import {useStore} from "@/store"
 import useWebSocketHeartbeat from '../../composables/useWebSocketHeartbeat'
@@ -9,6 +9,7 @@ import Decimal from 'decimal.js'
 import ChooseOddsDialog from './components/ChooseOddsDialog.vue'
 import FightBox from './components/FightBox.vue'
 import bgm from "@/assets/music/main_battle.mp3";
+import {ElMessage} from "element-plus";
 
 const router = useRouter()
 const store = useStore()
@@ -16,7 +17,6 @@ const store = useStore()
 const musica = new Audio(bgm)
 const stageGroupFightId = Number(window.sessionStorage.getItem('stageGroupFightId'))
 const fightData = ref({})
-const isAudience = ref() // 是否观战用户
 const currTeamPlayer = ref({
   index: -1,
   data: {}
@@ -27,12 +27,16 @@ const currOpponentTeamPlayer = ref({
 })
 const currTeamFightBoxRef = ref()
 const currOpponentTeamFightBoxRef = ref()
+const currTeamScore = ref(0)
+const currOpponentTeamScore = ref(0)
 const teamScrollRef = ref(null)
 const opponentTeamScrollRef = ref(null)
 const currRound = ref(0)
 const chooseOddsDialogRef = ref(null)
 const chooseCountdownValue = ref()
 const currUserStageRecordId = ref(-1)
+const currTeamWaitingNextRoundText = ref('')
+const currOpponentTeamWaitingNextRoundText = ref('')
 const localSet = reactive({
   music: true
 })
@@ -55,17 +59,12 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
     }
     // 回合开始
     if (data.type === 'ROUND_START') {
+      // 清空等待下一轮提示文案
+      currTeamWaitingNextRoundText.value = ''
+      currOpponentTeamWaitingNextRoundText.value = ''
       // ROUND_START会发送两次数据，代表当前队伍玩家和对手队伍玩家
-      // 判断当前回合是观战还是玩家自玩
-      if (currUserId === data.data.userId) {
-        // 玩家自玩
-        isAudience.value = false
-      } else {
-        // 观战
-        isAudience.value = true
-      }
       // 定位到即将对战的两个用户
-      findFightingUserByUserId(data.data.userId)
+      findFightingUserByUserId(data.data.userId, data.data.userStatus)
       // 判断当前回合游戏剩余的时间能做些什么(ROUND_START会推2条数据)
       checkRemainTime(new Date(data.data.endTime), 'ROUND_START')
     }
@@ -78,7 +77,26 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
     }
     // 等待对手选择
     if (data.type === 'ROUND_WAITING') {
-      
+      // 遍历 设置当前回合的对战结果数据
+      setCurrFightResult(data.data)
+    }
+    if (data.type === 'FIGHT_END') {
+      // 清空等待下一轮提示文案
+      currTeamWaitingNextRoundText.value = ''
+      currOpponentTeamWaitingNextRoundText.value = ''
+      // 设置对战结束
+      fightData.value.status = data.data.status
+      currTeamPlayer.value = {
+        index: -1,
+        data: {}
+      }
+      currOpponentTeamPlayer.value = {
+        index: -1,
+        data: {}
+      }
+    }
+    if (data.type === 'ERROR') {
+      ElMessage.error(data.data)
     }
   },
   onClose: () => {},
@@ -109,44 +127,61 @@ const checkProgress = () => {
 }
 
 // 定位到正在对战的两个用户
-const findFightingUserByCurrRound = (currRound) => {
-  currRound.value = currRound
+const findFightingUserByCurrRound = (currRoundNum) => {
+  currRound.value = currRoundNum
   const teamUserList = fightData.value.team?.stageRecordStartList
   const opponentTeamUserList = fightData.value.opponentTeam?.stageRecordStartList
 
   teamUserList.forEach((item, index) => {
-    if (item.round === currRound) {
+    if (item.round === currRoundNum) {
       currTeamPlayer.value.data = item
       currTeamPlayer.value.index = index
-      scrollToTarget(teamScrollRef.value, teamUserList, currTeamPlayer.value.index)
+      nextTick(() => {
+        scrollToTarget(teamScrollRef.value, teamUserList, currTeamPlayer.value.index)
+      })
     }
   });
   opponentTeamUserList.forEach((item, index) => {
-    if (item.round === currRound) {
+    if (item.round === currRoundNum) {
       currOpponentTeamPlayer.value.data = item
       currOpponentTeamPlayer.value.index = index
-      scrollToTarget(opponentTeamScrollRef.value, opponentTeamUserList, currOpponentTeamPlayer.value.index)
+      nextTick(() => {
+        scrollToTarget(opponentTeamScrollRef.value, opponentTeamUserList, currOpponentTeamPlayer.value.index)
+      })
     }
   });
 }
 
 // 定位到即将对战的两个用户
-const findFightingUserByUserId = (userId) => {
+const findFightingUserByUserId = (userId, userStatus) => {
   const teamUserList = fightData.value.team?.stageRecordStartList
   const opponentTeamUserList = fightData.value.opponentTeam?.stageRecordStartList
-  currTeamPlayer.value.index = teamUserList.findIndex(item => item.userId === userId)
-  currOpponentTeamPlayer.value.index = opponentTeamUserList.findIndex(item => item.userId === userId)
+  const currTeamPlayerIndex = teamUserList.findIndex(item => item.userId === userId)
+  const currOpponentTeamPlayerIndex = opponentTeamUserList.findIndex(item => item.userId === userId)
+
   // 说明用户在team里
-  if (currTeamPlayer.value.index > -1) {
+  if (currTeamPlayerIndex > -1) {
+    // 更新用户状态
+    teamUserList[currTeamPlayerIndex].status = userStatus
+
+    currTeamPlayer.value.index = currTeamPlayerIndex
     currTeamPlayer.value.data = teamUserList[currTeamPlayer.value.index]
     currRound.value = currTeamPlayer.value.data.round
-    scrollToTarget(teamScrollRef.value, teamUserList, currTeamPlayer.value.index)
+    nextTick(() => {
+      scrollToTarget(teamScrollRef.value, teamUserList, currTeamPlayer.value.index)
+    })
   }
   // 说明用户在opponentTeam里
-  if (currOpponentTeamPlayer.value.index > -1) {
+  if (currOpponentTeamPlayerIndex > -1) {
+    // 更新用户状态
+    opponentTeamUserList[currOpponentTeamPlayerIndex].status = userStatus
+
+    currOpponentTeamPlayer.value.index = currOpponentTeamPlayerIndex
     currOpponentTeamPlayer.value.data = opponentTeamUserList[currOpponentTeamPlayer.value.index]
     currRound.value = currOpponentTeamPlayer.value.data.round
-    scrollToTarget(opponentTeamScrollRef.value, opponentTeamUserList, currOpponentTeamPlayer.value.index)
+    nextTick(() => {
+      scrollToTarget(opponentTeamScrollRef.value, opponentTeamUserList, currOpponentTeamPlayer.value.index)
+    })
   }
 }
 
@@ -154,15 +189,27 @@ const findFightingUserByUserId = (userId) => {
 const setCurrFightResult = (userResult) => {
   const teamUserList = fightData.value.team?.stageRecordStartList
   const opponentTeamUserList = fightData.value.opponentTeam?.stageRecordStartList
-  teamUserList.forEach(item => {
+  console.log(22)
+  console.log(teamUserList)
+  console.log(opponentTeamUserList)
+  teamUserList.forEach((item, index) => {
     if (item.userId === userResult.userId) {
-      item = userResult
+      console.log(33)
+      teamUserList[index] = userResult
+      currTeamPlayer.value.data = userResult
+      currTeamScore.value = teamUserList.reduce((prev, next) => {
+        return new Decimal(next.score || '0').plus(prev).toNumber()
+      }, 0)
     }
   });
-  opponentTeamUserList.forEach(item => {
+  opponentTeamUserList.forEach((item, index) => {
     if (item.userId === userResult.userId) {
-      item = userResult
+      console.log(44)
+      opponentTeamUserList[index] = userResult
       currOpponentTeamPlayer.value.data = userResult
+      currOpponentTeamScore.value = opponentTeamUserList.reduce((prev, next) => {
+        return new Decimal(next.score || '0').plus(prev).toNumber()
+      }, 0)
     }
   });
 }
@@ -199,40 +246,62 @@ const checkRemainTime = (endTime, type) => {
   console.log(0)
   // 当前回合状态非进行中，直接返回
   // TO DO: if (currTeamPlayerData.status !== 1) return
+  console.log(currTeamPlayerData)
+  console.log(currOpponentTeamPlayerData)
   if (currOpponentTeamPlayerData.status !== 1) return
   console.log(1)
   console.log(timeDiff / 1000)
+
   // (timeDiff - 30000) / 1000 > 1 表示倒计时超过1s才可以展示弹窗
   if (timeDiff > 30000 && ((timeDiff - 30000) / 1000 > 1)) {
     console.log(2)
     // 只有 ROUND_START 和 CURRENT_PROGRESS 才可以展示弹窗，ROUND_RESULT 和 ROUND_WAITING不行
-    if (!(type === 'ROUND_START' || type === 'CURRENT_PROGRESS')) return
-
-    // 只有前30s可以展示选择弹窗和倒计时，并且得是当前用户才展示，否则展示“用户选择中”
-    if (currUserId === currTeamPlayerData.userId && !currTeamPlayerData.score) {
-      chooseOddsDialogRef.value.open()
-      currUserStageRecordId.value = currTeamPlayerData.id
-      chooseCountdownValue.value = Math.floor((timeDiff - 30000) / 1000)
+    if (type === 'ROUND_START' || type === 'CURRENT_PROGRESS') {
+      
+      // 只有前30s可以展示选择弹窗和倒计时，并且得是当前用户才展示，否则展示“用户选择中”
+      if (currUserId === currTeamPlayerData.userId && Number(currTeamPlayerData.score) === 0) {
+        console.log('hhh')
+        chooseOddsDialogRef.value.open()
+        currUserStageRecordId.value = currTeamPlayerData.id
+        chooseCountdownValue.value = Math.floor((timeDiff - 30000) / 1000)
+      }
+      if (currUserId === currOpponentTeamPlayerData.userId && Number(currOpponentTeamPlayerData.score) === 0) {
+        chooseOddsDialogRef.value.open()
+        currUserStageRecordId.value = currOpponentTeamPlayerData.id
+        chooseCountdownValue.value = Math.floor((timeDiff - 30000) / 1000)
+      }
+    } else if (type === 'ROUND_RESULT') {
+      console.log('jjj')
+      // 播放动画
+      if (currTeamPlayer.value.index > -1) {
+        nextTick(() => {
+          currTeamFightBoxRef.value.startAnimation()
+        })
+      }
+      if (currOpponentTeamPlayer.value.index > -1) {
+        nextTick(() => {
+          currOpponentTeamFightBoxRef.value.startAnimation()
+        })
+      }
     }
-    if (currUserId === currOpponentTeamPlayerData.userId && !currOpponentTeamPlayerData.score) {
-      chooseOddsDialogRef.value.open()
-      currUserStageRecordId.value = currOpponentTeamPlayerData.id
-      chooseCountdownValue.value = Math.floor((timeDiff - 30000) / 1000)
-    }
-  } else if (timeDiff > 16000) {
+  } else if (timeDiff > 17000) {
     console.log(3)
     // 只有 ROUND_RESULT 和 CURRENT_PROGRESS 才可以播放动画，ROUND_START 和 ROUND_WAITING 不行
     if (!(type === 'ROUND_RESULT' || type === 'CURRENT_PROGRESS')) return
 
-    // 动画13s，自定义缓冲时间3s，回合一共60s，剩余时间大于16s时可展示动画，否则直接展示结果
+    // 动画13s，自定义缓冲时间4s，回合一共60s，剩余时间大于17s时可展示动画，否则直接展示结果
     // 播放动画
     if (currTeamPlayer.value.index > -1) {
-      currTeamFightBoxRef.value.startAnimation()
+      nextTick(() => {
+        currTeamFightBoxRef.value.startAnimation()
+      })
     }
     if (currOpponentTeamPlayer.value.index > -1) {
-      currOpponentTeamFightBoxRef.value.startAnimation()
+      nextTick(() => {
+        currOpponentTeamFightBoxRef.value.startAnimation()
+      })
     }
-  } else {
+  } else if (timeDiff > 0) {
     console.log(4)
     // 只有 ROUND_RESULT 和 CURRENT_PROGRESS 才可以直接展示结果，ROUND_START 和 ROUND_WAITING 不行
     if (!(type === 'ROUND_RESULT' || type === 'CURRENT_PROGRESS')) return
@@ -241,11 +310,17 @@ const checkRemainTime = (endTime, type) => {
     console.log(currOpponentTeamPlayer.value.index)
     // 直接展示结果
     if (currTeamPlayer.value.index > -1) {
-      currTeamFightBoxRef.value.jumpToEndPosition()
+      nextTick(() => {
+        currTeamFightBoxRef.value.jumpToEndPosition()
+      })
     }
     if (currOpponentTeamPlayer.value.index > -1) {
-      currOpponentTeamFightBoxRef.value.jumpToEndPosition()
+      nextTick(() => {
+        currOpponentTeamFightBoxRef.value.jumpToEndPosition()
+      })
     }
+  } else {
+    ElMessage.warning('当前回合结束时间有误')
   }
 }
 
@@ -259,7 +334,7 @@ const handleChooseOdds = (odds) => {
       userId: currUserId                                             
     }
   }
-  ws.send(JSON.stringify(params))
+  ws.value.send(JSON.stringify(params))
 }
 
 const createWs = () => {
@@ -286,16 +361,8 @@ const test = () => {
     userId: 504,
     userStatus: 1
   }
-  // 判断当前回合是观战还是玩家自玩
-  if (currUserId === data.data.userId) {
-    // 玩家自玩
-    isAudience.value = false
-  } else {
-    // 观战
-    isAudience.value = true
-  }
   // 定位到即将对战的两个用户
-  findFightingUserByUserId(data.data.userId)
+  findFightingUserByUserId(data.data.userId, data.data.userStatus)
   // 判断当前回合游戏剩余的时间能做些什么(ROUND_START会推2条数据)
   checkRemainTime(new Date(data.data.endTime), 'ROUND_START')
 }
@@ -351,6 +418,23 @@ const changeSet = (set) => {
   }
 }
 
+const handleScrollEnd = (type) => {
+  // 是否展示等待下一轮文案
+  if (type === 'currTeam') {
+    if (currRound.value < fightData.value.round) {
+      currTeamWaitingNextRoundText.value = '等待下一回合开始...'
+    } else {
+      currTeamWaitingNextRoundText.value = '等待对战结束...'
+    }
+  } else {
+    if (currRound.value < fightData.value.round) {
+      currOpponentTeamWaitingNextRoundText.value = '等待下一回合开始...'
+    } else {
+      currOpponentTeamWaitingNextRoundText.value = '等待对战结束...'
+    }
+  }
+}
+
 onMounted(() => {
     musica.src = bgm
     musica.loop = true
@@ -398,15 +482,17 @@ onUnmounted(() => {
             <span class="tw-text-xs md:tw-text-sm">关闭音效</span>
           </span>
         </div>
-        <span @click="test">开始</span>
-        <span @click="test2">结果</span>
         <!-- 队伍信息 -->
         <div class="against-fight-header-content">
           <div class="team-info">
-            <img :src="fightData.teamAvatar" alt="">
+            <img :src="fightData.teamAvatar" alt="" class="team-avatar">
             <div>
               <p class="alias-name">{{ fightData.team?.aliasName }}</p>
               <p class="team-name">{{ fightData.teamName }}</p>
+              <p class="team-score">
+                <img :src="requireImg('/coin1.png',false)" alt="">
+                <span>{{currTeamScore}}</span>
+              </p>
             </div>
           </div>
           <div class="round-num">
@@ -416,10 +502,14 @@ onUnmounted(() => {
             <h3>VS</h3>
           </div>
           <div class="team-info team-info-right">
-            <img :src="fightData.opponentTeamAvatar" alt="">
+            <img :src="fightData.opponentTeamAvatar" alt="" class="team-avatar">
             <div>
               <p class="alias-name">{{ fightData.opponentTeam?.aliasName }}</p>
               <p class="team-name">{{ fightData.opponentTeamName }}</p>
+              <p class="team-score">
+                <img :src="requireImg('/coin1.png',false)" alt="">
+                <span>{{currOpponentTeamScore}}</span>
+              </p>
             </div>
           </div>
         </div>
@@ -454,12 +544,17 @@ onUnmounted(() => {
             </el-scrollbar>
             <div class="team-fight">
               <div class="team-fight-status" v-if="fightData.status === 0 || currTeamPlayer.data.status === 0">暂未开始</div>
-              <!-- <div class="team-fight-status" v-else-if="fightData.status === 2">游戏已结束</div> -->
-              <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && !currTeamPlayer.data.score">用户选择中...</div>
+              <div class="team-fight-status" v-else-if="fightData.status === 2">游戏已结束</div>
+              <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && Number(currTeamPlayer.data.score) === 0">用户选择中...</div>
+              <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && Number(currTeamPlayer.data.score) > 0 && Number(currOpponentTeamPlayer.data.score) === 0">用户已选择</div>
+              <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && Number(currTeamPlayer.data.score) > 0 && Number(currOpponentTeamPlayer.data.score) > 0 && currTeamWaitingNextRoundText">{{ currTeamWaitingNextRoundText }}</div>
               <FightBox
+                v-else-if="currTeamPlayer.data.status === 1 && Number(currTeamPlayer.data.score) > 0 && Number(currOpponentTeamPlayer.data.score) > 0"
                 ref="currTeamFightBoxRef"
                 :fightResult="currTeamPlayer.data"
-                :localSet="localSet" />
+                :localSet="localSet"
+                @scrollEnd="handleScrollEnd('currTeam')" />
+              <div class="team-fight-status" v-else>系统错误</div>
             </div>
           </div>
         </div>
@@ -495,12 +590,17 @@ onUnmounted(() => {
             </el-scrollbar>
             <div class="team-fight">
               <div class="team-fight-status" v-if="fightData.status === 0 || currOpponentTeamPlayer.data.status === 0">暂未开始</div>
-              <!-- <div class="team-fight-status" v-if="fightData.status === 2">游戏已结束</div> -->
-              <div class="team-fight-status" v-if="currOpponentTeamPlayer.data.status === 1 && !currOpponentTeamPlayer.data.score">用户选择中...</div>
+              <div class="team-fight-status" v-else-if="fightData.status === 2">游戏已结束</div>
+              <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && Number(currOpponentTeamPlayer.data.score) === 0">用户选择中...</div>
+              <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && Number(currOpponentTeamPlayer.data.score) > 0 && Number(currTeamPlayer.data.score) === 0">用户已选择</div>
+              <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && Number(currOpponentTeamPlayer.data.score) > 0 && Number(currTeamPlayer.data.score) > 0 && currOpponentTeamWaitingNextRoundText">{{ currOpponentTeamWaitingNextRoundText }}</div>
               <FightBox
+                v-else-if="currOpponentTeamPlayer.data.status === 1 && Number(currOpponentTeamPlayer.data.score) > 0 && Number(currTeamPlayer.data.score) > 0 && !currOpponentTeamWaitingNextRoundText"
                 ref="currOpponentTeamFightBoxRef"
                 :fightResult="currOpponentTeamPlayer.data"
-                :localSet="localSet" />
+                :localSet="localSet"
+                @scrollEnd="handleScrollEnd('currOpponentTeam')" />
+              <div class="team-fight-status" v-else>系统错误</div>
             </div>
           </div>
         </div>
@@ -552,7 +652,7 @@ onUnmounted(() => {
       display: flex;
       align-items: center;
       padding: 10px;
-      img {
+      .team-avatar {
         width: 50px;
         height: 50px;
         border-radius: 50%;
@@ -561,17 +661,30 @@ onUnmounted(() => {
       }
       .alias-name {
         font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        font-size: 13px;
+        font-size: 12px;
         background-color: rgba($color: #c01e1e, $alpha: 0.3);
         padding: 0 6px;
-        margin-bottom: 4px;
         color: #b38181;
       }
       .team-name {
         font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        font-size: 15px;
+        font-size: 14px;
         color: #dddddd;
         padding-left: 4px;
+        margin-bottom: 2px;
+      }
+      .team-score {
+        display: flex;
+        align-items: center;
+        padding-left: 4px;
+        img {
+          width: 10px;
+          height: 13px;
+          margin-right: 3px;
+        }
+        span {
+          font-size: 13px;
+        }
       }
     }
     .team-info-right {

@@ -46,6 +46,7 @@ const subNavList = ref([{
   'value': 1
 }])
 const auditForm = ref({
+  matchId: -1,
   pageNum: 1,
   pageSize: 12
 })
@@ -89,6 +90,8 @@ const changeActive = (val) => {
     // 当前用户为主播才可以审批
     if (userInfo.value.userType === '01') {
       getAuditList()
+    } else {
+      getInvitedList(true)
     }
   } else {
     getMatchStageList()
@@ -150,7 +153,7 @@ const changeSubActive = (val) => {
   if (subActive.value === 0) {
     getAuditList()
   } else if (subActive.value === 1) {
-    getInvitedList()
+    getInvitedList(false)
   }
 }
 
@@ -164,6 +167,7 @@ const debouncedGetAuditList = useDebounceFn(() => {
 // 获取待审批用户列表
 const getAuditList = () => {
   loading.value = true
+  auditForm.value.matchId = matchData.value.id
   getAuditListApi(auditForm.value).then(res => {
     if (res.data && res.data.length) {
       if (auditForm.value.pageNum === 1) {
@@ -192,14 +196,19 @@ const onAuditScroll = (e) => {
 const debouncedGetInvitedList = useDebounceFn(() => {
   if (!isInvitedComplete.value) {
     invitedForm.value.pageNum += 1
-    getInvitedList()
+    if (isShowAuditList.value) {
+      getInvitedList(false)
+    } else {
+      getInvitedList(true)
+    }
   }
 }, 300)
 
 // 获取已邀请用户列表
-const getInvitedList = () => {
+const getInvitedList = (type) => {
   loading.value = true
   invitedForm.value.matchId = matchData.value.id
+  invitedForm.value.invite = type // type为true表示被邀请，为false表示邀请列表
   getInviteListApi(invitedForm.value).then(res => {
     if (res.data && res.data.length) {
       if (invitedForm.value.pageNum === 1) {
@@ -241,12 +250,12 @@ const handleAudit = (type, id) => {
 // 处理邀请
 const handleInvite = (type, id) => {
   handleInviteApi({
-    id: id,
+    inviteId: id,
     status: type
   }).then(res => {
     if (res.code === 200) {
       ElMessage.success(res.msg)
-      getInvitedList()
+      getInvitedList(true)
     }
   })
 }
@@ -254,6 +263,10 @@ const handleInvite = (type, id) => {
 // 点击邀请 搜索用户
 const showSearchUserDialog = () => {
   searchUserDialogRef.value.open()
+}
+
+const handleCloseSearchUserDialog = () => {
+  getInvitedList(false)
 }
 
 // 获取比赛阶段
@@ -280,7 +293,6 @@ onMounted(() => {
 <template>
   <Detail>
     <div class="signup-container" v-loading="loading" :style="{
-      '--bg-battle':requireImg('/bg/bg-login-pc.png',true),
       '--bg-tab1':requireImg('/home/t0.png',true),
       '--bg-tab2':requireImg('/home/t1.png',true),
       '--bg-header':requireImg('/level/3.png',true),
@@ -335,9 +347,13 @@ onMounted(() => {
                       <img class="avatar" :src="item.userAvatar" alt="">
                       <span class="nick-name">{{ item.nickName }}</span>
                     </div>
-                    <div class="audit-btn-wrap">
+                    <div class="audit-btn-wrap" v-if="item.status === 0">
                       <div class="audit-btn" @click="handleAudit(1, item.id)">同意</div>
                       <div class="audit-btn" @click="handleAudit(2, item.id)">拒绝</div>
+                    </div>
+                    <div class="audit-status" v-else>
+                      <div v-if="item.status === 1">已接受邀请</div>
+                      <div v-if="item.status === 2">已拒绝邀请</div>
                     </div>
                   </div>
                 </div>
@@ -373,16 +389,20 @@ onMounted(() => {
           <div class="auth-2" v-else>
             <div class="audit-list">
               <el-scrollbar max-height="800px" @scroll="onAuditScroll" ref="auditScrollRef">
-                <div ref="auditListRef" class="audit-list-container" v-if="auditList && auditList.length">
-                  <div :class="['audit-list-item', index % 2 === 1 ? 'highlight' : 'non-highlight']" v-for="(item, index) in auditList" :key="item.userId">
+                <div ref="invitedListRef" class="audit-list-container" v-if="invitedList && invitedList.length">
+                  <div :class="['audit-list-item', index % 2 === 1 ? 'highlight' : 'non-highlight']" v-for="(item, index) in invitedList" :key="item.userId">
                     <div class="audit-list-item-left">
                       <div class="serial-num">{{ index + 1 }}</div>
-                      <img class="avatar" :src="item.userAvatar" alt="">
-                      <span class="nick-name">{{ item.nickName }}</span>
+                      <img class="avatar" :src="item.invitedUserAvatar" alt="">
+                      <span class="nick-name">{{ item.invitedUserName }}</span>
                     </div>
-                    <div class="audit-btn-wrap">
+                    <div class="audit-btn-wrap" v-if="item.status === 0">
                       <div class="audit-btn" @click="handleInvite(1, item.id)">同意邀请</div>
                       <div class="audit-btn" @click="handleInvite(2, item.id)">拒绝邀请</div>
+                    </div>
+                    <div class="audit-status" v-else>
+                      <div v-if="item.status === 1">已接受邀请</div>
+                      <div v-if="item.status === 2">已拒绝邀请</div>
                     </div>
                   </div>
                 </div>
@@ -398,7 +418,11 @@ onMounted(() => {
       </div>
     </div>
     <CreateTeamDialog ref="createTeammDialogRef" />
-    <SearchUserDialog ref="searchUserDialogRef" :teamId="teamInfo.id" :matchId="teamInfo.matchId"/>
+    <SearchUserDialog
+      ref="searchUserDialogRef"
+      :teamId="teamInfo.id"
+      :matchId="teamInfo.matchId"
+      @close="handleCloseSearchUserDialog"/>
   </Detail>
 </template>
 
@@ -406,7 +430,6 @@ onMounted(() => {
 @use "@/style" as *;
 
 .signup-container {
-  background: url();
   width: 96%;
   display: flex;
   flex-direction: column;
@@ -631,6 +654,9 @@ onMounted(() => {
   }
   .non-highlight {
     background: linear-gradient(to right, rgb(105, 94, 116), rgb(24, 24, 36));
+  }
+  .audit-list {
+    padding: 16px 0;
   }
   .audit-list-item {
     display: flex;

@@ -98,3 +98,21 @@ export const getMatchStageApi = (data) => {
       data: data
   })
 }
+
+// 获取助威列表
+export const getMatchCheerListApi = (data) => {
+  return request({
+      url: "/api/match/cheer/list",
+      method: "post",
+      data: data
+  })
+}
+
+// 助威比赛阶段对战
+export const cheerApi = (data) => {
+  return request({
+      url: "/api/match/stage/cheer",
+      method: "post",
+      data: data
+  })
+}

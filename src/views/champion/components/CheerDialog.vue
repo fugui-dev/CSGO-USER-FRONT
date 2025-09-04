@@ -1,29 +1,32 @@
 <script setup>
 import { ref } from "vue";
 import {requireImg} from "@/utils/common";
-import {searchUserApi, inviteUserApi} from "@/api/champion"
+import {cheerApi} from "@/api/champion"
 import {ElMessage} from "element-plus";
 
 const props = defineProps({
   teamId: {
-    type: Number
+    type: Number,
+    required: true
   },
-  matchId: {
-    type: Number
+  stageGroupFightId: {
+    type: Number,
+    required: true
   }
 });
 
 const visible = ref(false)
-const searchUserFormRef = ref()
-const searchUserForm = ref({
-  userName: ''
+const cheerFormRef = ref()
+const cheerForm = ref({
+  teamId: -1,
+  stageGroupFightId: -1,
+  amount: ''
 })
-const searchUserFormRules = ref({
-  userName: [
-    {required: true, message: '请输入用户名', trigger: 'blur'}
+const cheerFormRules = ref({
+  amount: [
+    {required: true, message: '请输入助威金额', trigger: 'blur'}
   ]
 })
-const userList = ref([])
 const loading = ref(false)
 
 const open = () => {
@@ -32,39 +35,43 @@ const open = () => {
 
 const close = () => {
     visible.value = false
-    userList.value = []
-    searchUserForm.value.userName = ''
+    cheerForm.value = {
+      teamId: -1,
+      stageGroupFightId: -1,
+      amount: ''
+    }
     emit('close')
 }
 
 const closeModal = () => {
     visible.value = false;
-    userList.value = []
-    searchUserForm.value.userName = ''
+    cheerForm.value = {
+      teamId: -1,
+      stageGroupFightId: -1,
+      amount: ''
+    }
 };
 
-const searchUserFormSubmit = () => {
-  searchUserFormRef.value.validate(valid => {
+const cheerFormSubmit = () => {
+  cheerFormRef.value.validate(valid => {
+    if ((props.teamId && props.teamId !== -1) && (props.stageGroupFightId && props.stageGroupFightId !== -1)) {
+      cheerForm.value.teamId = props.teamId
+      cheerForm.value.stageGroupFightId = props.stageGroupFightId
+    } else {
+      ElMessage.warning('请求参数有误')
+      return
+    }
+    
     if (valid) {
       loading.value = true
-      searchUserApi(searchUserForm.value).then(res => {
+      cheerApi(cheerForm.value).then(res => {
         if (res.code === 200) {
-          userList.value = res.rows
+          ElMessage.success(res.msg)
+          close()
         }
       }).finally(() => {
         loading.value = false
       })
-    }
-  })
-}
-
-const handleInvite = (inviteUserId) => {
-  const teamId = props.teamId
-  const matchId = props.matchId
-  inviteUserApi({teamId, matchId, inviteUserId}).then(res => {
-    if (res.code === 200) {
-      ElMessage.success(res.msg)
-      close()
     }
   })
 }
@@ -116,30 +123,15 @@ defineExpose({
                 
                 <!-- 内容区域 -->
                 <div class="tw-overflow-hidden tw-overflow-y-auto tw-max-h-[50vh] no-scrollbar tw-transition-all tw-duration-500 tw-ease-in-out tw-my-4 tw-relative tw-z-10 content" v-loading="loading">
-                  <el-form :model="searchUserForm" :rules="searchUserFormRules" ref="searchUserFormRef" class="search-form">
-                    <el-form-item label="" prop="userName" class="user-name">
-                      <el-input v-model="searchUserForm.userName" placeholder="请输入用户名"/>
+                  <el-form :model="cheerForm" :rules="cheerFormRules" ref="cheerFormRef" class="cheer-form">
+                    <el-form-item label="" prop="amount">
+                      <el-input v-model="cheerForm.amount" placeholder="请输入助威金额"/>
                     </el-form-item>
                     <el-form-item>
                       <!-- 按钮 -->
-                      <div class="search-form-btn" @click="searchUserFormSubmit">搜索</div>
+                      <div class="cheer-form-btn" @click="cheerFormSubmit">确认</div>
                     </el-form-item>
                   </el-form>
-                  <!-- 搜索结果 -->
-                  <div class="user-list-container" v-if="userList && userList.length">
-                    <div :class="['user-list-item', index % 2 === 1 ? 'highlight' : 'non-highlight']" v-for="(item, index) in userList" :key="item.userId">
-                      <div class="user-list-item-left">
-                        <img class="avatar" :src="item.avatar" alt="">
-                        <span class="nick-name">{{ item.nickName }}</span>
-                      </div>
-                      <div class="invite-btn-wrap">
-                        <div class="invite-btn" @click="handleInvite(item.userId)">邀请</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="empty-box" v-else>
-                    <p>暂无数据</p>
-                  </div>
                 </div>
             </div>
         </van-popup>
@@ -150,11 +142,13 @@ defineExpose({
 .dialog {
     background: none;
 }
-.search-form {
+.cheer-form {
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
-.search-form-btn {
+.cheer-form-btn {
   background-color: #fb8c1e;
   border-radius: 6px;
   width: 80px;
@@ -175,9 +169,6 @@ defineExpose({
     justify-content: flex-start;
     color: #eee;
   }
-}
-.user-name {
-  flex: 1;
 }
 .el-input {
   --el-input-bg-color: transparent;

@@ -4,18 +4,14 @@ import {requireImg} from "@/utils/common";
 import { useRoute } from 'vue-router'
 import {useStore} from "@/store"
 import LevelItem from "./components/LevelItem.vue";
+import CheerDialog from "./components/CheerDialog.vue";
 import {getMatchStageApi} from "@/api/champion";
 import Detail from './Detail.vue';
 import { useRouter } from "vue-router";
 
+
 const router = useRouter()
 
-const props = defineProps({
-  data: {
-    type: Array,
-    required: true
-  }
-});
 const type = Number(window.sessionStorage.getItem('againstType'))
 const statusMap = {
   '0': '未开始',
@@ -25,6 +21,9 @@ const statusMap = {
 const levelData = ref([])
 const currLevelData = ref({})
 const loading = ref(false)
+const cheerDialogRef = ref()
+const currClickStageGroupFightId = ref(-1)
+const currClickTeamId = ref(-1)
 
 const roundColor = computed(() => {
   return (index) => {
@@ -103,6 +102,12 @@ const handleJump = (id) => {
   router.push('/match-against-fight')
 }
 
+const handleClickCheer = (stageGroupFightId, teamId) => {
+  currClickStageGroupFightId.value = stageGroupFightId
+  currClickTeamId.value = teamId
+  cheerDialogRef.value.open()
+}
+
 onMounted(() => {
   getMatchStageList()
 })
@@ -131,9 +136,12 @@ onMounted(() => {
             <LevelItem
               :data="subItem"
               :showTitle="true"
+              :showBottomBtn="currLevelData.status === 0"
+              btnText="助威"
               v-for="(subItem, subIndex) in item"
               :key="subIndex"
               @click="handleJump(subItem.id)"
+              @clickBtn="handleClickCheer"
               class="level-item-wrap" />
           </div>
         </div>
@@ -155,6 +163,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    <CheerDialog ref="cheerDialogRef"/>
   </Detail>
 </template>
 

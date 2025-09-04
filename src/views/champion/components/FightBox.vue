@@ -133,7 +133,7 @@ const handleScrollAnimationEnd = () => {
     scrollAnimation.value = false
     emit('scrollEnd')
     timer && clearTimeout(timer)
-  }, 2000)
+  }, 3000)
 }
 
 const pauseMusic = () => {

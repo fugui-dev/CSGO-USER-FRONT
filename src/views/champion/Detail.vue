@@ -15,11 +15,11 @@ const navList = ref([{
   value: 1,
   path: ['/match-against', '/match-against-detail', '/match-against-fight']
 }, {
-  name: '助威',
+  name: '助威记录',
   value: 2,
   path: ['/match-cheer']
 }, {
-  name: '记录',
+  name: '往期记录',
   value: 3,
   path: ['/match-record']
 }])

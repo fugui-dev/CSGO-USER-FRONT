@@ -1,5 +1,5 @@
 <script setup>
-import {computed, ref, watch} from "vue";
+import {computed, ref, watch, defineEmits} from "vue";
 import {requireImg} from "@/utils/common";
 import {joinTeamApi} from "@/api/champion"
 import { useRoute } from 'vue-router'
@@ -10,6 +10,12 @@ const props = defineProps({
   showTitle: {
     type: Boolean
   },
+  showBottomBtn: {
+    type: Boolean
+  },
+  btnText: {
+    type: String
+  },
   label: {
     type: String
   },
@@ -18,6 +24,13 @@ const props = defineProps({
     required: true
   }
 });
+
+const emit = defineEmits(['clickBtn'])
+
+const handleClickBtn = (teamId) => {
+  const stageGroupFightId = props.data.id
+  emit('clickBtn', stageGroupFightId, teamId)
+}
 
 </script>
 <template>
@@ -28,33 +41,45 @@ const props = defineProps({
         '--bg-level-16':requireImg('/level/4.png',true),
       }">
       <div class="level-item-container" v-if="showTitle">
-        <div class="level-item-content level-item-left pad-margin-left">
-          <h3>{{ data.team.aliasName }}</h3>
-          <img :src="data.team.teamAvatar" alt="">
-          <p>{{ data.team.teamName }}</p>
+        <div class="level-item-wrap">
+          <div class="level-item-content pad-margin-left">
+            <h3>{{ data.team.aliasName }}</h3>
+            <img :src="data.team.teamAvatar" alt="">
+            <p>{{ data.team.teamName }}</p>
+          </div>
+          <div class="level-item-btn" @click.stop="handleClickBtn(data.team.teamId)">{{ btnText }}</div>
         </div>
-        <div class="label-item-conter">
+        <div class="label-item-center">
           <p v-if="label" class="label">{{ label }}</p>
           <p class="vs">VS</p>
         </div>
-        <div class="level-item-content level-item-right pad-margin-right">
-          <h3>{{ data.opponentTeam.aliasName }}</h3>
-          <img :src="data.opponentTeam.teamAvatar" alt="">
-          <p>{{ data.opponentTeam.teamName }}</p>
+        <div class="level-item-wrap level-item-right">
+          <div class="level-item-content pad-margin-right">
+            <h3>{{ data.opponentTeam.aliasName }}</h3>
+            <img :src="data.opponentTeam.teamAvatar" alt="">
+            <p>{{ data.opponentTeam.teamName }}</p>
+          </div>
+          <div class="level-item-btn" @click="handleClickBtn(data.opponentTeam.teamId)">{{ btnText }}</div>
         </div>
       </div>
       <div class="level-item-container" v-else>
-        <div class="level-item-content level-item-left">
-          <img :src="data.team.teamAvatar" alt="">
-          <p>{{ data.team.teamName }}</p>
+        <div class="level-item-wrap">
+          <div class="level-item-content">
+            <img :src="data.team.teamAvatar" alt="">
+            <p>{{ data.team.teamName }}</p>
+          </div>
+          <div class="level-item-btn" @click="handleClickBtn">{{ btnText }}</div>
         </div>
-        <div class="label-item-conter">
+        <div class="label-item-center">
           <p v-if="label" class="label">{{ label }}</p>
           <p class="vs">VS</p>
         </div>
-        <div class="level-item-content level-item-right">
-          <img :src="data.opponentTeam.teamAvatar" alt="">
-          <p>{{ data.opponentTeam.teamName }}</p>
+        <div class="level-item-wrap level-item-right">
+          <div class="level-item-content">
+            <img :src="data.opponentTeam.teamAvatar" alt="">
+            <p>{{ data.opponentTeam.teamName }}</p>
+          </div>
+          <div class="level-item-btn" @click="handleClickBtn">{{ btnText }}</div>
         </div>
       </div>
     </div>
@@ -80,42 +105,54 @@ const props = defineProps({
   }
   .pad-margin-right {
     background-color: #75559d;
-    padding: 2px 8px;
+    padding: 2px 10px;
     border-radius: 4px;
   }
-  .level-item-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  .level-item-wrap {
     margin-right: 12px;
     @include mobile {
       margin-right: 8px;
     }
-    h3 {
-      font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-      font-size: 13px;
-      color: #701818;
-    }
-    img {
-      width: 40px;
-      height: 40px;
-      border-radius: 6px;
-      border: 1px solid #060ee8;
-      margin-bottom: 2px;
-      background-color: #666;
-      @include mobile {
-        width: 34px;
-        height: 34px;
+    .level-item-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      h3 {
+        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+        font-size: 13px;
+        color: #701818;
+      }
+      img {
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        border: 1px solid #060ee8;
+        margin-bottom: 2px;
+        background-color: #666;
+        @include mobile {
+          width: 34px;
+          height: 34px;
+        }
+      }
+      p {
+        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+        font-size: 13px;
+        white-space: nowrap; /* 防止文本换行 */
+        overflow: hidden; /* 隐藏溢出的内容 */
+        text-overflow: ellipsis; /* 显示省略符号来代表被修剪的文本 */
+        max-width: 120px;
       }
     }
-    p {
-      font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-      font-size: 13px;
-      white-space: nowrap; /* 防止文本换行 */
-      overflow: hidden; /* 隐藏溢出的内容 */
-      text-overflow: ellipsis; /* 显示省略符号来代表被修剪的文本 */
-      max-width: 120px;
+    .level-item-btn {
+      cursor: pointer;
+      margin-top: 5px;
+      font-size: 12px;
+      height: 22px;
+      line-height: 22px;
+      text-align: center;
+      border-radius: 11px;
+      background: linear-gradient(to right, rgb(143, 5, 202), rgb(11, 11, 96));
     }
   }
   .level-item-right {
@@ -128,7 +165,7 @@ const props = defineProps({
       border: 1px solid #7414f2;
     }
   }
-  .label-item-conter {
+  .label-item-center {
     display: flex;
     flex-direction: column;
     align-items: center;
