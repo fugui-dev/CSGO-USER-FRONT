@@ -13,16 +13,16 @@ const props = defineProps({
 const emit = defineEmits(['choose', 'close'])
 const visible = ref(false)
 const chooseOddsForm = ref({
-  probabilitySelect: 0
+  probabilitySelect: 1
 })
 const marks = ref({
-  0: {
+  1: {
     style: {
       color: '#f2a814',
       fontFamily: `'titleFont', 'Microsoft YaHei', 'sans-serif'`,
       fontSize: '14px'
     },
-    label: '0%',
+    label: '1%',
   },
   50: {
     style: {
@@ -123,7 +123,7 @@ defineExpose({
                   <!-- 滑动条 -->
                   <el-form :model="chooseOddsForm" class="choose-odds-form">
                     <el-form-item label="" prop="probabilitySelect" class="probability-select">
-                      <el-slider v-model="chooseOddsForm.probabilitySelect" :step="1" :marks="marks" />
+                      <el-slider v-model="chooseOddsForm.probabilitySelect" :step="1" min="1" max="100" :marks="marks" />
                     </el-form-item>
                     <el-form-item>
                       <p class="choosed">已选择：<span>{{ chooseOddsForm.probabilitySelect }}%</span></p>

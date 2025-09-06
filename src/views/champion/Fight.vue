@@ -259,13 +259,13 @@ const checkRemainTime = (endTime, type) => {
     if (type === 'ROUND_START' || type === 'CURRENT_PROGRESS') {
       
       // 只有前30s可以展示选择弹窗和倒计时，并且得是当前用户才展示，否则展示“用户选择中”
-      if (currUserId === currTeamPlayerData.userId && Number(currTeamPlayerData.score) === 0) {
+      if (currUserId === currTeamPlayerData.userId && !currTeamPlayerData.data) {
         console.log('hhh')
         chooseOddsDialogRef.value.open()
         currUserStageRecordId.value = currTeamPlayerData.id
         chooseCountdownValue.value = Math.floor((timeDiff - 30000) / 1000)
       }
-      if (currUserId === currOpponentTeamPlayerData.userId && Number(currOpponentTeamPlayerData.score) === 0) {
+      if (currUserId === currOpponentTeamPlayerData.userId && !currOpponentTeamPlayerData.data) {
         chooseOddsDialogRef.value.open()
         currUserStageRecordId.value = currOpponentTeamPlayerData.id
         chooseCountdownValue.value = Math.floor((timeDiff - 30000) / 1000)
@@ -545,11 +545,11 @@ onUnmounted(() => {
             <div class="team-fight">
               <div class="team-fight-status" v-if="fightData.status === 0 || currTeamPlayer.data.status === 0">暂未开始</div>
               <div class="team-fight-status" v-else-if="fightData.status === 2">游戏已结束</div>
-              <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && Number(currTeamPlayer.data.score) === 0">用户选择中...</div>
-              <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && Number(currTeamPlayer.data.score) > 0 && Number(currOpponentTeamPlayer.data.score) === 0">用户已选择</div>
-              <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && Number(currTeamPlayer.data.score) > 0 && Number(currOpponentTeamPlayer.data.score) > 0 && currTeamWaitingNextRoundText">{{ currTeamWaitingNextRoundText }}</div>
+              <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && !currTeamPlayer.data.data">用户选择中...</div>
+              <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && currTeamPlayer.data.data && !currOpponentTeamPlayer.data.data">用户已选择</div>
+              <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && currTeamPlayer.data.data && currOpponentTeamPlayer.data.data && currTeamWaitingNextRoundText">{{ currTeamWaitingNextRoundText }}</div>
               <FightBox
-                v-else-if="currTeamPlayer.data.status === 1 && Number(currTeamPlayer.data.score) > 0 && Number(currOpponentTeamPlayer.data.score) > 0"
+                v-else-if="currTeamPlayer.data.status === 1 && currTeamPlayer.data.data && currOpponentTeamPlayer.data.data"
                 ref="currTeamFightBoxRef"
                 :fightResult="currTeamPlayer.data"
                 :localSet="localSet"
@@ -591,11 +591,11 @@ onUnmounted(() => {
             <div class="team-fight">
               <div class="team-fight-status" v-if="fightData.status === 0 || currOpponentTeamPlayer.data.status === 0">暂未开始</div>
               <div class="team-fight-status" v-else-if="fightData.status === 2">游戏已结束</div>
-              <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && Number(currOpponentTeamPlayer.data.score) === 0">用户选择中...</div>
-              <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && Number(currOpponentTeamPlayer.data.score) > 0 && Number(currTeamPlayer.data.score) === 0">用户已选择</div>
-              <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && Number(currOpponentTeamPlayer.data.score) > 0 && Number(currTeamPlayer.data.score) > 0 && currOpponentTeamWaitingNextRoundText">{{ currOpponentTeamWaitingNextRoundText }}</div>
+              <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && !currOpponentTeamPlayer.data.data">用户选择中...</div>
+              <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && currOpponentTeamPlayer.data.data && !currTeamPlayer.data.data">用户已选择</div>
+              <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && currOpponentTeamPlayer.data.data && currTeamPlayer.data.data && currOpponentTeamWaitingNextRoundText">{{ currOpponentTeamWaitingNextRoundText }}</div>
               <FightBox
-                v-else-if="currOpponentTeamPlayer.data.status === 1 && Number(currOpponentTeamPlayer.data.score) > 0 && Number(currTeamPlayer.data.score) > 0 && !currOpponentTeamWaitingNextRoundText"
+                v-else-if="currOpponentTeamPlayer.data.status === 1 && currOpponentTeamPlayer.data.data && currTeamPlayer.data.data && !currOpponentTeamWaitingNextRoundText"
                 ref="currOpponentTeamFightBoxRef"
                 :fightResult="currOpponentTeamPlayer.data"
                 :localSet="localSet"

@@ -47,7 +47,7 @@ const handleClickBtn = (teamId) => {
             <img :src="data.team.teamAvatar" alt="">
             <p>{{ data.team.teamName }}</p>
           </div>
-          <div class="level-item-btn" @click.stop="handleClickBtn(data.team.teamId)">{{ btnText }}</div>
+          <div class="level-item-btn" v-if="showBottomBtn" @click.stop="handleClickBtn(data.team.teamId)">{{ btnText }}</div>
         </div>
         <div class="label-item-center">
           <p v-if="label" class="label">{{ label }}</p>
@@ -59,7 +59,7 @@ const handleClickBtn = (teamId) => {
             <img :src="data.opponentTeam.teamAvatar" alt="">
             <p>{{ data.opponentTeam.teamName }}</p>
           </div>
-          <div class="level-item-btn" @click="handleClickBtn(data.opponentTeam.teamId)">{{ btnText }}</div>
+          <div class="level-item-btn" v-if="showBottomBtn" @click="handleClickBtn(data.opponentTeam.teamId)">{{ btnText }}</div>
         </div>
       </div>
       <div class="level-item-container" v-else>
@@ -68,7 +68,7 @@ const handleClickBtn = (teamId) => {
             <img :src="data.team.teamAvatar" alt="">
             <p>{{ data.team.teamName }}</p>
           </div>
-          <div class="level-item-btn" @click="handleClickBtn">{{ btnText }}</div>
+          <div class="level-item-btn" v-if="showBottomBtn" @click="handleClickBtn">{{ btnText }}</div>
         </div>
         <div class="label-item-center">
           <p v-if="label" class="label">{{ label }}</p>
@@ -79,7 +79,7 @@ const handleClickBtn = (teamId) => {
             <img :src="data.opponentTeam.teamAvatar" alt="">
             <p>{{ data.opponentTeam.teamName }}</p>
           </div>
-          <div class="level-item-btn" @click="handleClickBtn">{{ btnText }}</div>
+          <div class="level-item-btn" v-if="showBottomBtn" @click="handleClickBtn">{{ btnText }}</div>
         </div>
       </div>
     </div>

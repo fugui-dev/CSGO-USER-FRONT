@@ -98,7 +98,7 @@ defineExpose({
                 <!-- 标题栏 -->
                 <div class="tw-flex tw-justify-between  tw-pb-4 tw-items-center tw-mb-6 tw-relative tw-z-10">
                     <div class="tw-absolute tw-h-[2px] tw-bg-gradient-to-r tw-from-transparent tw-via-[#FF7A21] tw-to-transparent tw-w-full tw-bottom-[-12px]"></div>
-                    <h3 class="tw-text-xl tw-font-bold tw-text-transparent tw-bg-clip-text tw-bg-gradient-to-r tw-from-[#FF7A21] tw-to-[#FFB74D] tw-animate-titleSlide">搜索用户</h3>
+                    <h3 class="tw-text-xl tw-font-bold tw-text-transparent tw-bg-clip-text tw-bg-gradient-to-r tw-from-[#FF7A21] tw-to-[#FFB74D] tw-animate-titleSlide">助威队伍</h3>
                     
                     <!-- 关闭按钮 -->
                     <button 
@@ -124,7 +124,7 @@ defineExpose({
                 <!-- 内容区域 -->
                 <div class="tw-overflow-hidden tw-overflow-y-auto tw-max-h-[50vh] no-scrollbar tw-transition-all tw-duration-500 tw-ease-in-out tw-my-4 tw-relative tw-z-10 content" v-loading="loading">
                   <el-form :model="cheerForm" :rules="cheerFormRules" ref="cheerFormRef" class="cheer-form">
-                    <el-form-item label="" prop="amount">
+                    <el-form-item label="助威金额" prop="amount">
                       <el-input v-model="cheerForm.amount" placeholder="请输入助威金额"/>
                     </el-form-item>
                     <el-form-item>
@@ -141,6 +141,9 @@ defineExpose({
 <style scoped lang="scss">
 .dialog {
     background: none;
+}
+.cheer-amount {
+  flex: 1;
 }
 .cheer-form {
   display: flex;
@@ -164,10 +167,14 @@ defineExpose({
 }
 .el-form-item {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  width: 100%;
   ::v-deep .el-form-item__label {
     justify-content: flex-start;
     color: #eee;
+  }
+  ::v-deep .el-form-item__content {
+    justify-content: center;
   }
 }
 .el-input {
@@ -178,6 +185,7 @@ defineExpose({
   --el-input-placeholder-color: #B1B1B1FF;
   --el-input-inner-height: 40px;
   font-size: 14px;
+  flex: 1;
 }
 .highlight {
   background: linear-gradient(to right, rgb(143, 5, 202), rgb(11, 11, 96));

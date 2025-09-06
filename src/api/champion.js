@@ -111,7 +111,7 @@ export const getMatchCheerListApi = (data) => {
 // 助威比赛阶段对战
 export const cheerApi = (data) => {
   return request({
-      url: "/api/match/stage/cheer",
+      url: "/api/match/cheer",
       method: "post",
       data: data
   })

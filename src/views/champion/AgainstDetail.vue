@@ -60,6 +60,7 @@ const getMatchStageList = () => {
     if (res.data && res.data.length) {
       levelData.value = res.data
       currLevelData.value = res.data.find(item => item.type === type)
+      console.log(currLevelData.value)
     }
   }).finally(() => {
     loading.value = false
@@ -94,6 +95,7 @@ const groupData = computed(() => {
       }
     });
   }
+  console.log(res)
   return res
 })
 
@@ -136,7 +138,7 @@ onMounted(() => {
             <LevelItem
               :data="subItem"
               :showTitle="true"
-              :showBottomBtn="currLevelData.status === 0"
+              :showBottomBtn="subItem.status === 0"
               btnText="助威"
               v-for="(subItem, subIndex) in item"
               :key="subIndex"
@@ -156,14 +158,17 @@ onMounted(() => {
           <LevelItem
               :data="item"
               :showTitle="true"
+              :showBottomBtn="item.status === 0"
+              btnText="助威"
               v-for="(item, index) in upgradeData[type]"
               :key="index"
               @click="handleJump(item.id)"
+              @clickBtn="handleClickCheer"
               class="level-item-wrap" />
         </div>
       </div>
     </div>
-    <CheerDialog ref="cheerDialogRef"/>
+    <CheerDialog ref="cheerDialogRef" :teamId="currClickTeamId" :stageGroupFightId="currClickStageGroupFightId"/>
   </Detail>
 </template>
 
