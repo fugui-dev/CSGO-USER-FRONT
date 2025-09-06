@@ -15,6 +15,7 @@ import Level from "./components/Level.vue";
 import {getMatchInfoApi, handleInviteApi} from "@/api/champion";
 import { useRoute } from 'vue-router';
 import Detail from './Detail.vue';
+import DraggableButton from "./components/DraggableButton.vue";
 
 const route = useRoute()
 const store = useStore()
@@ -124,6 +125,7 @@ const getMyTeam = () => {
   }).then(res => {
     if (res.data && res.data.length) {
       teamInfo.value = res.data[0]
+      console.log(teamInfo.value)
       checkStatus()
     }
   }).finally(() => {
@@ -262,10 +264,17 @@ const handleInvite = (type, id) => {
 
 // 点击邀请 搜索用户
 const showSearchUserDialog = () => {
-  searchUserDialogRef.value.open()
+  const currUserInfo = store.userInfo
+  // 当前用户是队长且主播才可以邀请用户
+  if (currUserInfo.userId === teamInfo.value.captainUserId && currUserInfo.userType === '01') {
+    searchUserDialogRef.value.open()
+  } else {
+    ElMessage.warning('当前用户是队长且主播才可以邀请用户')
+  }
 }
 
 const handleCloseSearchUserDialog = () => {
+  subActive.value = 1
   getInvitedList(false)
 }
 
@@ -283,6 +292,10 @@ const getMatchStageList = () => {
   })
 }
 
+const handleStopCountdown = () => {
+  getMatchInfo()
+}
+
 onMounted(() => {
   getList()
   getMatchInfo()
@@ -298,9 +311,10 @@ onMounted(() => {
       '--bg-header':requireImg('/level/3.png',true),
       }">
       <!-- 创建队伍 -->
-      <div class="create-team-btn" @click="handleClickCreateTeam" v-if="userInfo.userType === '01'">
-        <p>创建队伍</p>
-      </div>
+      <DraggableButton
+        text="创建队伍"
+        @click="handleClickCreateTeam"
+        v-if="userInfo.userType === '01'" />
       <!-- 头部 -->
       <div class="signup-header" v-if="matchData.status === 1 && targetDate > new Date()">
         <h3>战队集结中</h3>
@@ -308,6 +322,7 @@ onMounted(() => {
         <Countdown
           :target-time="targetDate"
           :show-status="false"
+          @stop="handleStopCountdown"
         />
       </div>
       
@@ -321,8 +336,11 @@ onMounted(() => {
         <!-- 所有队伍 -->
         <div class="team-list" v-loading="loading" style="flex: 1" v-if="active === 0">
           <div class="content">
-            <div class="team-list-container">
+            <div class="team-list-container" v-if="list.length">
               <TeamCard :cardData="i" v-for="(i,index) in list" :key="index"/>
+            </div>
+            <div class="empty-box" v-else>
+              <p>暂无数据</p>
             </div>
           </div>
         </div>
@@ -437,22 +455,6 @@ onMounted(() => {
   margin: 6px auto;
   box-sizing: border-box;
   position: relative;
-  .create-team-btn {
-    width: 92px;
-    height: 92px;
-    background: url('@/assets/openBox/di.png') no-repeat;
-    background-size: cover;
-    font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-shadow:  0px 0px 10px rgb(247, 219, 77);
-    position: absolute;
-    z-index: 3;
-    right: 28px;
-    top: 10px;
-    cursor: pointer;
-  }
   .signup-header {
     position: relative;
     h3 {

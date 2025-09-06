@@ -31,7 +31,7 @@ const currTeamScore = ref(0)
 const currOpponentTeamScore = ref(0)
 const teamScrollRef = ref(null)
 const opponentTeamScrollRef = ref(null)
-const currRound = ref(0)
+const currRound = ref(1)
 const chooseOddsDialogRef = ref(null)
 const chooseCountdownValue = ref()
 const currUserStageRecordId = ref(-1)
@@ -499,7 +499,7 @@ onUnmounted(() => {
             <div class="round-num-bg rotate1"></div>
             <div class="round-num-bg rotate2"></div>
             <div class="round-num-bg rotate3"></div>
-            <h3>VS</h3>
+            <h3>{{ currRound }} / {{ fightData.round }}</h3>
           </div>
           <div class="team-info team-info-right">
             <img :src="fightData.opponentTeamAvatar" alt="" class="team-avatar">
@@ -803,9 +803,10 @@ onUnmounted(() => {
         }
       }
       .magnify {
+        overflow: visible;
         img {
-          width: 54px;
-          height: 54px;
+          width: 60px;
+          height: 60px;
           animation: smooth 2s infinite;
         }
         p {

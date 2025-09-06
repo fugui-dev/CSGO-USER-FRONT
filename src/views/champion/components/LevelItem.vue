@@ -22,6 +22,15 @@ const props = defineProps({
   data: {
     type: Object,
     required: true
+  },
+  showStatus: {
+    type: Boolean
+  },
+  statusText: {
+    type: String
+  },
+  statusBgColor: {
+    type: String
   }
 });
 
@@ -41,6 +50,12 @@ const handleClickBtn = (teamId) => {
         '--bg-level-16':requireImg('/level/4.png',true),
       }">
       <div class="level-item-container" v-if="showTitle">
+        <div
+          class="level-item-status"
+          v-if="showStatus"
+          :style="{backgroundColor: statusBgColor}">
+            {{ statusText }}
+        </div>
         <div class="level-item-wrap">
           <div class="level-item-content pad-margin-left">
             <h3>{{ data.team.aliasName }}</h3>
@@ -63,6 +78,12 @@ const handleClickBtn = (teamId) => {
         </div>
       </div>
       <div class="level-item-container" v-else>
+        <div
+          class="level-item-status"
+          v-if="showStatus"
+          :style="{backgroundColor: statusBgColor}">
+            {{ statusText }}
+        </div>
         <div class="level-item-wrap">
           <div class="level-item-content">
             <img :src="data.team.teamAvatar" alt="">
@@ -98,6 +119,19 @@ const handleClickBtn = (teamId) => {
   margin: 10px;
   position: relative;
   background: linear-gradient(to right, rgb(188, 145, 207), rgb(112, 112, 200));
+  .level-item-status {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 20px;
+    line-height: 20px;
+    font-size: 12px;
+    padding: 0 14px;
+    z-index: 3;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
   .pad-margin-left {
     background-color: #526fa4;
     padding: 2px 10px;
@@ -110,6 +144,7 @@ const handleClickBtn = (teamId) => {
   }
   .level-item-wrap {
     margin-right: 12px;
+    margin-top: 12px;
     @include mobile {
       margin-right: 8px;
     }

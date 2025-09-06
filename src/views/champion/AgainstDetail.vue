@@ -134,17 +134,23 @@ onMounted(() => {
           <div class="level-group-round-header">
             <h2 :style="{ backgroundColor: roundColor(index) }">第 {{ index + 1 }} 回合</h2>
           </div>
-          <div class="level-group-round-list">
+          <div class="level-group-round-list" v-if="item.length">
             <LevelItem
               :data="subItem"
               :showTitle="true"
               :showBottomBtn="subItem.status === 0"
               btnText="助威"
+              :showStatus="true"
+              :statusText="statusMap[subItem.status]"
+              :statusBgColor="statusColor(subItem.status)"
               v-for="(subItem, subIndex) in item"
               :key="subIndex"
               @click="handleJump(subItem.id)"
               @clickBtn="handleClickCheer"
               class="level-item-wrap" />
+          </div>
+          <div class="empty-box" v-else>
+            <p>暂无数据</p>
           </div>
         </div>
       </div>
@@ -154,7 +160,7 @@ onMounted(() => {
           <span>{{ currLevelData.name }}</span>
           <div class="match-status" :style="{ backgroundColor: statusColor(currLevelData.status) }">{{ statusMap[currLevelData.status] }}</div>
         </div>
-        <div class="common-level">
+        <div class="common-level" v-if="upgradeData[type] && upgradeData[type].length">
           <LevelItem
               :data="item"
               :showTitle="true"
@@ -165,6 +171,9 @@ onMounted(() => {
               @click="handleJump(item.id)"
               @clickBtn="handleClickCheer"
               class="level-item-wrap" />
+        </div>
+        <div class="empty-box" v-else>
+          <p>暂无数据</p>
         </div>
       </div>
     </div>
@@ -198,6 +207,7 @@ onMounted(() => {
 .against-detail-container {
   width: 94%;
   margin: 0 auto;
+  position: relative;
   .common-level {
     background-color: rgba(50, 50, 50, 0.66);
     background-position: bottom;
@@ -208,6 +218,18 @@ onMounted(() => {
     flex-wrap: wrap;
     margin-top: 20px;
   }
+}
+.empty-box {
+  font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+  font-size: 18px;
+  color: #eee;
+  text-align: center;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 4;
 }
 .against-detail-group {
   .level-group-round {
