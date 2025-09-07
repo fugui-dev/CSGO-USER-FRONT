@@ -167,6 +167,14 @@ const routes = [
                 }
             },
             {
+              path: "/match-history-detail",
+              component: () => import("../views/champion/HistoryDetail.vue"),
+                name: "HistoryDetail",
+                meta: {
+                    title:'往期记录详情'
+                }
+            },
+            {
                 path: "/smelt",
                 component: () => import("../views/smelt/Index.vue"),
                 name: "Smelt",

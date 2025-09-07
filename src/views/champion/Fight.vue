@@ -118,7 +118,7 @@ const checkProgress = () => {
       // 定位到正在对战的两个用户
       findFightingUserByCurrRound(fightData.value.recordRound)
       // 判断当前回合游戏剩余的时间能做些什么
-      checkRemainTime(currTeamPlayer.value.data.endTime, 'CURRENT_PROGRESS')
+      checkRemainTime(new Date(currTeamPlayer.value.data.endTime), 'CURRENT_PROGRESS')
       break
     // 已结束
     case 2: break
@@ -231,15 +231,43 @@ const scrollToTarget = (scrollRef, list, targetIndex) => {
   })
 }
 
+const showChooseOddsDialog = () => {
+  const currUserId = store.userInfo.userId
+  if (currUserId === currTeamPlayerData.userId && !currTeamPlayerData.data) {
+    chooseOddsDialogRef.value.open()
+    currUserStageRecordId.value = currTeamPlayerData.id
+    chooseCountdownValue.value = Math.floor((timeDiff - 30000) / 1000)
+  }
+  if (currUserId === currOpponentTeamPlayerData.userId && !currOpponentTeamPlayerData.data) {
+    chooseOddsDialogRef.value.open()
+    currUserStageRecordId.value = currOpponentTeamPlayerData.id
+    chooseCountdownValue.value = Math.floor((timeDiff - 30000) / 1000)
+  }
+}
+
+// 播放动画
+const playAnimation = () => {
+  if (currTeamPlayer.value.index > -1) {
+    nextTick(() => {
+      currTeamFightBoxRef.value.startAnimation()
+    })
+  }
+  if (currOpponentTeamPlayer.value.index > -1) {
+    nextTick(() => {
+      currOpponentTeamFightBoxRef.value.startAnimation()
+    })
+  }
+}
+
 // 判断当前回合游戏剩余的时间能做些什么(能调用这个函数说明游戏还在进行中)
 const checkRemainTime = (endTime, type) => {
   const currentTime = new Date()
   const timeDiff = endTime - currentTime
   console.log(endTime)
   console.log(currentTime)
+  console.log(Number.isNaN(timeDiff))
   if (Number.isNaN(timeDiff)) return
 
-  const currUserId = store.userInfo.userId
   const currTeamPlayerData = currTeamPlayer.value.data
   const currOpponentTeamPlayerData = currOpponentTeamPlayer.value.data
 
@@ -256,33 +284,19 @@ const checkRemainTime = (endTime, type) => {
   if (timeDiff > 30000 && ((timeDiff - 30000) / 1000 > 1)) {
     console.log(2)
     // 只有 ROUND_START 和 CURRENT_PROGRESS 才可以展示弹窗，ROUND_RESULT 和 ROUND_WAITING不行
-    if (type === 'ROUND_START' || type === 'CURRENT_PROGRESS') {
-      
+    if (type === 'ROUND_START') {
       // 只有前30s可以展示选择弹窗和倒计时，并且得是当前用户才展示，否则展示“用户选择中”
-      if (currUserId === currTeamPlayerData.userId && !currTeamPlayerData.data) {
-        console.log('hhh')
-        chooseOddsDialogRef.value.open()
-        currUserStageRecordId.value = currTeamPlayerData.id
-        chooseCountdownValue.value = Math.floor((timeDiff - 30000) / 1000)
-      }
-      if (currUserId === currOpponentTeamPlayerData.userId && !currOpponentTeamPlayerData.data) {
-        chooseOddsDialogRef.value.open()
-        currUserStageRecordId.value = currOpponentTeamPlayerData.id
-        chooseCountdownValue.value = Math.floor((timeDiff - 30000) / 1000)
+      showChooseOddsDialog()
+    } else if (type === 'CURRENT_PROGRESS') {
+      // 当前两个玩家都已经选择概率，播放动画
+      if (currTeamPlayerData.data && currOpponentTeamPlayerData.data) {
+        playAnimation()
+      } else {
+        showChooseOddsDialog()
       }
     } else if (type === 'ROUND_RESULT') {
-      console.log('jjj')
       // 播放动画
-      if (currTeamPlayer.value.index > -1) {
-        nextTick(() => {
-          currTeamFightBoxRef.value.startAnimation()
-        })
-      }
-      if (currOpponentTeamPlayer.value.index > -1) {
-        nextTick(() => {
-          currOpponentTeamFightBoxRef.value.startAnimation()
-        })
-      }
+      playAnimation()
     }
   } else if (timeDiff > 17000) {
     console.log(3)
@@ -291,16 +305,7 @@ const checkRemainTime = (endTime, type) => {
 
     // 动画13s，自定义缓冲时间4s，回合一共60s，剩余时间大于17s时可展示动画，否则直接展示结果
     // 播放动画
-    if (currTeamPlayer.value.index > -1) {
-      nextTick(() => {
-        currTeamFightBoxRef.value.startAnimation()
-      })
-    }
-    if (currOpponentTeamPlayer.value.index > -1) {
-      nextTick(() => {
-        currOpponentTeamFightBoxRef.value.startAnimation()
-      })
-    }
+    playAnimation()
   } else if (timeDiff > 0) {
     console.log(4)
     // 只有 ROUND_RESULT 和 CURRENT_PROGRESS 才可以直接展示结果，ROUND_START 和 ROUND_WAITING 不行
@@ -554,7 +559,6 @@ onUnmounted(() => {
                 :fightResult="currTeamPlayer.data"
                 :localSet="localSet"
                 @scrollEnd="handleScrollEnd('currTeam')" />
-              <div class="team-fight-status" v-else>系统错误</div>
             </div>
           </div>
         </div>

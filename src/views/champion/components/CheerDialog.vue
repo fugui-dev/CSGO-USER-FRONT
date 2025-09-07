@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
 import {requireImg} from "@/utils/common";
 import {cheerApi} from "@/api/champion"
 import {ElMessage} from "element-plus";
@@ -15,6 +15,7 @@ const props = defineProps({
   }
 });
 
+const emit = defineEmits(['close'])
 const visible = ref(false)
 const cheerFormRef = ref()
 const cheerForm = ref({

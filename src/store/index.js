@@ -35,6 +35,7 @@ export const useStore = defineStore('myStore', { // 第一个参数是 id
             localStorage.removeItem('userInfo');
             localStorage.removeItem('token');
             sessionStorage.removeItem('matchId');
+            sessionStorage.removeItem('historyMatchId');
             sessionStorage.removeItem('againstType');
             sessionStorage.removeItem('stageGroupFightId');
             window.location.reload();

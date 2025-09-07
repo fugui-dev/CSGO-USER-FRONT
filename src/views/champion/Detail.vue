@@ -21,7 +21,7 @@ const navList = ref([{
 }, {
   name: '往期记录',
   value: 3,
-  path: ['/match-history']
+  path: ['/match-history', '/match-history-detail']
 }])
 
 const changeActive = (val) => {

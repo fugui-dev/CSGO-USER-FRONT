@@ -35,6 +35,7 @@ const emit = defineEmits(['scrollEnd'])
 const store = useStore()
 const musica = new Audio(m1) //滚动音频
 const musicb = new Audio(m2) //滚动音频
+const showHighlightScore = ref(false)
 
 // 多个列表拼接
 const tempMultiOrnamentsData = computed(() => {
@@ -129,11 +130,17 @@ const jumpToEndPosition = () => {
 const handleScrollAnimationEnd = () => {
   console.log('滚动结束')
   pauseMusic()
+  showHighlightScore.value = true
+
   const timer = setTimeout(() => {
     scrollAnimation.value = false
     emit('scrollEnd')
     timer && clearTimeout(timer)
   }, 3000)
+}
+
+const handleShakeAnimationEnd = () => {
+  showHighlightScore.value = false
 }
 
 const pauseMusic = () => {
@@ -172,6 +179,12 @@ defineExpose({
       class="scroll-wrap"
       @mousewheel.prevent
       @touchmove.prevent>
+      <div
+        class="highlight-score"
+        v-if="showHighlightScore"
+        @animationend="handleShakeAnimationEnd">
+          {{ fightResult.score }}
+      </div>
       <div class="line">
         <img :src="lightLeft" alt="">
         <div class="yellow-line"></div>
@@ -196,6 +209,22 @@ defineExpose({
 <style scoped lang="scss">
 .scroll-wrap {
   position: relative;
+  .highlight-score {
+    position: absolute;
+    z-index: 10;
+    left: calc(50% - 26px);
+    top: calc(50% - 26px);
+    height: 52px;
+    line-height: 52px;
+    width: 52px;
+    font-size: 46px;
+    color: #f8bc18;
+    font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+    text-shadow:  0px 2px 4px rgb(246, 218, 144);
+    animation-duration: 2s;
+    animation-iteration-count: 1;
+    animation-name: shake;
+  }
   .line {
     width: 56%;
     position: absolute;
@@ -277,6 +306,32 @@ defineExpose({
 
     to {
         transform: translateY(var(--scroll-end-position));
+    }
+}
+@keyframes shake {
+    0% {
+        transform: scale(0.1);
+    }
+    30% {
+        transform: scale(1);
+    }
+    40% {
+        transform: rotateZ(-20deg);
+    }
+    50% {
+        transform: rotateZ(20deg);
+    }
+    60% {
+        transform: rotateZ(-20deg);
+    }
+    70% {
+        transform: rotateZ(20deg);
+    }
+    80% {
+        transform: rotateZ(0);
+    }
+    100% {
+        transform: scale(0.1);
     }
 }
 

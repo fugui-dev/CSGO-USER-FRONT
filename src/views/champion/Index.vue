@@ -255,10 +255,22 @@ onMounted(() => {
 
 /* 响应式调整 */
 @media (max-width: 768px) {
-  .content-wrap {
-    flex-direction: column;
-    .battle-list-container {
-      grid-template-columns: 1fr 1fr !important;
+  .match-container {
+    .matching {
+      .match-logo {
+        width: 80px;
+        height: 80px;
+      }
+      .match-name {
+        div {
+          font-size: 26px !important;
+        }
+      }
+      .enter-btn {
+        right: 10px !important;
+        top: 8% !important;
+        padding: 3px 25px !important;
+      }
     }
   }
 }

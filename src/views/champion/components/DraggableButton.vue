@@ -19,7 +19,7 @@ let draggableBtnRef = ref()
 
 // 页面初始化
 function initBodySize() {
-  initWidth.value = draggableBtnRef.value.parentElement.clientWidth; // 拿到父元素宽
+  initWidth.value = draggableBtnRef.value?.parentElement.clientWidth; // 拿到父元素宽
   initHeight.value = initWidth.value * ((1080 * 0.88) / (1920 - 1080 * 0.02)); // 根据宽计算高实现自适应
 }
 // 拖拽开始事件
@@ -39,8 +39,8 @@ function dragend(e) {
   // 限制按钮不能拖出可视区域
   const btnWidth = 92;
   const btnHeight = 92;
-  const parentWidth = draggableBtnRef.value.parentElement.clientWidth;
-  const parentHeight = draggableBtnRef.value.parentElement.clientHeight;
+  const parentWidth = draggableBtnRef.value?.parentElement.clientWidth;
+  const parentHeight = draggableBtnRef.value?.parentElement.clientHeight;
   
   if (elRight.value < 0) elRight.value = 0;
   if (elRight.value > parentWidth - btnWidth) elRight.value = parentWidth - btnWidth;

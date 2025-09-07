@@ -116,3 +116,12 @@ export const cheerApi = (data) => {
       data: data
   })
 }
+
+// 获取往期比赛列表
+export const getHistoryMatchListApi = (data) => {
+    return request({
+        url: "/api/match/history/list",
+        method: "get",
+        data: data
+    })
+}

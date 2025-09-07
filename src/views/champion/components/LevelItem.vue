@@ -43,12 +43,7 @@ const handleClickBtn = (teamId) => {
 
 </script>
 <template>
-    <div class="level-item" :style="{
-        '--bg-level-2':requireImg('/level/1.png',true),
-        '--bg-level-4':requireImg('/level/2.png',true),
-        '--bg-level-8':requireImg('/level/3.png',true),
-        '--bg-level-16':requireImg('/level/4.png',true),
-      }">
+    <div class="level-item">
       <div class="level-item-container" v-if="showTitle">
         <div
           class="level-item-status"
@@ -59,7 +54,8 @@ const handleClickBtn = (teamId) => {
         <div class="level-item-wrap">
           <div class="level-item-content pad-margin-left">
             <h3>{{ data.team.aliasName }}</h3>
-            <img :src="data.team.teamAvatar" alt="">
+            <img :src="data.team.teamAvatar" alt="" v-if="data.team.teamAvatar">
+            <img :src="requireImg('/v2/nav/u1.png')" alt="" v-else style="border: none; margin-top: 6px;">
             <p>{{ data.team.teamName }}</p>
           </div>
           <div class="level-item-btn" v-if="showBottomBtn" @click.stop="handleClickBtn(data.team.teamId)">{{ btnText }}</div>
@@ -71,10 +67,11 @@ const handleClickBtn = (teamId) => {
         <div class="level-item-wrap level-item-right">
           <div class="level-item-content pad-margin-right">
             <h3>{{ data.opponentTeam.aliasName }}</h3>
-            <img :src="data.opponentTeam.teamAvatar" alt="">
+            <img :src="data.opponentTeam.teamAvatar" alt="" v-if="data.opponentTeam.teamAvatar">
+            <img :src="requireImg('/v2/nav/u1.png')" alt="" v-else style="border: none; margin-top: 6px;">
             <p>{{ data.opponentTeam.teamName }}</p>
           </div>
-          <div class="level-item-btn" v-if="showBottomBtn" @click="handleClickBtn(data.opponentTeam.teamId)">{{ btnText }}</div>
+          <div class="level-item-btn" v-if="showBottomBtn" @click.stop="handleClickBtn(data.opponentTeam.teamId)">{{ btnText }}</div>
         </div>
       </div>
       <div class="level-item-container" v-else>
@@ -86,7 +83,8 @@ const handleClickBtn = (teamId) => {
         </div>
         <div class="level-item-wrap">
           <div class="level-item-content">
-            <img :src="data.team.teamAvatar" alt="">
+            <img :src="data.team.teamAvatar" alt="" v-if="data.team.teamAvatar">
+            <img :src="requireImg('/v2/nav/u1.png')" alt="" v-else style="border: none; margin-top: 6px;">
             <p>{{ data.team.teamName }}</p>
           </div>
           <div class="level-item-btn" v-if="showBottomBtn" @click="handleClickBtn">{{ btnText }}</div>
@@ -97,7 +95,8 @@ const handleClickBtn = (teamId) => {
         </div>
         <div class="level-item-wrap level-item-right">
           <div class="level-item-content">
-            <img :src="data.opponentTeam.teamAvatar" alt="">
+            <img :src="data.opponentTeam.teamAvatar" alt="" v-if="data.opponentTeam.teamAvatar">
+            <img :src="requireImg('/v2/nav/u1.png')" alt="" v-else style="border: none; margin-top: 6px;">
             <p>{{ data.opponentTeam.teamName }}</p>
           </div>
           <div class="level-item-btn" v-if="showBottomBtn" @click="handleClickBtn">{{ btnText }}</div>
@@ -210,8 +209,8 @@ const handleClickBtn = (teamId) => {
     }
     .label {
       font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-      color: #eee;
-      font-size: 13px;
+      color: #ddd;
+      font-size: 14px;
       margin-bottom: 2px;
     }
     .vs {
