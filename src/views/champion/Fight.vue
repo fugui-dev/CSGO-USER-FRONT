@@ -10,6 +10,7 @@ import ChooseOddsDialog from './components/ChooseOddsDialog.vue'
 import FightBox from './components/FightBox.vue'
 import bgm from "@/assets/music/main_battle.mp3";
 import {ElMessage} from "element-plus";
+import Countdown from "./components/Countdown.vue";
 
 const router = useRouter()
 const store = useStore()
@@ -32,11 +33,14 @@ const currOpponentTeamScore = ref(0)
 const teamScrollRef = ref(null)
 const opponentTeamScrollRef = ref(null)
 const currRound = ref(1)
+const totalRound = ref(10)
 const chooseOddsDialogRef = ref(null)
 const chooseCountdownValue = ref()
 const currUserStageRecordId = ref(-1)
 const currTeamWaitingNextRoundText = ref('')
 const currOpponentTeamWaitingNextRoundText = ref('')
+const showCountdown = ref(false)
+const targetDate = ref(0)
 const localSet = reactive({
   music: true
 })
@@ -53,6 +57,9 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
     if (data.type === 'CURRENT_PROGRESS') {
       if (data.data.code === 200 && data.data.data) {
         fightData.value = data.data.data
+        totalRound.value = data.data.data.team.stageRecordStartList.length
+        // 检查是否需要展示倒计时
+        checkFirstRoundStartTime()
         // 检测整场游戏的进度
         checkProgress()
       }
@@ -107,6 +114,17 @@ const handleClickBack = () => {
   router.back()
 }
 
+// 检查是否需要展示倒计时
+const checkFirstRoundStartTime = () => {
+  const firstRoundData = fightData.value.team.stageRecordStartList.find(item => item.round === 1)
+  targetDate.value = new Date(firstRoundData.startTime)
+  if (targetDate.value > new Date()) {
+    showCountdown.value = true
+  } else {
+    showCountdown.value = false
+  }
+}
+
 // 初始化时，检测整场游戏的进度
 const checkProgress = () => {
   const status = fightData.value.status
@@ -115,6 +133,7 @@ const checkProgress = () => {
     case 0: break
     // 进行中
     case 1: 
+      if (targetDate.value > new Date()) return
       // 定位到正在对战的两个用户
       findFightingUserByCurrRound(fightData.value.recordRound)
       // 判断当前回合游戏剩余的时间能做些什么
@@ -231,8 +250,11 @@ const scrollToTarget = (scrollRef, list, targetIndex) => {
   })
 }
 
-const showChooseOddsDialog = () => {
+const showChooseOddsDialog = (timeDiff) => {
   const currUserId = store.userInfo.userId
+  const currTeamPlayerData = currTeamPlayer.value.data
+  const currOpponentTeamPlayerData = currOpponentTeamPlayer.value.data
+
   if (currUserId === currTeamPlayerData.userId && !currTeamPlayerData.data) {
     chooseOddsDialogRef.value.open()
     currUserStageRecordId.value = currTeamPlayerData.id
@@ -249,12 +271,12 @@ const showChooseOddsDialog = () => {
 const playAnimation = () => {
   if (currTeamPlayer.value.index > -1) {
     nextTick(() => {
-      currTeamFightBoxRef.value.startAnimation()
+      currTeamFightBoxRef.value?.startAnimation()
     })
   }
   if (currOpponentTeamPlayer.value.index > -1) {
     nextTick(() => {
-      currOpponentTeamFightBoxRef.value.startAnimation()
+      currOpponentTeamFightBoxRef.value?.startAnimation()
     })
   }
 }
@@ -286,13 +308,13 @@ const checkRemainTime = (endTime, type) => {
     // 只有 ROUND_START 和 CURRENT_PROGRESS 才可以展示弹窗，ROUND_RESULT 和 ROUND_WAITING不行
     if (type === 'ROUND_START') {
       // 只有前30s可以展示选择弹窗和倒计时，并且得是当前用户才展示，否则展示“用户选择中”
-      showChooseOddsDialog()
+      showChooseOddsDialog(timeDiff)
     } else if (type === 'CURRENT_PROGRESS') {
       // 当前两个玩家都已经选择概率，播放动画
       if (currTeamPlayerData.data && currOpponentTeamPlayerData.data) {
         playAnimation()
       } else {
-        showChooseOddsDialog()
+        showChooseOddsDialog(timeDiff)
       }
     } else if (type === 'ROUND_RESULT') {
       // 播放动画
@@ -426,18 +448,22 @@ const changeSet = (set) => {
 const handleScrollEnd = (type) => {
   // 是否展示等待下一轮文案
   if (type === 'currTeam') {
-    if (currRound.value < fightData.value.round) {
+    if (currRound.value < totalRound.value) {
       currTeamWaitingNextRoundText.value = '等待下一回合开始...'
     } else {
       currTeamWaitingNextRoundText.value = '等待对战结束...'
     }
   } else {
-    if (currRound.value < fightData.value.round) {
+    if (currRound.value < totalRound.value) {
       currOpponentTeamWaitingNextRoundText.value = '等待下一回合开始...'
     } else {
       currOpponentTeamWaitingNextRoundText.value = '等待对战结束...'
     }
   }
+}
+
+const handleStopCountdown = () => {
+  showCountdown.value = false
 }
 
 onMounted(() => {
@@ -459,6 +485,13 @@ onUnmounted(() => {
         '--bg-level':requireImg('/level/3.png',true),
         '--bg-round-num':requireImg('/v2/smelt/jg-bg.png',true),
       }">
+      <!-- 倒计时 -->
+      <Countdown
+        v-if="showCountdown"
+        :target-time="targetDate"
+        :show-status="false"
+        @finish="handleStopCountdown"
+      />
       <!-- 头部 -->
       <div class="against-fight-header">
         <div class="against-fight-header-top">
@@ -504,7 +537,7 @@ onUnmounted(() => {
             <div class="round-num-bg rotate1"></div>
             <div class="round-num-bg rotate2"></div>
             <div class="round-num-bg rotate3"></div>
-            <h3>{{ currRound }} / {{ fightData.round }}</h3>
+            <h3>{{ currRound }} / {{ totalRound }}</h3>
           </div>
           <div class="team-info team-info-right">
             <img :src="fightData.opponentTeamAvatar" alt="" class="team-avatar">
@@ -548,7 +581,7 @@ onUnmounted(() => {
               </div>
             </el-scrollbar>
             <div class="team-fight">
-              <div class="team-fight-status" v-if="fightData.status === 0 || currTeamPlayer.data.status === 0">暂未开始</div>
+              <div class="team-fight-status" v-if="fightData.status === 0 || currTeamPlayer.data.status === 0 || showCountdown">暂未开始</div>
               <div class="team-fight-status" v-else-if="fightData.status === 2">游戏已结束</div>
               <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && !currTeamPlayer.data.data">用户选择中...</div>
               <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && currTeamPlayer.data.data && !currOpponentTeamPlayer.data.data">用户已选择</div>
@@ -593,7 +626,7 @@ onUnmounted(() => {
               </div>
             </el-scrollbar>
             <div class="team-fight">
-              <div class="team-fight-status" v-if="fightData.status === 0 || currOpponentTeamPlayer.data.status === 0">暂未开始</div>
+              <div class="team-fight-status" v-if="fightData.status === 0 || currOpponentTeamPlayer.data.status === 0 || showCountdown">暂未开始</div>
               <div class="team-fight-status" v-else-if="fightData.status === 2">游戏已结束</div>
               <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && !currOpponentTeamPlayer.data.data">用户选择中...</div>
               <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && currOpponentTeamPlayer.data.data && !currTeamPlayer.data.data">用户已选择</div>

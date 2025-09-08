@@ -322,7 +322,7 @@ onMounted(() => {
         <Countdown
           :target-time="targetDate"
           :show-status="false"
-          @stop="handleStopCountdown"
+          @finish="handleStopCountdown"
         />
       </div>
       

@@ -58,7 +58,7 @@ onMounted(() => {
           v-if="matchData.status === 0"
           :target-time="targetDate"
           :show-status="false"
-          @stop="handleStopCountdown"
+          @finish="handleStopCountdown"
         />
         <div class="matching" v-if="matchData.status === 0 || matchData.status === 1">
           <!-- 已开始房间才能进入 -->
