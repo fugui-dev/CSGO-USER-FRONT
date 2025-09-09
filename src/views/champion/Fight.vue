@@ -41,6 +41,8 @@ const currTeamWaitingNextRoundText = ref('')
 const currOpponentTeamWaitingNextRoundText = ref('')
 const showCountdown = ref(false)
 const targetDate = ref(0)
+const currTeamGameStart = ref(false)
+const currOpponentTeamGameStart = ref(false)
 const localSet = reactive({
   music: true
 })
@@ -88,6 +90,8 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
       setCurrFightResult(data.data)
     }
     if (data.type === 'FIGHT_END') {
+      currTeamGameStart.value = false
+      currOpponentTeamGameStart.value = false
       // 清空等待下一轮提示文案
       currTeamWaitingNextRoundText.value = ''
       currOpponentTeamWaitingNextRoundText.value = ''
@@ -153,6 +157,7 @@ const findFightingUserByCurrRound = (currRoundNum) => {
 
   teamUserList.forEach((item, index) => {
     if (item.round === currRoundNum) {
+      currTeamGameStart.value = true
       currTeamPlayer.value.data = item
       currTeamPlayer.value.index = index
       nextTick(() => {
@@ -162,6 +167,7 @@ const findFightingUserByCurrRound = (currRoundNum) => {
   });
   opponentTeamUserList.forEach((item, index) => {
     if (item.round === currRoundNum) {
+      currOpponentTeamGameStart.value = true
       currOpponentTeamPlayer.value.data = item
       currOpponentTeamPlayer.value.index = index
       nextTick(() => {
@@ -183,6 +189,7 @@ const findFightingUserByUserId = (userId, userStatus) => {
     // 更新用户状态
     teamUserList[currTeamPlayerIndex].status = userStatus
 
+    currTeamGameStart.value = true
     currTeamPlayer.value.index = currTeamPlayerIndex
     currTeamPlayer.value.data = teamUserList[currTeamPlayer.value.index]
     currRound.value = currTeamPlayer.value.data.round
@@ -195,6 +202,7 @@ const findFightingUserByUserId = (userId, userStatus) => {
     // 更新用户状态
     opponentTeamUserList[currOpponentTeamPlayerIndex].status = userStatus
 
+    currOpponentTeamGameStart.value = true
     currOpponentTeamPlayer.value.index = currOpponentTeamPlayerIndex
     currOpponentTeamPlayer.value.data = opponentTeamUserList[currOpponentTeamPlayer.value.index]
     currRound.value = currOpponentTeamPlayer.value.data.round
@@ -581,7 +589,7 @@ onUnmounted(() => {
               </div>
             </el-scrollbar>
             <div class="team-fight">
-              <div class="team-fight-status" v-if="fightData.status === 0 || currTeamPlayer.data.status === 0 || showCountdown">暂未开始</div>
+              <div class="team-fight-status" v-if="fightData.status === 0 || currTeamPlayer.data.status === 0 || showCountdown || !currTeamGameStart">等待游戏开始...</div>
               <div class="team-fight-status" v-else-if="fightData.status === 2">游戏已结束</div>
               <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && !currTeamPlayer.data.data">用户选择中...</div>
               <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && currTeamPlayer.data.data && !currOpponentTeamPlayer.data.data">用户已选择</div>
@@ -592,6 +600,7 @@ onUnmounted(() => {
                 :fightResult="currTeamPlayer.data"
                 :localSet="localSet"
                 @scrollEnd="handleScrollEnd('currTeam')" />
+              <div class="team-fight-status" v-else>系统错误</div>
             </div>
           </div>
         </div>
@@ -626,7 +635,7 @@ onUnmounted(() => {
               </div>
             </el-scrollbar>
             <div class="team-fight">
-              <div class="team-fight-status" v-if="fightData.status === 0 || currOpponentTeamPlayer.data.status === 0 || showCountdown">暂未开始</div>
+              <div class="team-fight-status" v-if="fightData.status === 0 || currOpponentTeamPlayer.data.status === 0 || showCountdown || !currOpponentTeamGameStart">等待游戏开始...</div>
               <div class="team-fight-status" v-else-if="fightData.status === 2">游戏已结束</div>
               <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && !currOpponentTeamPlayer.data.data">用户选择中...</div>
               <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && currOpponentTeamPlayer.data.data && !currTeamPlayer.data.data">用户已选择</div>
