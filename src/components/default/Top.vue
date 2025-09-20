@@ -1,167 +1,214 @@
 <script setup>
-import {computed, onMounted, ref} from "vue";
-import {goto, requireImg} from "@/utils/common.js";
-import {useRoute} from "vue-router";
+import { computed, onMounted, ref } from "vue";
+import { goto, requireImg } from "@/utils/common.js";
+import { useRoute } from "vue-router";
 import TopInfo from "@/components/TopInfo.vue";
-import {useStore} from "@/store";
+import { useStore } from "@/store";
 
-const store = useStore()
-const route = useRoute()
+const store = useStore();
+const route = useRoute();
 const menus = ref([
   {
-    name: '饰品军需',
-    routeName: 'Home',
+    name: "饰品军需",
+    routeName: "Required",
     path: "/",
     ico: requireImg("/nav/a1.png", false),
     icoActive: requireImg("/nav/a1a.png", false),
-  }, {
-    name: 'Roll福利',
-    routeName: 'Roll',
+  },
+  {
+    name: "Roll福利",
+    routeName: "Roll",
     path: "/roll",
     ico: requireImg("/nav/a2.png", false),
-    icoActive: requireImg("/nav/a2a.png", false)
-  },{
-    name: '对战大厅',
-    routeName: 'Battle',
+    icoActive: requireImg("/nav/a2a.png", false),
+  },
+  {
+    name: "对战大厅",
+    routeName: "Battle",
     path: "/battle",
     ico: requireImg("/nav/a1.png", false),
-    icoActive: requireImg("/nav/a1a.png", false)
-  }, {
-    name: '夺冠之路',
-    routeName: 'Champion',
+    icoActive: requireImg("/nav/a1a.png", false),
+  },
+  {
+    name: "夺冠之路",
+    routeName: "Champion",
     path: "/champion",
     ico: requireImg("/nav/a1.png", false),
-    icoActive: requireImg("/nav/a1a.png", false)
-  },{
-    name: '装备升级',
-    routeName: 'upgradeShopping',
+    icoActive: requireImg("/nav/a1a.png", false),
+  },
+  {
+    name: "装备升级",
+    routeName: "upgradeShopping",
     path: "/upgrade",
     ico: requireImg("/nav/a3.png", false),
-    icoActive: requireImg("/nav/a3a.png", false)
-  }, {
-    name: '福利中心',
-    routeName: 'Center',
+    icoActive: requireImg("/nav/a3a.png", false),
+  },
+  {
+    name: "福利中心",
+    routeName: "Center",
     path: "/center",
     ico: requireImg("/nav/a4.png", false),
-    icoActive: requireImg("/nav/a4a.png", false)
+    icoActive: requireImg("/nav/a4a.png", false),
   },
-])
+]);
 const nowMenu = computed(() => {
-  let findIndex = menus.value.findIndex(i => i.routeName === route.name)
-  return findIndex === -1 ? 1.5 : findIndex
-})
-const hoverActive = ref(nowMenu.value)
+  let findIndex = menus.value.findIndex((i) => i.routeName === route.name);
+  return findIndex === -1 ? 1.5 : findIndex;
+});
+const hoverActive = ref(nowMenu.value);
 
 const mouseEnter = (e, index) => {
-  hoverActive.value = index
-}
+  hoverActive.value = index;
+};
 
 const mouseLeave = (e, index) => {
   if (hoverActive.value === index) {
-    hoverActive.value = nowMenu.value
+    hoverActive.value = nowMenu.value;
   }
-}
-const topRef = ref()
-
+};
+const topRef = ref();
 
 const getScrollTop = () => {
-  return window.pageYOffset ||
-      document.documentElement.scrollTop ||
-      document.body.scrollTop;
-}
-
+  return (
+    window.pageYOffset ||
+    document.documentElement.scrollTop ||
+    document.body.scrollTop
+  );
+};
 
 onMounted(() => {
-  topRef.value.style.backdropFilter = "blur(0)"
+  topRef.value.style.backdropFilter = "blur(0)";
   document.addEventListener("scroll", (e) => {
-    if (!topRef.value) return
+    if (!topRef.value) return;
     if (getScrollTop() > 0) {
-      topRef.value.style.backdropFilter = "blur(15px)"
+      topRef.value.style.backdropFilter = "blur(15px)";
     } else {
-      topRef.value.style.backdropFilter = "blur(0)"
+      topRef.value.style.backdropFilter = "blur(0)";
     }
-  })
-
-})
-const showPopover=ref(false)
-
+  });
+});
+const showPopover = ref(false);
 </script>
 
 <template>
-  <div ref="topRef" style="width: 100%;height: 90px;position: fixed;left: 0;top: 0;  z-index: 10;" :style="{background:showPopover&&!store.isPC?'rgb(33,15,11)':'inherit'}">
+  <div
+    ref="topRef"
+    style="
+      width: 100%;
+      height: 90px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 10;
+    "
+    :style="{
+      background: showPopover && !store.isPC ? 'rgb(33,15,11)' : 'inherit',
+    }"
+  >
     <div class="top" v-if="true">
       <div class="top-logo" v-if="!store.isPC">
-        <img :src="requireImg('/logo-sd.png',false)" alt="">
+        <img :src="requireImg('/logo-sd.png', false)" alt="" />
       </div>
       <div class="top-nav" v-if="store.isPC">
         <div class="menu">
-          <div class="menu-item" v-for="(i,index) in menus" :key="index" :class="{active:route.name === i.routeName}"
-               @click="goto(i.path)">
+          <div
+            class="menu-item"
+            v-for="(i, index) in menus"
+            :key="index"
+            :class="{ active: route.name === i.routeName }"
+            @click="goto(i.path)"
+          >
             <span>{{ i.name }}</span>
-            <img :src="requireImg('/v2/nav/nav-active-jb.png',false)" alt="" class="jb"
-                 v-show="route.name === i.routeName">
+            <img
+              :src="requireImg('/v2/nav/nav-active-jb.png', false)"
+              alt=""
+              class="jb"
+              v-show="route.name === i.routeName"
+            />
           </div>
         </div>
       </div>
       <div class="top-info">
-        <TopInfo v-model:show-popover="showPopover"/>
+        <TopInfo v-model:show-popover="showPopover" />
       </div>
     </div>
     <div v-if="!store.isPC" class="mobile_menu">
-        <div class="mobile_menu-item" v-for="(i,index) in menus" :key="index" :class="{active:route.name === i.routeName}"
-             @click="goto(i.path)">
-          <span>{{ i.name }}</span>
-        </div>
+      <div
+        class="mobile_menu-item"
+        v-for="(i, index) in menus"
+        :key="index"
+        :class="{ active: route.name === i.routeName }"
+        @click="goto(i.path)"
+      >
+        <span>{{ i.name }}</span>
+      </div>
     </div>
   </div>
 
-  <div class="top-1" v-if="false" :style="{
-    '--top-bg':requireImg('/top/top-bg.jpg',true),
-    '--top-bg2':requireImg('/top/top-bg2.jpg',true),
-    '--top-btn-bg':requireImg('/top/btn-bg.png',true),
-  }">
+  <div
+    class="top-1"
+    v-if="false"
+    :style="{
+      '--top-bg': requireImg('/top/top-bg.jpg', true),
+      '--top-bg2': requireImg('/top/top-bg2.jpg', true),
+      '--top-btn-bg': requireImg('/top/btn-bg.png', true),
+    }"
+  >
     <div class="top-1-info">
-      <img class="logo" :src="requireImg('/logo-m.png')" v-if="store.isPC" alt="">
-      <img class="logo" :src="requireImg('/logo-m.png')" alt="" v-else>
+      <img
+        class="logo"
+        :src="requireImg('/logo-m.png')"
+        v-if="store.isPC"
+        alt=""
+      />
+      <img class="logo" :src="requireImg('/logo-m.png')" alt="" v-else />
       <div class="info">
-        <TopInfo/>
+        <TopInfo />
       </div>
     </div>
     <div class="top-1-nav">
       <div class="top-1-nav-container">
-        <div class="top-1-nav-item" v-for="(i,index) in menus" :key="index"
-             :class="{'active':route.name === i.routeName}"
-             @click="goto(i.path)" @mouseenter="mouseEnter(i,index)" @mouseleave="mouseLeave(i,index)">
-          <img :src="route.name===i.routeName?i.icoActive:i.ico" alt="">
+        <div
+          class="top-1-nav-item"
+          v-for="(i, index) in menus"
+          :key="index"
+          :class="{ active: route.name === i.routeName }"
+          @click="goto(i.path)"
+          @mouseenter="mouseEnter(i, index)"
+          @mouseleave="mouseLeave(i, index)"
+        >
+          <img :src="route.name === i.routeName ? i.icoActive : i.ico" alt="" />
           <span>{{ i.name }}</span>
         </div>
-        <div class="top-1-nav-bg" :style="{'left':hoverActive*200+'px'}"></div>
+        <div
+          class="top-1-nav-bg"
+          :style="{ left: hoverActive * 200 + 'px' }"
+        ></div>
       </div>
     </div>
   </div>
 </template>
 <style>
 .nav-popper {
-  background-color: #0A0A1EFF;
+  background-color: #0a0a1eff;
   border: none;
 }
 </style>
 <style scoped lang="scss">
 @use "@/style" as *;
-.mobile_menu{
+.mobile_menu {
   display: flex;
   width: 100%;
-  &-item{
+  &-item {
     width: 25%;
     display: flex;
     align-items: center;
     justify-content: center;
-    &.active{
-      color: #FFF5F5;
-      filter: drop-shadow(0px 0px 2.15px #FF4545A6);
-    border-bottom: 1px solid #FFF5F566;
+    &.active {
+      color: #fff5f5;
+      filter: drop-shadow(0px 0px 2.15px #ff4545a6);
+      border-bottom: 1px solid #fff5f566;
       box-sizing: border-box;
-
     }
   }
 }
@@ -208,7 +255,6 @@ const showPopover=ref(false)
       right: 10px;
       top: 50%;
       transform: translateY(-50%);
-
     }
   }
 
@@ -240,7 +286,7 @@ const showPopover=ref(false)
       align-items: center;
       width: 200px;
       cursor: pointer;
-      transition: all .3s;
+      transition: all 0.3s;
       justify-content: center;
       z-index: 2;
 
@@ -249,13 +295,14 @@ const showPopover=ref(false)
         margin-right: 10px;
       }
 
-      &:hover, &.active {
+      &:hover,
+      &.active {
         color: rgb(176, 144, 230);
       }
     }
 
     &-bg {
-      transition: .3s;
+      transition: 0.3s;
       width: 200px;
       height: 100%;
       background-image: var(--top-btn-bg);
@@ -333,11 +380,12 @@ const showPopover=ref(false)
         cursor: pointer;
         transition: 0.3s;
 
-        &:hover, &.active {
-          color: #FFF5F5;
+        &:hover,
+        &.active {
+          color: #fff5f5;
 
           span {
-            filter: drop-shadow(0px 0px 4px #FF4545A6);
+            filter: drop-shadow(0px 0px 4px #ff4545a6);
           }
         }
 
@@ -346,11 +394,8 @@ const showPopover=ref(false)
           right: -20px;
           top: 15%;
         }
-
       }
     }
-
-
   }
 
   &-info {
@@ -364,6 +409,5 @@ const showPopover=ref(false)
   @include mobile {
     padding: 0 20px;
   }
-
 }
 </style>
