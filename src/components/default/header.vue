@@ -51,7 +51,7 @@ const toMenu = (item: { name: string; path: string }) => {
   z-index: 10;
   .bg {
     width: 100%;
-    height: 230px;
+    height: 80px;
     object-fit: cover;
     position: absolute;
     top: 0;

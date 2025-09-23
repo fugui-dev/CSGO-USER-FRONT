@@ -93,7 +93,7 @@ const routes = [
       },
       {
         path: "/battle",
-        component: () => import("../views/battle/Index.vue"),
+        component: () => import("../views/battle/Index1.vue"),
         name: "Battle",
         meta: {
           title: "对战大厅",
