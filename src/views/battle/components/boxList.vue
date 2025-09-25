@@ -110,7 +110,8 @@ const handleClickBoxItem = (item) => {
     .box-item {
       min-width: 145px;
       height: 100px;
-      border: 1px solid yellow;
+      background: url("@/assets/images/battle/weapon-bg.png") no-repeat;
+      background-size: 100% 100%;
       cursor: pointer;
       & + .box-item {
         margin-left: 20px;

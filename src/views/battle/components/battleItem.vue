@@ -79,10 +79,7 @@ const statusColor = computed(() => {
             v-for="item in cardData.seats"
             :key="item.code"
           >
-            <div v-if="item.status === 0" class="empty-seat">
-              <div class="horizontal-line"></div>
-              <div class="vertical-line"></div>
-            </div>
+            <div v-if="item.status === 0" class="empty-seat"></div>
             <div class="avatar-wrapper" v-else>
               <img class="avatar" :src="item.avatar" alt="" />
               <img
@@ -169,28 +166,14 @@ const statusColor = computed(() => {
 .seat-list {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-top: 15px;
   .empty-seat {
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    border: 1px solid #aaa;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(20, 20, 20, 0.66);
+    width: 41px;
+    height: 41px;
+    background: url("@/assets/images/battle/join.png") no-repeat;
+    background-size: 100% 100%;
     margin-right: 6px;
-    .horizontal-line {
-      width: 13px;
-      height: 1px;
-      background-color: #efefef;
-    }
-    .vertical-line {
-      width: 1px;
-      height: 13px;
-      background-color: #efefef;
-      transform: translateX(-7px);
-    }
   }
   .avatar-wrapper {
     width: 58px;
@@ -199,7 +182,6 @@ const statusColor = computed(() => {
     justify-content: center;
     align-items: center;
     position: relative;
-    margin-right: 6px;
     .avatar {
       width: 39px;
       height: 39px;

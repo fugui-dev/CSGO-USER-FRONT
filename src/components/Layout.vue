@@ -82,6 +82,15 @@ onBeforeUnmount(() => {
 const isHome = computed(() => {
   return route.path === "/";
 });
+
+const hideOld = computed(() => {
+  const hideList = ["/", "/battle"];
+  const regexList = [/^\/openBox\/([^/]+)$/];
+  return (
+    hideList.includes(route.path) ||
+    regexList.some((regex) => regex.test(route.path))
+  );
+});
 </script>
 
 <template>
@@ -94,7 +103,7 @@ const isHome = computed(() => {
     <BackGround :path="route.path" />
     <slot />
     <div
-      v-if="!isHome"
+      v-if="!hideOld"
       style="
         display: flex;
         flex: 1;
@@ -115,13 +124,14 @@ const isHome = computed(() => {
         <Bottom v-if="!isHome" />
       </div>
     </div>
+    <!-- <Bottom v-if="hideOld" /> -->
     <!--    <Aside />-->
   </div>
   <div class="home" v-else>
     <Top v-if="route.path !== '/userMobile'"></Top>
     <BackGround :path="route.path" :showBox="showBox" />
     <slot />
-    <div v-if="!isHome" id="container" style="flex: 1; overflow-y: auto">
+    <div v-if="!hideOld" id="container" style="flex: 1; overflow-y: auto">
       <RollingShow
         v-if="showBox"
         :style="{ top: isHome ? '90px' : 'inherit' }"
@@ -129,6 +139,7 @@ const isHome = computed(() => {
       <slot name="item"></slot>
       <Bottom v-if="!isHome" />
     </div>
+    <!-- <Bottom v-if="hideOld" /> -->
   </div>
 </template>
 

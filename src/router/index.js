@@ -24,7 +24,7 @@ const routes = [
       },
       {
         path: "/openBox/:id",
-        component: () => import("../views/openBox/index.vue"),
+        component: () => import("../views/openBox/index1.vue"),
         name: "openBox",
         props: true,
         meta: {
