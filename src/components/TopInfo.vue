@@ -1,117 +1,140 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import UAvatar from "@/components/UAvatar.vue";
 
-import {useStore} from "@/store/index.js";
+import { useStore } from "@/store/index.js";
 import LoginDialog from "@/components/dialogs/LoginDialog.vue";
-import {goto, requireImg} from "@/utils/common";
+import { goto, requireImg } from "@/utils/common";
 import RechargeModal from "@/components/RechargeModal/index.vue";
-import {useRoute} from "vue-router";
+import { useRoute } from "vue-router";
 import Kefu from "@/components/dialogs/Kefu.vue";
 import RedEnvelopeDialog from "@/components/dialogs/RedEnvelopeDialog.vue";
 import CDKDialog from "@/components/dialogs/CDKDialog.vue";
 
-const store = useStore()
-const loginDialog = ref()
-const rechargeModalRef = ref()
-const route = useRoute()
-const userNav = ref([{
-  name: '个人资料',
-  img: requireImg("/v2/nav/u1.png"),
-  func: () => {
-    goto('/user/base')
-  }
-}, {
-  name: '饰品库存',
-  img: requireImg("/v2/nav/u2.png"),
-  func: () => {
-    goto('/user/inventory')
-  }
-}, {
-  name: '开箱记录',
-  img: requireImg("/v2/nav/u3.png"),
-  func: () => {
-    goto('/user/record')
-  }
-}, {
-  name: '推广用户',
-  img: requireImg("/v2/nav/u4.png"),
-  func: () => {
-    goto('/user/promote')
-  }
-}, {
-  name: '帐变记录',
-  img: requireImg("/v2/nav/u5.png"),
-  func: () => {
-    goto('/user/log')
-  }
-}, {
-  name: '邮件信息',
-  img: requireImg("/v2/nav/u6.png"),
-  func: () => {
-    goto('/user/mail')
-  }
-}, {
-  name: '退出登录',
-  img: requireImg("/v2/nav/u7.png"),
-  func: () => {
-    store.logout()
-  }
-}])
-
-const icoNav = ref([{
-  name: '红包',
-  img: requireImg('/v2/nav/hb.png'), func: () => {
-    redEnvelopeDialogRef.value.open()
-  }
-},
+const store = useStore();
+const loginDialog = ref();
+const rechargeModalRef = ref();
+const route = useRoute();
+const userNav = ref([
   {
-    name: 'CDK兑换',
-    img: requireImg('/v2/nav/cdk.png'), func: () => {
-      cdkDialogRef.value.open()
-    }
-  }, {
-    name: '客服',
-    img: requireImg('/v2/nav/kf.png'),
+    name: "个人资料",
+    img: requireImg("/v2/nav/u1.png"),
     func: () => {
-      kefuRef.value.open()
-    }
-  }
-])
+      goto("/user/base");
+    },
+  },
+  {
+    name: "饰品库存",
+    img: requireImg("/v2/nav/u2.png"),
+    func: () => {
+      goto("/user/inventory");
+    },
+  },
+  {
+    name: "开箱记录",
+    img: requireImg("/v2/nav/u3.png"),
+    func: () => {
+      goto("/user/record");
+    },
+  },
+  {
+    name: "推广用户",
+    img: requireImg("/v2/nav/u4.png"),
+    func: () => {
+      goto("/user/promote");
+    },
+  },
+  {
+    name: "帐变记录",
+    img: requireImg("/v2/nav/u5.png"),
+    func: () => {
+      goto("/user/log");
+    },
+  },
+  {
+    name: "邮件信息",
+    img: requireImg("/v2/nav/u6.png"),
+    func: () => {
+      goto("/user/mail");
+    },
+  },
+  {
+    name: "退出登录",
+    img: requireImg("/v2/nav/u7.png"),
+    func: () => {
+      store.logout();
+    },
+  },
+]);
+
+const icoNav = ref([
+  {
+    name: "红包",
+    img: requireImg("/v2/nav/hb.png"),
+    func: () => {
+      redEnvelopeDialogRef.value.open();
+    },
+  },
+  {
+    name: "CDK兑换",
+    img: requireImg("/v2/nav/cdk.png"),
+    func: () => {
+      cdkDialogRef.value.open();
+    },
+  },
+  {
+    name: "客服",
+    img: requireImg("/v2/nav/kf.png"),
+    func: () => {
+      kefuRef.value.open();
+    },
+  },
+]);
 
 onMounted(() => {
   if (route.query.code && !store.isLogin) {
-    sessionStorage.setItem('code', route.query.code)
-    loginDialog.value.open('register')
+    sessionStorage.setItem("code", route.query.code);
+    loginDialog.value.open("register");
   }
-})
+});
 
-const showPopover = defineModel('showPopover', {default: false})
+const showPopover = defineModel("showPopover", { default: false });
 const visibleChange = (v) => {
-  showPopover.value = v
-}
-const cdkDialogRef = ref()
-const redEnvelopeDialogRef = ref()
-const kefuRef = ref()
+  showPopover.value = v;
+};
+const cdkDialogRef = ref();
+const redEnvelopeDialogRef = ref();
+const kefuRef = ref();
 </script>
 
 <template>
-  <CDKDialog ref="cdkDialogRef"/>
-  <RedEnvelopeDialog ref="redEnvelopeDialogRef"/>
+  <CDKDialog ref="cdkDialogRef" />
+  <RedEnvelopeDialog ref="redEnvelopeDialogRef" />
   <Kefu ref="kefuRef"></Kefu>
   <div class="top-info">
     <div class="is_login" v-if="store.isLogin">
       <div class="ico_nav">
-        <img v-for="(i,index) in icoNav" :key="index" :title="i.name" :src="i.img" @click="i.func">
+        <img
+          v-for="(i, index) in icoNav"
+          :key="index"
+          :title="i.name"
+          :src="i.img"
+          @click="i.func"
+        />
       </div>
-      <div class="charge item" v-if="!store.isPC" @click="rechargeModalRef.open" style="margin-right: 5px">
-        <img :src='requireImg("/v2/jine.png")' alt=""/>
+      <div
+        class="charge item"
+        v-if="!store.isPC"
+        @click="rechargeModalRef.open"
+        style="margin-right: 5px"
+      >
+        <img :src="requireImg('/v2/jine.png')" alt="" />
         充值
       </div>
       <div v-if="store.isPC" style="display: flex">
         <div class="item">
-          <img :src="requireImg('/coin1.png',false,false)" alt="">
-          余额：{{ store.userInfo?.accountAmount || 0.00 }}
+          <img :src="requireImg('/coin1.png', false, false)" alt="" />
+          余额：{{ store.userInfo?.accountAmount || 0.0 }}
         </div>
         <!-- <div class="item">
           <img :src="requireImg('/coin2.png',false,false)"
@@ -130,23 +153,46 @@ const kefuRef = ref()
       <!--        </div>-->
       <!--      </div>-->
       <div class="charge item" v-if="store.isPC" @click="rechargeModalRef.open">
-        <img :src='requireImg("/v2/jine.png",false)' alt=""/>
+        <img :src="requireImg('/v2/jine.png', false)" alt="" />
         充值
       </div>
-      <UAvatar style="cursor: pointer;flex-shrink: 0" v-if="!store.isLogin"/>
+      <UAvatar style="cursor: pointer; flex-shrink: 0" v-if="!store.isLogin" />
 
-      <el-dropdown v-else popper-class="user-popper" @visible-change="visibleChange">
-        <UAvatar style="cursor: pointer;flex-shrink: 0"
-                 :src="store.userInfo&&store.userInfo.avatar?store.userInfo.avatar:null" size="55"/>
+      <el-dropdown
+        v-else
+        popper-class="user-popper"
+        @visible-change="visibleChange"
+      >
+        <UAvatar
+          style="cursor: pointer; flex-shrink: 0"
+          :src="
+            store.userInfo && store.userInfo.avatar
+              ? store.userInfo.avatar
+              : null
+          "
+          size="55"
+        />
         <template #dropdown>
-          <el-dropdown-menu style="
-          --el-bg-color-overlay:#210F0BCC;
-          --el-text-color-regular:#FFF;
-          --el-dropdown-menuItem-hover-color: #FFFFFFCC;
-          --el-dropdown-menuItem-hover-fill: #000;min-width: 136px">
-            <el-dropdown-item v-for="(i,index) in userNav" :key="index" @click="i.func">
-              <div style="display: flex;align-items: center">
-                <img :src="i.img" alt="" style="width: 20px;height: 20px;margin-right: 10px">
+          <el-dropdown-menu
+            style="
+              --el-bg-color-overlay: #210f0bcc;
+              --el-text-color-regular: #fff;
+              --el-dropdown-menuItem-hover-color: #ffffffcc;
+              --el-dropdown-menuItem-hover-fill: #000;
+              min-width: 136px;
+            "
+          >
+            <el-dropdown-item
+              v-for="(i, index) in userNav"
+              :key="index"
+              @click="i.func"
+            >
+              <div style="display: flex; align-items: center">
+                <img
+                  :src="i.img"
+                  alt=""
+                  style="width: 20px; height: 20px; margin-right: 10px"
+                />
                 <span>{{ i.name }}</span>
               </div>
             </el-dropdown-item>
@@ -155,16 +201,24 @@ const kefuRef = ref()
       </el-dropdown>
     </div>
     <div class="no_login" v-else>
-      <div class="register_btn item" @click="goto('/register')">
+      <div class="item-wrapper" @click="goto('/register')">
+        <img src="@/assets/images/header/reg.png" alt="" class="icon" />
+        注册
+      </div>
+      <div class="item-wrapper login" @click="goto('/login')">
+        <img src="@/assets/images/header/login.png" alt="" class="icon" />
+        登录
+      </div>
+      <!-- <div class="register_btn item" @click="goto('/register')">
         注册
       </div>
       <div class="login_btn item" @click="goto('/login')">
         登录
-      </div>
+      </div> -->
     </div>
   </div>
-  <LoginDialog ref="loginDialog"/>
-  <RechargeModal ref="rechargeModalRef"/>
+  <LoginDialog ref="loginDialog" />
+  <RechargeModal ref="rechargeModalRef" />
 </template>
 <style lang="scss">
 @use "@/style" as *;
@@ -181,7 +235,6 @@ const kefuRef = ref()
     background: rgb(33, 15, 11) !important;
     inset: 60.6667px auto auto 0px !important;
   }
-
 }
 </style>
 <style scoped lang="scss">
@@ -231,8 +284,6 @@ const kefuRef = ref()
           margin-right: 5px;
         }
       }
-
-
     }
   }
 
@@ -240,7 +291,26 @@ const kefuRef = ref()
     cursor: pointer;
     display: flex;
     align-items: center;
-
+    .item-wrapper {
+      width: 90px;
+      height: 27px;
+      background-color: #343a3e;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      margin-right: 15px;
+      font-weight: 400;
+      font-size: 22px;
+      color: #62a9c7;
+      &.login {
+        color: #52b870;
+      }
+      .icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+      }
+    }
 
     .login_btn {
       width: 70px;
@@ -252,8 +322,7 @@ const kefuRef = ref()
       align-items: center;
       justify-content: center;
       font-size: 14px;
-      transition: .3s;
-
+      transition: 0.3s;
 
       &:hover {
         filter: drop-shadow(0 0 5px #ff553c);
@@ -270,7 +339,7 @@ const kefuRef = ref()
       align-items: center;
       justify-content: center;
       font-size: 14px;
-      transition: .3s;
+      transition: 0.3s;
 
       &:hover {
         filter: drop-shadow(0 0 5px #ff553c);
@@ -284,7 +353,7 @@ const kefuRef = ref()
 
     .item {
       margin-right: 20px;
-      font-size: .8em;
+      font-size: 0.8em;
 
       img {
         width: 18px;
@@ -298,35 +367,33 @@ const kefuRef = ref()
       justify-content: center;
       width: 112px;
       height: 40px;
-      background: linear-gradient(180deg, #FF553C 0%, #A70202 100%);
+      background: linear-gradient(180deg, #ff553c 0%, #a70202 100%);
 
       border-radius: 28px;
-      border: 1px solid #A70202;
+      border: 1px solid #a70202;
 
       font-size: 16px;
       cursor: pointer;
-      transition: .3s;
+      transition: 0.3s;
       font-weight: bold;
 
-
       &:hover {
-        filter: drop-shadow(0 0 5px #FF553C);
+        filter: drop-shadow(0 0 5px #ff553c);
       }
 
       img {
         width: 24px;
         height: 24px;
-        transition: .1s;
+        transition: 0.1s;
       }
-      @include mobile{
+      @include mobile {
         width: 80px;
         height: 29px;
         font-size: 14px;
 
-        img{
+        img {
           width: 16px;
           height: 16px;
-
         }
       }
     }
