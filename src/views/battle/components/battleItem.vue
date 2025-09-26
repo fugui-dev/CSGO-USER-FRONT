@@ -1,6 +1,8 @@
 <script setup>
 import { computed, ref, watch } from "vue";
-import { requireImg } from "@/utils/common";
+import waitBg from "@/assets/images/battle/wait.png";
+import ingBg from "@/assets/images/battle/ing.png";
+import endBg from "@/assets/images/battle/end.png";
 
 const props = defineProps({
   cardData: {
@@ -13,6 +15,11 @@ const statusMap = {
   0: "等待中",
   1: "进行中",
   2: "已结束",
+};
+const statusBgMap = {
+  0: waitBg,
+  1: ingBg,
+  2: endBg,
 };
 const modelMap = {
   0: "欧皇",
@@ -52,7 +59,10 @@ const statusColor = computed(() => {
   <div class="battle-card-container">
     <!-- 头部 -->
     <div class="card-header">
-      <div class="card-status" :style="{ backgroundColor: statusColor }">
+      <div
+        class="card-status"
+        :style="{ backgroundImage: `url(${statusBgMap[cardData.status]})` }"
+      >
         {{ statusMap[cardData.status] }}
       </div>
       <div class="card-header-right">
@@ -118,7 +128,7 @@ const statusColor = computed(() => {
   display: flex;
   flex-direction: column;
   margin-left: -10px;
-  padding: 20px 30px 0;
+  padding: 7px 30px 0 31px;
   &:nth-child(3) {
     margin-left: 0px;
   }
@@ -126,13 +136,16 @@ const statusColor = computed(() => {
 .card-header {
   display: flex;
   justify-content: space-between;
+  line-height: 36px;
   .card-status {
-    height: 28px;
-    line-height: 28px;
-    font-size: 14px;
-    padding: 0 14px;
-    border-top-left-radius: 12px;
-    border-bottom-right-radius: 12px;
+    text-align: center;
+    width: 98px;
+    height: 36px;
+    line-height: 36px;
+    font-size: 16px;
+    color: #ffffff;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
   }
   .card-header-right {
     display: flex;
@@ -156,7 +169,7 @@ const statusColor = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 22px;
+  margin-top: 16px;
   .coin {
     width: 29px;
     height: 29px;
