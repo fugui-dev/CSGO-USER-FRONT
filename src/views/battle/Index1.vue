@@ -61,7 +61,6 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
       if (Array.isArray(data.data) && data.data.length === 1) {
         replaceBattleCard(data.data[0]);
       }
-      console.log(list.value);
     }
   },
   onClose: () => {},
@@ -226,7 +225,7 @@ onMounted(() => {
 @use "@/style" as *;
 .battle-wrapper {
   padding-top: 68px;
-  background: url("@/assets/images/battle/bg.png") no-repeat;
+  background: url("@/assets/images/battle/bg.webp") no-repeat;
   background-size: 100% auto;
   background-color: rgba(144, 136, 129);
   min-height: 100vh;

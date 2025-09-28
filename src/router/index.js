@@ -212,6 +212,14 @@ const routes = [
           title: "注册",
         },
       },
+      {
+        path: "/shop",
+        component: () => import("../views/shop/index.vue"),
+        name: "Shop",
+        meta: {
+          title: "商店",
+        },
+      },
     ],
   },
   {

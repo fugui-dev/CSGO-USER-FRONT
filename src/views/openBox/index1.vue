@@ -466,7 +466,7 @@ const resetAnimationState = () => {
 .open-box-wrapper {
   width: 100%;
   padding-top: 68px;
-  background: url("@/assets/images/open/bg.png") no-repeat;
+  background: url("@/assets/images/open/bg.webp") no-repeat;
   background-size: 100% auto;
   background-color: #383d36;
   min-height: 100vh;

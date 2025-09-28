@@ -7,7 +7,7 @@ const showCancel = defineModel("showCancel", {default: false})
 const showConfirm = defineModel("showConfirm", {default: false})
 const title = defineModel("title", {default: '标题'})
 const visible = ref(false)
-const emit = defineEmits(['confirm'])
+const emit = defineEmits(['confirm', 'cancel'])
 
 const open = () => {
   visible.value = true
@@ -17,6 +17,9 @@ const close = () => {
 }
 const onConfirm = () => {
   emit('confirm')
+}
+const onCancel = () => {
+  emit('cancel')
 }
 
 defineExpose({
@@ -53,7 +56,7 @@ defineExpose({
 
         </div>
         <div class="buttons">
-          <BaseButton :is-gold-color="true" name="取消" @click="onConfirm" v-if="showCancel" style="margin-right: 10px"></BaseButton>
+          <BaseButton :is-gold-color="true" name="取消" @click="onCancel" v-if="showCancel" style="margin-right: 10px"></BaseButton>
           <BaseButton name="确定" @click="onConfirm" v-if="showConfirm"></BaseButton>
         </div>
 

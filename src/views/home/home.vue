@@ -43,7 +43,7 @@ const enterList = [
   {
     img: shopImg,
     text: "shop",
-    path: "",
+    path: "/shop",
   },
   {
     img: rollImg,
@@ -96,14 +96,14 @@ const enter = (item: { img: string; text: string; path: string }) => {
 <style scoped lang="scss">
 .home-wrapper {
   width: 100%;
-  height: 135vw;
-  background: url("@/assets/images/home/bg.png") no-repeat;
+  height: 120vw;
+  background: url("@/assets/images/home/bg.webp") no-repeat;
   background-size: 100% 135vw;
   background-color: #34393f;
-  padding-top: 35vw;
+  padding-top: 32vw;
   .open {
-    width: 18vw;
-    height: 20vw;
+    width: 20vw;
+    height: 18vw;
     margin: 0 auto;
     cursor: pointer;
   }
@@ -116,7 +116,7 @@ const enter = (item: { img: string; text: string; path: string }) => {
     justify-content: center;
     background: url("@/assets/images/home/tip.png") no-repeat;
     background-size: 100% 100%;
-    margin: 0 auto;
+    margin: 3vw auto 0;
     .icon {
       width: 26px;
       height: 26px;
@@ -129,7 +129,7 @@ const enter = (item: { img: string; text: string; path: string }) => {
     }
   }
   .enter-wrapper {
-    margin-top: 8vw;
+    margin-top: 6vw;
     display: flex;
     align-items: center;
     justify-self: center;
