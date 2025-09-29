@@ -75,7 +75,7 @@ const enterList2 = [
   {
     img: item5,
     text: "夺冠之路",
-    path: "",
+    path: "/champion",
   },
 ];
 import { useRouter } from "vue-router";
