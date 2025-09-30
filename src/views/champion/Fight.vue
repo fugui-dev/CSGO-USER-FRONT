@@ -129,6 +129,18 @@ const checkFirstRoundStartTime = () => {
   }
 }
 
+const changeAllAnimationStatus = () => {
+  const teamUserList = fightData.value.team?.stageRecordStartList
+  const opponentTeamUserList = fightData.value.opponentTeam?.stageRecordStartList
+
+  teamUserList.forEach((item) => {
+    item.animationEnd = true
+  });
+  opponentTeamUserList.forEach((item) => {
+    item.animationEnd = true
+  });
+}
+
 // 初始化时，检测整场游戏的进度
 const checkProgress = () => {
   const status = fightData.value.status
@@ -144,7 +156,10 @@ const checkProgress = () => {
       checkRemainTime(new Date(currTeamPlayer.value.data.endTime), 'CURRENT_PROGRESS')
       break
     // 已结束
-    case 2: break
+    case 2: 
+      // 更改所有数据的动画状态
+      changeAllAnimationStatus()
+      break
     default:
   }
 }
@@ -164,6 +179,10 @@ const findFightingUserByCurrRound = (currRoundNum) => {
         scrollToTarget(teamScrollRef.value, teamUserList, currTeamPlayer.value.index)
       })
     }
+    // 修改前 currRound-1 轮的动画状态
+    if (item.round < currRoundNum) {
+      item.animationEnd = true
+    }
   });
   opponentTeamUserList.forEach((item, index) => {
     if (item.round === currRoundNum) {
@@ -173,6 +192,10 @@ const findFightingUserByCurrRound = (currRoundNum) => {
       nextTick(() => {
         scrollToTarget(opponentTeamScrollRef.value, opponentTeamUserList, currOpponentTeamPlayer.value.index)
       })
+    }
+    // 修改前 currRound-1 轮的动画状态
+    if (item.round < currRoundNum) {
+      item.animationEnd = true
     }
   });
 }
@@ -193,6 +216,14 @@ const findFightingUserByUserId = (userId, userStatus) => {
     currTeamPlayer.value.index = currTeamPlayerIndex
     currTeamPlayer.value.data = teamUserList[currTeamPlayer.value.index]
     currRound.value = currTeamPlayer.value.data.round
+
+    // 将前 currRound - 1 轮的滚动状态置为已滚动结束
+    teamUserList.forEach(item => {
+      if (item.round < currRound.value) {
+        item.animationEnd = true
+      }
+    })
+
     nextTick(() => {
       scrollToTarget(teamScrollRef.value, teamUserList, currTeamPlayer.value.index)
     })
@@ -206,6 +237,14 @@ const findFightingUserByUserId = (userId, userStatus) => {
     currOpponentTeamPlayer.value.index = currOpponentTeamPlayerIndex
     currOpponentTeamPlayer.value.data = opponentTeamUserList[currOpponentTeamPlayer.value.index]
     currRound.value = currOpponentTeamPlayer.value.data.round
+
+    // 将前 currRound - 1 轮的滚动状态置为已滚动结束
+    opponentTeamUserList.forEach(item => {
+      if (item.round < currRound.value) {
+        item.animationEnd = true
+      }
+    })
+
     nextTick(() => {
       scrollToTarget(opponentTeamScrollRef.value, opponentTeamUserList, currOpponentTeamPlayer.value.index)
     })
@@ -456,12 +495,20 @@ const changeSet = (set) => {
 const handleScrollEnd = (type) => {
   // 是否展示等待下一轮文案
   if (type === 'currTeam') {
+    // 设置动画结束标志
+    const index = currTeamPlayer.value.index
+    fightData.value.team.stageRecordStartList[index].animationEnd = true
+
     if (currRound.value < totalRound.value) {
       currTeamWaitingNextRoundText.value = '等待下一回合开始...'
     } else {
       currTeamWaitingNextRoundText.value = '等待对战结束...'
     }
   } else {
+    const index = currOpponentTeamPlayer.value.index
+    fightData.value.opponentTeam.stageRecordStartList[index].animationEnd = true
+
+    currOpponentTeamPlayer.value.data.animationEnd = true;
     if (currRound.value < totalRound.value) {
       currOpponentTeamWaitingNextRoundText.value = '等待下一回合开始...'
     } else {
@@ -576,11 +623,13 @@ onUnmounted(() => {
                       <div class="team-member-item-result">
                         <div class="user-probability">
                           <img :src="requireImg('/v2/user/nav1-a.png',false)" alt="">
-                          <span>{{item.data}}</span>
+                          <span v-if="item.animationEnd">{{item.data}}</span>
+                          <span v-else>0</span>
                         </div>
                         <div class="user-score">
                           <img :src="requireImg('/coin1.png',false)" alt="">
-                          <span>{{item.score}}</span>
+                          <span v-if="item.animationEnd">{{item.score}}</span>
+                          <span v-else>0</span>
                         </div>
                       </div>
                     </div>
@@ -622,11 +671,13 @@ onUnmounted(() => {
                       <div class="team-member-item-result">
                         <div class="user-probability">
                           <img :src="requireImg('/v2/user/nav1-a.png',false)" alt="">
-                          <span>{{item.data}}</span>
+                          <span v-if="item.animationEnd">{{item.data}}</span>
+                          <span v-else>0</span>
                         </div>
                         <div class="user-score">
                           <img :src="requireImg('/coin1.png',false)" alt="">
-                          <span>{{item.score}}</span>
+                          <span v-if="item.animationEnd">{{item.score}}</span>
+                          <span v-else>0</span>
                         </div>
                       </div>
                     </div>
