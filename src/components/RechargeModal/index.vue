@@ -12,6 +12,10 @@ import Title from "@/components/Title.vue";
 import { requireImg } from '@/utils/common';
 import Money from '@/assets/icons/money.svg'
 import BtnIcon from '@/assets/rechargeModal/btn.png'
+// import iPay from '@/assets/images/recharge/ipay-icon.png'
+// import cardPay from '@/assets/images/recharge/card-pay-icon.png'
+import iPay from '@/assets/rechargeModal/btn.png'
+import cardPay from '@/assets/rechargeModal/btn.png'
 const props = defineProps({
   // 可以添加自定义属性
 });
@@ -38,19 +42,22 @@ const { rechargeList, payConfigList, fetchRechargeData, fetchPayConfigData } = u
 const { fetchUserInfo } = useUserInfo()
 // 默认充值金额，在API数据加载前使用
 const defaultRechargeList = [
-  { id: 1, price: 50 },
-  { id: 2, price: 100 },
-  { id: 3, price: 200 },
-  { id: 4, price: 500 },
-  { id: 5, price: 1000 },
-  { id: 6, price: 2000 }
+  { id: 1, productA: 50, price: 50 },
+  { id: 2, productA: 100, price: 100 },
+  { id: 3, productA: 200, price: 200 },
+  { id: 4, productA: 500, price: 500 },
+  { id: 5, productA: 1000, price: 1000 },
+  { id: 6, productA: 2000, price: 2000 }
 ]
+const enableRechargeList = computed(() => {
+  return rechargeList.value || defaultRechargeList
+})
 
 // 支付方式
 const payTypes = ref([
   // { id: '20', name: '微信', icon: 'wechat-icon' },
-  { id: '30', name: '支付宝', icon: 'wechaicon' },
-  { id: 'card', name: '卡密支付', icon: 'card-icon' }
+  { id: '30', name: '支付宝', icon: iPay },
+  { id: 'card', name: '卡密支付', icon: cardPay }
 ])
 
 // 使用设备类型检测
@@ -384,182 +391,49 @@ defineExpose({
 </script>
 
 <template>
-  <BaseModel v-model="visible" :showFooter="false" :closeOnEsc="true" :showTitle="false" :closeOnClickOutside="true"
-    @close="close">
-    <div class="tw-flex tw-flex-col tw-h-full tw-px-2.5 md:tw-px-0 tw-w-full tw-relative tw-bg-[#4A1D13]">
-      <img :src="requireImg('/v2/bg/model-bg.png')"
-        class="tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full tw-object-cover" />
-      <Title name="充值中心"></Title>
-      <button @click="close()"
-        class="tw-w-6 tw-absolute tw-top-4 tw-right-4   tw-opacity-80 hover:tw-opacity-100 hover:tw-rotate-90 tw-duration-200">
-        <svg t="1744272178420" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-          p-id="1468" :width="closeIcon" :height="closeIcon">
-          <path
-            d="M525.269211 510.837524 918.101111 116.227118c7.17747-7.209192 7.14984-18.871813-0.059352-26.049283-7.210215-7.176446-18.87079-7.151887-26.049283 0.059352L499.278257 484.72889 106.563014 90.236164c-7.17747-7.209192-18.84009-7.235798-26.049283-0.059352-7.209192 7.17747-7.235798 18.84009-0.059352 26.049283L473.287303 510.837524 80.45438 905.446907c-7.176446 7.209192-7.150864 18.871813 0.059352 26.049283 3.593851 3.577478 8.29492 5.365194 12.994965 5.365194 4.727675 0 9.455349-1.809205 13.054317-5.424546l392.715243-394.491703 392.715243 394.491703c3.599991 3.615341 8.326643 5.424546 13.054317 5.424546 4.700045 0 9.402137-1.787716 12.994965-5.365194 7.209192-7.17747 7.235798-18.84009 0.059352-26.049283L525.269211 510.837524z"
-            fill="#ffffff" p-id="1469"></path>
-        </svg>
-      </button>
-      <div class="tw-flex tw-flex-col  md:tw-flex-row md:tw-px-[3.875rem] tw-justify-between">
-        <div class="tw-flex tw-gap-3 md:tw-gap-5  tw-flex-col md:tw-w-[30.5rem]">
-          <span class="tw-text-white/70 tw-text-xs md:tw-text-sm">选择充值</span>
-          <template v-if="!rechargeList || rechargeList.length === 0">
-            <div class=" tw-flex  tw-gap-2 md:tw-gap-4 tw-flex-wrap">
-              <div @click="selectAmount(item, index)"
-                class="tw-flex tw-items-center tw-text-[#FFF6C7] tw-bg-[#2A0800] tw-duration-300 tw-border tw-border-transparent tw-w-[5rem] md:tw-w-[9.4375rem] tw-py-1 md:tw-py-2.5 tw-justify-center tw-rounded-md  md:tw-rounded-xl tw-gap-1 md:tw-gap-2 tw-cursor-pointer"
-                :class="curIndex === index ? 'tw-border-[#B13200] activePrice' : ''"
-                v-for="(item, index) in defaultRechargeList" :key="'default-' + item.id">
-                <img :src="Money" class="tw-w-[1.5625rem] md:tw-w-[3.125rem] " />
-                {{ item.price }}
-              </div>
-            </div>
-          </template>
-          <template v-else>
-            <div class=" tw-flex  tw-gap-2 md:tw-gap-4 tw-flex-wrap">
-              <div @click="selectAmount(item, index)"
-                class="tw-flex tw-items-center tw-text-[#FFF6C7] tw-bg-[#2A0800] tw-duration-300 tw-border tw-border-transparent tw-w-[5rem] md:tw-w-[9.4375rem] tw-py-1 md:tw-py-2.5 tw-justify-center tw-rounded-md  md:tw-rounded-xl tw-gap-1 md:tw-gap-2 tw-cursor-pointer"
-                :class="curIndex === index ? 'tw-border-[#B13200] activePrice' : ''"
-                v-for="(item, index) in rechargeList" :key="'default-' + item.id">
-                <img :src="Money" class="tw-w-[1.5625rem] md:tw-w-[3.125rem] " />
-                {{ item.productA }}
-              </div>
-            </div>
-          </template>
-          <span class="tw-text-white/70 tw-text-xs md:tw-text-sm ">选择支付方式</span>
-          <div class=" tw-flex tw-gap-2 md:tw-gap-4 tw-flex-wrap">
-            <div
-              class="tw-flex tw-items-center tw-text-[#FFF6C7] tw-bg-[#2A0800] tw-duration-300 tw-border tw-border-transparent tw-py-2 md:tw-py-4 tw-w-[10.125rem] md:tw-w-[9.4375rem] tw-justify-center tw-rounded-xl tw-gap-2 tw-cursor-pointer"
-              :class="selectPayType === type.id ? 'tw-border-[#B13200] activePrice' : ''" v-for="type in payTypes"
-              :key="type.name" @click="selectPayType = type.id">
-              <svg xmlns="http://www.w3.org/2000/svg" class=" md:tw-w-8 md:tw-h-8 tw-w-4 tw-h-4" viewBox="0 0 32 32"
-                fill="none">
-                <path
-                  d="M2.67334 12H28.0067C28.1818 12 28.3551 12.0345 28.5169 12.1015C28.6787 12.1685 28.8257 12.2667 28.9495 12.3905C29.0733 12.5143 29.1715 12.6613 29.2385 12.8231C29.3055 12.9849 29.34 13.1582 29.34 13.3333V26.6667C29.34 27.0203 29.1995 27.3594 28.9495 27.6095C28.6994 27.8595 28.3603 28 28.0067 28H4.00667C3.65305 28 3.31391 27.8595 3.06386 27.6095C2.81382 27.3594 2.67334 27.0203 2.67334 26.6667V12ZM4.00667 4H24.0067V9.33333H2.67334V5.33333C2.67334 4.97971 2.81382 4.64057 3.06386 4.39052C3.31391 4.14048 3.65305 4 4.00667 4ZM20.0067 18.6667V21.3333H24.0067V18.6667H20.0067Z"
-                  fill="#FFF6C7" />
-              </svg> {{ type.name }}
+  <el-dialog v-model="visible" width="1163" :show-close="false" align-center style="--el-dialog-bg-color: transparent;" destroy-on-close :close-on-click-modal="false" :close-on-press-escape="false">
+    <div class="recharge-wrapper">
+      <img slot="header" class="title" src="@/assets/images/recharge/title.png" alt="">
+      <img class="close" @click="close" src="@/assets/images/recharge/coin.png" alt="">
+      <div class="recharge-content tw-flex tw-justify-between">
+        <div class="pay-content">
+          <div class="tip">选择充值</div>
+          <div class="recharge-select tw-flex">
+            <div class="recharge-item tw-flex tw-items-center" :class="curIndex === index ? 'active' : ''" v-for="(item, index) in enableRechargeList" :key="'default-' + item.id" @click="selectAmount(item, index)">
+              <img class="coin-icon" src="@/assets/images/recharge/coin.png" alt="">
+              <div class="amount">{{ item.productA }}</div>
             </div>
           </div>
-          <span class="tw-text-white/70 tw-text-xs md:tw-text-sm "
-            v-if="!showCardForm && payConfigList && payConfigList.length > 0">选择支付通道</span>
-          <div v-if="!showCardForm && payConfigList && payConfigList.length > 0"
-            class="tw-flex tw-gap-2 md:tw-gap-[1.125rem] tw-flex-wrap tw-w-full">
-            <div v-for="channel in payConfigList" :key="channel.id" @click="selectChannel(channel)"
-              class="tw-cursor-pointer tw-w-full"
-              v-show="channel.status === 1 && channel.payTag && channel.payTag.length > 0">
-              <div
-                class="tw-flex  tw-items-center tw-text-[#FFF6C7] tw-bg-[#2A0800] tw-duration-300 tw-border tw-border-transparent tw-justify-center tw-py-2 md:tw-py-4 tw-rounded-xl tw-gap-2"
-                :class="selectPayChannel && selectPayChannel.id === channel.id ? 'tw-border-[#B13200] activePrice' : ''">
+          <div class="tip pay-type">选择支付方式</div>
+          <div class="pay-type-select tw-flex">
+            <div class="pay-type-item tw-flex tw-items-center" :class="selectPayType === type.id ? 'active' : ''" v-for="type in payTypes" :key="type.name" @click="selectPayType = type.id">
+              <img class="pay-icon" :src="type.icon" alt="">
+              <div class="pay-text">{{ type.name }}</div>
+            </div>
+          </div>
+          <template v-if="!showCardForm && payConfigList && payConfigList.length > 0">
+            <div class="tip pay-select">选择支付通道</div>
+            <div class="pay-channel-select tw-flex-col">
+              <div class="pay-channel-item" :class="selectPayChannel && selectPayChannel.id === channel.id ? 'active' : ''" v-for="channel in payConfigList" :key="channel.id" @click="selectChannel(channel)" v-show="channel.status === 1 && channel.payTag && channel.payTag.length > 0">
                 {{ channel.payName }}
               </div>
             </div>
-          </div>
-          <div v-if="showCardForm" class="tw-bg-[#2A0800] tw-p-4 tw-rounded-xl">
-            <h3 class="tw-text-white/70 tw-text-sm tw-mb-3">填写卡密信息</h3>
-            <div class="tw-mb-3">
-              <label class="tw-block tw-text-[#FFF6C7]/70 tw-text-xs tw-mb-1">充值卡密</label>
-              <input v-model="cardPassword" type="text" placeholder="请输入充值卡密"
-                class="tw-w-full tw-bg-[#2A0800] tw-border tw-border-[#B13200]/50 tw-rounded-lg tw-px-4 tw-py-2 tw-text-[#FFF6C7] tw-text-sm focus:tw-outline-none focus:tw-ring-1 focus:tw-ring-[#B13200]"
-                :disabled="cardLoading" />
-            </div>
-            <p class="tw-text-[#FFF6C7]/50 tw-text-xs">温馨提示：卡密一经使用，不可退换</p>
-          </div>
-          <div class="tw-flex tw-justify-center tw-items-center tw-flex-col tw-gap-2 tw-mb-10 md:tw-mb-0 md:tw-gap-0">
-            <span v-if="showCardForm || !isPC" class="tw-flex tw-items-center tw-text-[#FFF6C7]"> 充值金额： <img
-                :src="Money" class="tw-w-6" /> <span class=" tw-text-sm "> {{
-                  rechargeList &&
-                    rechargeList.length > 0 ? rechargeList[curIndex]?.price :
-                    defaultRechargeList[curIndex]?.price }}</span></span>
-            <BaseButton @click="submitPay" v-if="showCardForm || !isPC" class="tw-text-white"
-              :customStyle="{ width: isPC ? '100%' : '80%', height: isPC ? '3rem' : '2.6875rem' }"
-              :font-size="isPC ? '1rem' : '0.875rem'">
-              <template #name>
-                <div class="tw-flex tw-items-center tw-gap-2">
-
-
-                  <img :src="BtnIcon" class="tw-w-6" /> 充值
-                </div>
-              </template>
-            </BaseButton>
-            <span class="tw-text-white/70 tw-text-sm tw-text-center md:tw-hidden">禁止未成年人支付</span>
-          </div>
-
+          </template>
         </div>
-        <div class="md:tw-flex tw-hidden tw-flex-col tw-w-[27rem] tw-mb-[1.3125rem] tw-gap-5">
-          <div class="tw-w-full tw-text-sm tw-flex tw-justify-end tw-text-white/70">
-            二维码支付
+        <div class="qrcode">
+          <div class="pay-amount tw-flex tw-items-center tw-justify-center">
+            支付金额
+            <img class="pay-coin-icon" src="@/assets/images/recharge/coin.png" alt="">
+            {{ enableRechargeList[curIndex]?.price }}
           </div>
-          <div class="tw-w-full tw-bg-[#2A0800] tw-rounded-xl tw-pt-4 tw-pb-8 tw-px-10">
-            <div
-              class="tw-flex tw-justify-between tw-pb-4 tw-border-b tw-border-white/20 tw-items-center tw-text-[#FFF6C7]">
-              <div style="text-shadow:  0px 0px 4.3px rgba(255, 69, 69, 0.65);">
-                充值金额
-              </div>
-              <div class="tw-flex tw-items-center tw-gap-2  tw-text-[2rem]">
-                <img :src="Money" class="tw-w-[3.125rem] " />
-                {{ rechargeList && rechargeList.length > 0 ? rechargeList[curIndex]?.price :
-                  defaultRechargeList[curIndex]?.price }}
-              </div>
-            </div>
-            <div class=" tw-flex tw-flex-col tw-justify-center tw-items-center tw-pt-10 tw-pb-8">
-              <div v-if="qrCode"
-                class="tw-w-[14.4375rem] tw-h-[14.4375rem] tw-bg-white tw-flex tw-items-center tw-justify-center">
-                <img :src="qrCode" alt="支付二维码" class="tw-w-full tw-h-full tw-object-contain" />
-              </div>
-              <div v-else class="tw-w-[14.4375rem] tw-h-[14.4375rem] tw-flex tw-items-center tw-justify-center">
-                <svg class="tw-animate-spin tw-h-8 tw-w-8 tw-text-blue-500" viewBox="0 0 24 24">
-                  <circle class="tw-opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="tw-opacity-75" fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                  </path>
-                </svg>
-              </div>
-              <div class="tw-mt-3 tw-w-full tw-text-center">
-                <span class="tw-text-[0.75rem] tw-text-orange-400">二维码有效期五分钟，禁止一码多扫重复支付!</span>
-              </div>
-              <div class="tw-mt-4">
-                <button @click="checkPayStatus"
-                  class="tw-bg-[#B13200] tw-text-white tw-py-2 tw-px-4 tw-rounded-lg tw-text-sm hover:tw-bg-[#932900] tw-transition-colors"
-                  :disabled="payStatusLoading" v-if="payStatusLoading">
-                  <span>查询中...</span>
-                </button>
-                <p v-if="paymentTimeoutAt && new Date() < paymentTimeoutAt"
-                  class="tw-mt-1 tw-text-xs tw-text-[#FFF6C7]/70">
-                  剩余时间: {{ Math.max(0, Math.floor((paymentTimeoutAt - new Date()) / 1000 / 60)) }}分钟
-                </p>
-              </div>
-            </div>
-            <BaseButton @click="submitPay" class="tw-text-white"
-              :customStyle="{ width: '100%', height: isPC ? '3rem' : '1.75rem' }"
-              :font-size="isPC ? '1rem' : '0.875rem'">
-              <template #name>
-                <div class="tw-flex tw-items-center tw-gap-2">
-                  <img :src="BtnIcon" class="tw-w-6" /> 生成二维码
-                </div>
-              </template>
-            </BaseButton>
-          </div>
-          <span class="tw-text-white/70 tw-text-sm tw-text-center">禁止未成年人支付</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 添加移动端二维码弹窗 -->
-    <div v-if="showQrPopup"
-      class="tw-fixed tw-inset-0 tw-bg-black/50 tw-z-50 tw-flex tw-items-center tw-justify-center md:tw-hidden">
-      <div class="tw-bg-[#2A0800] tw-rounded-xl tw-p-6 tw-w-[80%] tw-max-w-[300px]">
-        <div class="tw-flex tw-justify-between tw-items-center tw-mb-4">
-          <h3 class="tw-text-[#FFF6C7] tw-text-lg">扫码支付</h3>
-          <button @click="showQrPopup = false" class="tw-text-white/70 hover:tw-text-white">
-            <svg t="1744272178420" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-              width="24" height="24">
-              <path
-                d="M525.269211 510.837524 918.101111 116.227118c7.17747-7.209192 7.14984-18.871813-0.059352-26.049283-7.210215-7.176446-18.87079-7.151887-26.049283 0.059352L499.278257 484.72890 106.563014 90.236164c-7.17747-7.209192-18.84009-7.235798-26.049283-0.059352-7.209192 7.17747-7.235798 18.84009-0.059352 26.049283L473.287303 510.837524 80.45438 905.446907c-7.176446 7.209192-7.150864 18.871813 0.059352 26.049283 3.593851 3.577478 8.29492 5.365194 12.994965 5.365194 4.727675 0 9.455349-1.809205 13.054317-5.424546l392.715243-394.491703 392.715243 394.491703c3.599991 3.615341 8.326643 5.424546 13.054317 5.424546 4.700045 0 9.402137-1.787716 12.994965-5.365194 7.209192-7.17747 7.235798-18.84009 0.059352-26.049283L525.269211 510.837524z"
-                fill="currentColor" />
+          <img v-if="qrCode" :src="qrCode" alt="支付二维码" class="qrcode-img" />
+          <div v-else class="qrcode-img tw-flex tw-items-center tw-justify-center">
+            <svg class="tw-animate-spin tw-h-8 tw-w-8 tw-text-blue-500" viewBox="0 0 24 24">
+              <circle class="tw-opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="tw-opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
             </svg>
-          </button>
-        </div>
-        <div class="tw-flex tw-flex-col tw-items-center">
-          <div class="tw-w-[200px] tw-h-[200px] tw-bg-white tw-flex tw-items-center tw-justify-center tw-mb-4">
-            <img :src="qrCode" alt="支付二维码" class="tw-w-full tw-h-full tw-object-contain" />
           </div>
           <div class="tw-text-center tw-text-[#FFF6C7]/70 tw-text-sm">
             <p class="tw-mt-2 tw-text-orange-400 tw-text-xs">二维码有效期五分钟，禁止一码多扫重复支付!</p>
@@ -575,35 +449,161 @@ defineExpose({
               </p>
             </div>
           </div>
+          <div class="create-qrcode" @click="submitPay">
+            生成二维码
+          </div>
         </div>
       </div>
     </div>
-  </BaseModel>
+  </el-dialog>
 </template>
 
-<style scoped>
-.activePrice {
-  background: linear-gradient(270deg, #4E1600 0%, #B43300 100%);
-  box-shadow: 0px 4px 23.8px 0px rgba(168, 48, 1, 0.56);
-  border: 1px solid #B13200;
-}
-
-.dialog {
-  background: none;
-}
-
-/* 仅保留动画效果，移除背景图片过渡效果 */
-.dialog :deep(.van-popup) {
-  animation: modalAppear .3s ease-out;
-}
-
-@keyframes modalAppear {
-  from {
-    opacity: 0;
+<style scoped lang="scss">
+.recharge-wrapper {
+  height: 730px;
+  background: url('@/assets/images/recharge/bg.webp') no-repeat;
+  background-size: 100% 100%;
+  position: relative;
+  line-height: normal;
+  .title {
+    width: 239px;
+    height: 169px;
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
   }
-
-  to {
-    opacity: 1;
+  .close {
+    width: 70px;
+    height: 72px;
+    position: absolute;
+    right: 30px;
+    top: 44px;
+    cursor: pointer;
+  }
+  .recharge-content {
+    width: 900px;
+    margin: 0 auto;
+    padding-top: 110px;
+    .pay-content {
+      flex: 1;
+      .tip {
+        text-align: left;
+        font-weight: 500;
+        font-size: 24px;
+        color: #1D1F22;
+      }
+      .recharge-select {
+        margin-top: 33px;
+        flex-wrap: wrap;
+        gap: 30px 44px;
+        .recharge-item {
+          width: 139px;
+          height: 40px;
+          background: url('@/assets/images/recharge/coin-bg.png') no-repeat;
+          background-size: 100% 100%;
+          cursor: pointer;
+          &.active {
+            background: url('@/assets/images/recharge/coin-active-bg.png') no-repeat;
+            background-size: 100% 100%;
+          }
+          .coin-icon {
+            margin-left: 8px;
+            margin-bottom: 5px;
+            width: 37px;
+            height: 36px;
+          }
+          .amount {
+            font-weight: 500;
+            font-size: 17px;
+            color: #FFFFFF;
+            flex: 1;
+            text-align: center;
+          }
+        }
+      }
+      .pay-type {
+        margin-top: 40px;
+      }
+      .pay-type-select {
+        margin-top: 21px;
+        gap: 30px 18px;
+        .pay-type-item {
+          width: 191px;
+          height: 66px;
+          background: url('@/assets/images/recharge/pay-bg.png') no-repeat;
+          background-size: 100% 100%;
+          cursor: pointer;
+          &.active {
+            background: url('@/assets/images/recharge/pay-active-bg.png') no-repeat;
+            background-size: 100% 100%;
+          }
+          .pay-icon {
+            margin-left: 22px;
+            margin-right: 15px;
+            width: 44px;
+            height: 44px;
+          }
+          .pay-text {
+            font-weight: 500;
+            font-size: 17px;
+            color: #FFFFFF;
+          }
+        }
+      }
+      .pay-select {
+        margin-top: 37px;
+      }
+      .pay-channel-select {
+        margin-top: 12px;
+        .pay-channel-item {
+          width: 503px;
+          height: 40px;
+          line-height: 40px;
+          background: url('@/assets/images/recharge/pay-channel-bg.png') no-repeat;
+          background-size: 100% 100%;
+          font-weight: 500;
+          font-size: 17px;
+          color: #FFFFFF;
+          cursor: pointer;
+          &.active {
+            background: url('@/assets/images/recharge/pay-channel-active-bg.png') no-repeat;
+            background-size: 100% 100%;
+          }
+        }
+      }
+    }
+    .qrcode {
+      width: 308px;
+      margin-left: 84px;
+      margin-top: 65px;
+      .pay-amount {
+        font-weight: 500;
+        font-size: 20px;
+        color: #1D1F22;
+        .pay-coin-icon {
+          width: 47px;
+          height: 45px;
+          margin: 0 15px 0 17px;
+        }
+      }
+      .qrcode-img {
+        margin: 24px auto 0;
+        width: 229px;
+        height: 229px;
+      }
+      .create-qrcode {
+        width: 302px;
+        height: 81px;
+        line-height: 70px;
+        background: url('@/assets/images/recharge/qrcode.png') no-repeat;
+        background-size: 100% 100%;
+        font-weight: 500;
+        font-size: 24px;
+        color: #072523;
+        cursor: pointer;
+      }
+    }
   }
 }
 </style>
