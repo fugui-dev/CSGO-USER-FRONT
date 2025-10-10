@@ -85,7 +85,7 @@ const isHome = computed(() => {
 
 const hideOld = computed(() => {
   const hideList = ["/", "/battle"];
-  const regexList = [/^\/openBox\/([^/]+)$/];
+  const regexList = [/^\/openBox\/([^/]+)$/, /^\/match*/];
   return (
     hideList.includes(route.path) ||
     regexList.some((regex) => regex.test(route.path))
