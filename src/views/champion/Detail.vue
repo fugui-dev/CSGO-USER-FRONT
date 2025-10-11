@@ -43,23 +43,25 @@ onBeforeMount(() => {
 <template>
   <Layout>
     <div class="detail-layout-wrapper">
-      <div class="nav-wrapper tw-flex tw-items-center">
-        <router-link
-          class="nav-item"
-          :style="{
-            backgroundImage:
-              active === i.value ? `url(${activeTypeBg})` : `url(${typeBg})`,
-          }"
-          v-for="(i, index) in navList"
-          :class="{ active: active === i.value }"
-          :key="index"
-          @click="changeActive(i.value)"
-          :to="i.path[0]"
-        >
-          <span>{{ i.name }}</span>
-        </router-link>
+      <div class="detail-content">
+        <div class="nav-wrapper tw-flex tw-items-center">
+          <router-link
+            class="nav-item"
+            :style="{
+              backgroundImage:
+                active === i.value ? `url(${activeTypeBg})` : `url(${typeBg})`,
+            }"
+            v-for="(i, index) in navList"
+            :class="{ active: active === i.value }"
+            :key="index"
+            @click="changeActive(i.value)"
+            :to="i.path[0]"
+          >
+            <span>{{ i.name }}</span>
+          </router-link>
+        </div>
+        <slot></slot>
       </div>
-      <slot></slot>
     </div>
   </Layout>
 </template>
@@ -67,23 +69,33 @@ onBeforeMount(() => {
 <style scoped lang="scss">
 @use "@/style" as *;
 .detail-layout-wrapper {
-  padding: 86px 32px;
+  padding: 86px 32px 30px;
   background: url("@/assets/images/champion/bg.webp") no-repeat;
   background-size: 100% auto;
   background-color: #4d3337;
   min-height: 100vh;
-  .nav-wrapper {
-    gap: 10px 12px;
-    .nav-item {
-      width: 139px;
-      height: 40px;
-      text-align: center;
-      line-height: 40px;
-      background-size: 100%;
-      font-weight: 500;
-      font-size: 17px;
-      color: #ffffff;
-      cursor: pointer;
+  max-height: 187vw;
+  overflow: hidden;
+  display: flex;
+  .detail-content {
+    flex: 1;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    .nav-wrapper {
+      gap: 10px 12px;
+      .nav-item {
+        width: 139px;
+        height: 40px;
+        text-align: center;
+        line-height: 40px;
+        background-size: 100%;
+        font-weight: 500;
+        font-size: 17px;
+        color: #ffffff;
+        cursor: pointer;
+      }
     }
   }
 }

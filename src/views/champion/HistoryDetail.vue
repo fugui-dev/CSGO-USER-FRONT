@@ -1,108 +1,128 @@
 <script setup>
-import {computed, onMounted, ref} from "vue";
-import {getMatchStageApi, getTeamListApi} from "@/api/champion";
-import Detail from './Detail.vue';
+import { computed, onMounted, ref } from "vue";
+import { getMatchStageApi, getTeamListApi } from "@/api/champion";
+import Detail from "./Detail.vue";
 import Level from "./components/Level.vue";
-import {requireImg} from "@/utils/common";
+import { requireImg } from "@/utils/common";
 
-const loading = ref(false)
-const levelData = ref([])
-const championTeamInfo = ref({})
-const teamRankList = ref([])
-const active = ref(0)
-const navList = ref([{
-  'name': '晋级图',
-  'value': 0
-}, {
-  'name': '总冠军',
-  'value': 1
-}, {
-  'name': '队伍排名',
-  'value': 2
-}])
-const matchId = computed(() => Number(window.sessionStorage.getItem('historyMatchId')))
+const loading = ref(false);
+const levelData = ref([]);
+const championTeamInfo = ref({});
+const teamRankList = ref([]);
+const active = ref(0);
+const navList = ref([
+  {
+    name: "晋级图",
+    value: 0,
+  },
+  {
+    name: "总冠军",
+    value: 1,
+  },
+  {
+    name: "队伍排名",
+    value: 2,
+  },
+]);
+const matchId = computed(() =>
+  Number(window.sessionStorage.getItem("historyMatchId"))
+);
 
 const changeActive = (val) => {
-  active.value = val
+  active.value = val;
   if (active.value === 0) {
-    getMatchStageList()
+    getMatchStageList();
   } else if (active.value === 1) {
-    getChampionTeamInfo()
+    getChampionTeamInfo();
   } else {
-    getTeamRank()
+    getTeamRank();
   }
-}
+};
 
 // 获取比赛阶段
 const getMatchStageList = () => {
-  loading.value = true
+  loading.value = true;
   getMatchStageApi({
-    matchId: matchId.value
-  }).then(res => {
-    if (res.data && res.data.length) {
-      levelData.value = res.data
-    }
-  }).finally(() => {
-    loading.value = false
+    matchId: matchId.value,
   })
-}
+    .then((res) => {
+      if (res.data && res.data.length) {
+        levelData.value = res.data;
+      }
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+};
 
 // 获取冠军队伍
 const getChampionTeamInfo = () => {
-  loading.value = true
+  loading.value = true;
   getTeamListApi({
     matchId: matchId.value,
-    champion: true
-  }).then(res => {
-    if (res.data && res.data.length) {
-      championTeamInfo.value = res.data[0]
-    }
-  }).finally(() => {
-    loading.value = false
+    champion: true,
   })
-}
+    .then((res) => {
+      if (res.data && res.data.length) {
+        championTeamInfo.value = res.data[0];
+      }
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+};
 
 // 获取队伍排名
 const getTeamRank = () => {
-  loading.value = true
+  loading.value = true;
   getTeamListApi({
     matchId: matchId.value,
-    champion: false
-  }).then(res => {
-    if (res.data && res.data.length) {
-      teamRankList.value = res.data
-      teamRankList.value.sort((a, b) => a.rank - b.rank)
-    }
-  }).finally(() => {
-    loading.value = false
+    champion: false,
   })
-}
+    .then((res) => {
+      if (res.data && res.data.length) {
+        teamRankList.value = res.data;
+        teamRankList.value.sort((a, b) => a.rank - b.rank);
+      }
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+};
 
 onMounted(() => {
-  getMatchStageList()
-})
-
+  getMatchStageList();
+});
 </script>
 
 <template>
   <Detail>
-    <div class="history-detail-container" v-loading="loading" :style="{
-        '--bg-user':requireImg('/level/1.png',true),
-      }">
-      <div class="nav">
-        <div class="nav-item" v-for="(i,index) in navList" :class="{'active':active===i.value}" :key="index"
-            @click="changeActive(i.value)">
-          <span>{{ i.name }}</span>
+    <div
+      class="history-detail-container"
+      v-loading="loading"
+      :style="{
+        '--bg-user': requireImg('/level/1.png', true),
+      }"
+    >
+      <div class="group-wrapper">
+        <div
+          class="goup-item"
+          v-for="(i, index) in navList"
+          :key="'nav' + index"
+          :class="{ active: active === i.value }"
+          @click="changeActive(i.value)"
+        >
+          {{ i.name }}
         </div>
       </div>
       <!-- 晋级图 -->
-      <Level v-if="active === 0 && levelData.length" :data="levelData"/>
+      <Level v-if="active === 0 && levelData.length" :data="levelData" />
       <!-- 冠军队伍 -->
       <div class="champion-team" v-if="active === 1">
         <div class="level-1">
           <div class="rank-winner">
             <div class="winner-avatar">
-              <img :src="championTeamInfo.avatar" alt="">
+              <img :src="championTeamInfo.avatar" alt="" />
             </div>
             <p>{{ championTeamInfo.name }}</p>
             <div class="avatar-bg"></div>
@@ -110,11 +130,15 @@ onMounted(() => {
         </div>
         <!-- 用户列表 -->
         <div class="user-list">
-          <div class="user-list-item" v-for="item in championTeamInfo.matchUserList" :key="item.id">
-            <img :src="item.userAvatar" alt="" class="user-avatar">
+          <div
+            class="user-list-item"
+            v-for="item in championTeamInfo.matchUserList"
+            :key="item.id"
+          >
+            <img :src="item.userAvatar" alt="" class="user-avatar" />
             <p>{{ item.userName }}</p>
             <div class="mz">
-              <img :src="requireImg('/coin1.png',false)" alt="">
+              <img :src="requireImg('/coin1.png', false)" alt="" />
               <div class="score">{{ item.totalScore }}</div>
             </div>
           </div>
@@ -128,17 +152,24 @@ onMounted(() => {
             <div>胜场</div>
             <div>积分</div>
           </div>
-          <div :class="['team-rank-list-item', index % 2 === 1 ? 'highlight' : 'non-highlight']" v-for="(item, index) in teamRankList" :key="item.id">
+          <div
+            :class="[
+              'team-rank-list-item',
+              index % 2 === 1 ? 'highlight' : 'non-highlight',
+            ]"
+            v-for="(item, index) in teamRankList"
+            :key="item.id"
+          >
             <div class="team-rank-list-item-left">
               <div class="serial-num">{{ index + 1 }}</div>
-              <img :src="item.avatar" alt="">
+              <img :src="item.avatar" alt="" />
               <span>{{ item.name }}</span>
             </div>
             <div class="team-rank-list-item-center">
               <span>{{ item.winCount }}</span>
             </div>
             <div class="team-rank-list-item-right">
-              <img :src="requireImg('/coin1.png',false)" alt="">
+              <img :src="requireImg('/coin1.png', false)" alt="" />
               <span>{{ item.totalScore }}</span>
             </div>
           </div>
@@ -156,77 +187,25 @@ onMounted(() => {
 
 .history-detail-container {
   position: relative;
-  .nav {
+  .group-wrapper {
+    height: 60px;
+    margin-top: 56px;
     display: flex;
     align-items: center;
-    margin-top: 30px;
-    @include mobile{
-      justify-content: space-evenly;
-    }
-
-
-    &-item {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: "PingFang Regular", sans-serif;
+    .goup-item {
+      width: 159px;
+      height: 63px;
+      line-height: 57px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 18px;
+      color: #ffffff;
       cursor: pointer;
-      background: #FFF5F5;
-      flex-shrink: 0;
-
-      width: 153px;
-      height: 48px;
-      border-radius: 30px;
-      font-size: 16px;
-      margin-right: 32px;
-
-      @include mobile{
-        width: 104px;
-        margin-right: 0;
-      }
-
-      span {
-        filter: drop-shadow(0px 0px 4.3px #FF4545A6);
-        font-size: 16px;
-      }
-
-
-      @include mobile {
-        height: 40px;
-      }
-
-      &:first-child {
-        background: linear-gradient(90.15deg, #FF3C2A -4.19%, rgba(149, 0, 0, 0) 99.85%);
-
-      }
-
-      &:nth-child(2) {
-        background: linear-gradient(90.15deg, #FF952A -4.19%, rgba(149, 87, 0, 0) 99.85%);
-
-      }
-
-      &:nth-child(3) {
-        background: linear-gradient(90.15deg, #A27A7A -4.19%, rgba(152, 116, 116, 0) 99.85%);
-
-      }
-
       &.active {
-        position: relative;
-
-        &::after {
-          content: '';
-          position: absolute;
-          width: 40px;
-          height: 4px;
-          border-radius: 34px;
-          background: white;
-          bottom: -2px;
-          left: 50%;
-          transform: translateX(-50%);
-
-        }
+        color: #8fedd8;
+        background: url("@/assets/images/header/active-menu.png") no-repeat;
+        background-size: 100% 63px;
       }
-
     }
   }
   .level-1 {
@@ -247,7 +226,7 @@ onMounted(() => {
     .winner-avatar {
       // TODO
       // background-image: var(--bg-winner-avatar);
-      background-image: url('/public/avatarBorder.png');
+      background-image: url("/public/avatarBorder.png");
       background-size: contain;
       background-repeat: no-repeat;
       width: 88px;
@@ -267,12 +246,12 @@ onMounted(() => {
       }
     }
     p {
-      font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+      font-family: "titleFont", "Microsoft YaHei", "sans-serif";
       font-size: 15px;
     }
     .avatar-bg {
       // TODO
-      background-image: url('/public/avatarBg.png');
+      background-image: url("/public/avatarBg.png");
       background-size: contain;
       background-repeat: no-repeat;
       width: 140px;
@@ -307,7 +286,7 @@ onMounted(() => {
         border-radius: 6px;
       }
       p {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+        font-family: "titleFont", "Microsoft YaHei", "sans-serif";
         font-size: 14px;
         margin-bottom: 4px;
         white-space: nowrap; /* 防止文本换行 */
@@ -321,7 +300,12 @@ onMounted(() => {
     display: flex;
     align-items: center;
     padding: 0;
-    background: linear-gradient(90.47deg, rgba(202, 62, 39, 0) 0.31%, rgba(30, 30, 30) 51.13%, rgba(201, 61, 38, 0) 100.98%);
+    background: linear-gradient(
+      90.47deg,
+      rgba(202, 62, 39, 0) 0.31%,
+      rgba(30, 30, 30) 51.13%,
+      rgba(201, 61, 38, 0) 100.98%
+    );
     width: 100%;
     font-size: 13px;
     height: 21px;
@@ -329,7 +313,7 @@ onMounted(() => {
     margin: 0 0 4px 0;
     justify-content: center;
     .score {
-      font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+      font-family: "titleFont", "Microsoft YaHei", "sans-serif";
     }
   }
   .team-rank-list {
@@ -345,7 +329,7 @@ onMounted(() => {
     box-sizing: border-box;
     background: linear-gradient(to right, rgb(91, 21, 7), rgb(66, 1, 15));
     div {
-      font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+      font-family: "titleFont", "Microsoft YaHei", "sans-serif";
       font-size: 14px;
       display: flex;
       align-items: center;
@@ -377,7 +361,7 @@ onMounted(() => {
         border-radius: 50%;
         border: 1px solid #aaa;
         background-color: #444;
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+        font-family: "titleFont", "Microsoft YaHei", "sans-serif";
         font-size: 18px;
         color: #eee;
         display: flex;
@@ -393,7 +377,7 @@ onMounted(() => {
         margin-right: 4px;
       }
       span {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+        font-family: "titleFont", "Microsoft YaHei", "sans-serif";
         font-size: 13px;
         white-space: nowrap; /* 防止文本换行 */
         overflow: hidden; /* 隐藏溢出的内容 */
@@ -406,7 +390,7 @@ onMounted(() => {
       align-items: center;
       justify-content: center;
       span {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+        font-family: "titleFont", "Microsoft YaHei", "sans-serif";
         font-size: 13px;
       }
     }
@@ -421,7 +405,7 @@ onMounted(() => {
         margin-right: 3px;
       }
       span {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+        font-family: "titleFont", "Microsoft YaHei", "sans-serif";
         font-size: 13px;
       }
     }
@@ -449,7 +433,7 @@ onMounted(() => {
   }
 }
 .empty-box {
-  font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+  font-family: "titleFont", "Microsoft YaHei", "sans-serif";
   font-size: 18px;
   color: #eee;
   text-align: center;
