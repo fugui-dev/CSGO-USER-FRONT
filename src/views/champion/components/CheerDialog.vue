@@ -16,7 +16,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["close"]);
-const visible = ref(true);
+const visible = ref(false);
 const cheerFormRef = ref();
 const cheerForm = ref({
   teamId: -1,
