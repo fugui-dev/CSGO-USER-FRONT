@@ -118,6 +118,7 @@ defineExpose({
   font-weight: 500;
   color: #1d1f22;
   overflow: hidden;
+  margin-top: 30px;
   .close-click {
     width: 70px;
     height: 70px;
