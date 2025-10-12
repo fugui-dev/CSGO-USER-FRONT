@@ -26,10 +26,11 @@ const getMatchCheerList = () => {
 onMounted(() => {
   getMatchCheerList();
 });
+import bgImg from "@/assets/images/champion/cheer-bg.webp";
 </script>
 
 <template>
-  <Detail>
+  <Detail :bg="{ img: bgImg, height: '187vw' }">
     <div class="cheer-container" v-loading="loading">
       <div class="cheer-list" v-if="cheerList.length">
         <div

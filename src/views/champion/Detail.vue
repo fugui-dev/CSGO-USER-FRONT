@@ -38,11 +38,24 @@ onBeforeMount(() => {
   const currNav = navList.value.find((item) => item.path.includes(route.path));
   active.value = currNav ? currNav.value : 0;
 });
+import bgImg from "@/assets/images/champion/level-bg.webp";
+const props = defineProps({
+  bg: {
+    type: Object,
+    default: () => ({ img: bgImg, height: "187vw" }),
+  },
+});
 </script>
 
 <template>
   <Layout>
-    <div class="detail-layout-wrapper">
+    <div
+      class="detail-layout-wrapper"
+      :style="{
+        backgroundImage: `url(${bg.img})`,
+        maxHeight: `${bg.height}vw`,
+      }"
+    >
       <div class="detail-content">
         <div class="nav-wrapper tw-flex tw-items-center">
           <router-link
@@ -70,11 +83,10 @@ onBeforeMount(() => {
 @use "@/style" as *;
 .detail-layout-wrapper {
   padding: 86px 32px 30px;
-  background: url("@/assets/images/champion/bg.webp") no-repeat;
+  background-repeat: no-repeat;
   background-size: 100% auto;
   background-color: #4d3337;
   min-height: 100vh;
-  max-height: 187vw;
   overflow: hidden;
   display: flex;
   .detail-content {

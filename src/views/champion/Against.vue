@@ -109,10 +109,10 @@ const getImage = (item) => {
       };
   }
 };
+import bgImg from "@/assets/images/champion/match-bg.webp";
 </script>
-
 <template>
-  <Detail>
+  <Detail :bg="{ img: bgImg, height: '187vw' }">
     <div class="against-container" v-loading="loading">
       <div
         class="match-list-item"
