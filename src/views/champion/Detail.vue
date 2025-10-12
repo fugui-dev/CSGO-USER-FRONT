@@ -53,7 +53,7 @@ const props = defineProps({
       class="detail-layout-wrapper"
       :style="{
         backgroundImage: `url(${bg.img})`,
-        maxHeight: `${bg.height}vw`,
+        maxHeight: `${bg.height}`,
       }"
     >
       <div class="detail-content">
