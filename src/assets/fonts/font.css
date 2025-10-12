@@ -1,0 +1,18 @@
+@font-face {
+  font-family: "Jijiati";
+  src: url("HuXiaoBo-jijiati.TTF");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "PingFang-SC-R";
+  src: url("PingFang-SC-Regular.otf");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "PingFang-SC-M";
+  src: url("PingFang-SC-Medium.otf");
+  font-weight: normal;
+  font-style: normal;
+}
