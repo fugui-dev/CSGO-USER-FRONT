@@ -4,6 +4,7 @@ import { getMatchStageApi, getTeamListApi } from "@/api/champion";
 import Detail from "./Detail.vue";
 import Level from "./components/Level.vue";
 import { requireImg } from "@/utils/common";
+import TeamRank from "./components/teamRank.vue";
 
 const loading = ref(false);
 const levelData = ref([]);
@@ -145,38 +146,8 @@ onMounted(() => {
         </div>
       </div>
       <!-- 队伍排名 -->
-      <div class="team-rank" v-if="active === 2">
-        <div class="team-rank-list" v-if="teamRankList.length">
-          <div class="team-rank-list-header">
-            <div>队伍</div>
-            <div>胜场</div>
-            <div>积分</div>
-          </div>
-          <div
-            :class="[
-              'team-rank-list-item',
-              index % 2 === 1 ? 'highlight' : 'non-highlight',
-            ]"
-            v-for="(item, index) in teamRankList"
-            :key="item.id"
-          >
-            <div class="team-rank-list-item-left">
-              <div class="serial-num">{{ index + 1 }}</div>
-              <img :src="item.avatar" alt="" />
-              <span>{{ item.name }}</span>
-            </div>
-            <div class="team-rank-list-item-center">
-              <span>{{ item.winCount }}</span>
-            </div>
-            <div class="team-rank-list-item-right">
-              <img :src="requireImg('/coin1.png', false)" alt="" />
-              <span>{{ item.totalScore }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="empty-box" v-else>
-          <p>暂无数据</p>
-        </div>
+      <div v-if="active === 2">
+        <TeamRank :data="teamRankList"></TeamRank>
       </div>
     </div>
   </Detail>
@@ -316,131 +287,6 @@ onMounted(() => {
       font-family: "titleFont", "Microsoft YaHei", "sans-serif";
     }
   }
-  .team-rank-list {
-    width: 94%;
-    margin: 20px auto;
-  }
-  .team-rank-list-header {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 3px;
-    padding: 5px 10px;
-    height: 46px;
-    box-sizing: border-box;
-    background: linear-gradient(to right, rgb(91, 21, 7), rgb(66, 1, 15));
-    div {
-      font-family: "titleFont", "Microsoft YaHei", "sans-serif";
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-    }
-    div:nth-of-type(2) {
-      justify-content: center;
-    }
-    div:nth-of-type(3) {
-      justify-content: end;
-    }
-  }
-  .highlight {
-    background: linear-gradient(to right, rgb(143, 5, 202), rgb(11, 11, 96));
-  }
-  .non-highlight {
-    background: linear-gradient(to right, rgb(105, 94, 116), rgb(24, 24, 36));
-  }
-  .team-rank-list-item {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 3px;
-    padding: 5px 10px;
-    .team-rank-list-item-left {
-      display: flex;
-      align-items: center;
-      .serial-num {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        border: 1px solid #aaa;
-        background-color: #444;
-        font-family: "titleFont", "Microsoft YaHei", "sans-serif";
-        font-size: 18px;
-        color: #eee;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-right: 12px;
-      }
-      img {
-        width: 38px;
-        height: 38px;
-        border-radius: 6px;
-        border: 1px solid #f2b307;
-        margin-right: 4px;
-      }
-      span {
-        font-family: "titleFont", "Microsoft YaHei", "sans-serif";
-        font-size: 13px;
-        white-space: nowrap; /* 防止文本换行 */
-        overflow: hidden; /* 隐藏溢出的内容 */
-        text-overflow: ellipsis; /* 显示省略符号来代表被修剪的文本 */
-        max-width: 120px;
-      }
-    }
-    .team-rank-list-item-center {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      span {
-        font-family: "titleFont", "Microsoft YaHei", "sans-serif";
-        font-size: 13px;
-      }
-    }
-    .team-rank-list-item-right {
-      display: flex;
-      align-items: center;
-      justify-content: end;
-      padding-left: 4px;
-      img {
-        width: 10px;
-        height: 13px;
-        margin-right: 3px;
-      }
-      span {
-        font-family: "titleFont", "Microsoft YaHei", "sans-serif";
-        font-size: 13px;
-      }
-    }
-  }
-  .team-rank-list-item:nth-of-type(2) {
-    .serial-num {
-      border: 1px solid #f2a814;
-      color: #684412;
-      background: linear-gradient(#f8debb, #fab71b);
-    }
-  }
-  .team-rank-list-item:nth-of-type(3) {
-    .serial-num {
-      border: 1px solid #ccc;
-      color: #ffffff;
-      background: linear-gradient(#e9e7e3, #646463);
-    }
-  }
-  .team-rank-list-item:nth-of-type(4) {
-    .serial-num {
-      border: 1px solid #f0edd9;
-      color: #ffffff;
-      background: linear-gradient(#e8dabf, #9c7315);
-    }
-  }
-}
-.empty-box {
-  font-family: "titleFont", "Microsoft YaHei", "sans-serif";
-  font-size: 18px;
-  color: #eee;
-  text-align: center;
-  min-height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* 响应式调整 */
