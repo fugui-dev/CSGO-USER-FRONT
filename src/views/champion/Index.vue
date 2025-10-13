@@ -60,6 +60,7 @@ onMounted(() => {
         />
         <div
           class="match-content"
+          :style="{ marginTop: matchData.status === 0 ? '-9.5vw' : '10vw' }"
           v-if="matchData.status === 0 || matchData.status === 1"
         >
           <div class="matching tw-flex">
@@ -126,7 +127,6 @@ onMounted(() => {
   font-family: "PingFang Medium";
   font-weight: 500;
   .match-content {
-    margin-top: -9.5vw;
     .matching {
       margin: 0 auto;
       padding: 16px;
