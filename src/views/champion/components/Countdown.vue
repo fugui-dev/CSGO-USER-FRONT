@@ -36,6 +36,11 @@ const props = defineProps({
     type: [Number, Date, String, null],
     default: null
   },
+  // 服务器时间戳 (毫秒)
+  serverTimestamp: {
+    type: Number,
+    default: 0
+  },
   // 是否自动开始
   autoStart: {
     type: Boolean,
@@ -113,7 +118,11 @@ const calculateRemaining = () => {
     return 0;
   }
   
-  const now = Date.now();
+  // 使用服务器时间戳作为基准，加上前端时间差
+  const now = props.serverTimestamp ? 
+    props.serverTimestamp + (Date.now() - lastUpdateTime.value) : 
+    Date.now();
+  
   remainingTime.value = Math.max(0, target - now);
   isFinished.value = remainingTime.value <= 0;
   return remainingTime.value;
@@ -121,11 +130,8 @@ const calculateRemaining = () => {
 
 // 更新倒计时
 const updateCountdown = () => {
-  const now = Date.now();
-  const delta = now - lastUpdateTime.value;
-  lastUpdateTime.value = now;
-  
-  remainingTime.value = Math.max(0, remainingTime.value - delta);
+  // 简单递减剩余时间，每秒减少1000毫秒
+  remainingTime.value = Math.max(0, remainingTime.value - 1000);
   isFinished.value = remainingTime.value <= 0;
   
   emit('update', {
@@ -189,8 +195,20 @@ watch(() => props.targetTime, (newVal) => {
   }
 }, { deep: true });
 
+// 监听服务器时间戳变化，重新同步时间
+watch(() => props.serverTimestamp, (newVal) => {
+  if (newVal && newVal > 0) {
+    // 当服务器时间戳更新时，重置客户端参考时间
+    lastUpdateTime.value = Date.now();
+    calculateRemaining();
+  }
+});
+
 // 组件挂载时初始化
 onMounted(() => {
+  // 初始化客户端参考时间
+  lastUpdateTime.value = Date.now();
+  
   if (props.targetTime !== null && props.targetTime !== undefined) {
     calculateRemaining();
     if (props.autoStart && remainingTime.value > 0) {

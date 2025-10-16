@@ -41,6 +41,7 @@ const currTeamWaitingNextRoundText = ref('')
 const currOpponentTeamWaitingNextRoundText = ref('')
 const showCountdown = ref(false)
 const targetDate = ref(0)
+const serverTimeOffset = ref(0) // 服务器时间戳
 const currTeamGameStart = ref(false)
 const currOpponentTeamGameStart = ref(false)
 const localSet = reactive({
@@ -49,47 +50,134 @@ const localSet = reactive({
 
 const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
   pingInterval: 30000,
-  onOpen: () => {},
+  onOpen: () => {
+    console.log('WebSocket连接已建立，时间:', new Date().toISOString())
+  },
   onMessage: (res) => {
+    const startTime = performance.now()
+    console.log('收到原始消息时间:', new Date().toISOString())
+    console.log('消息内容:', res.data)
+    
     const data = JSON.parse(res.data)
-    console.log(data)
-    if (data.data === 'pong') return
+    const parseTime = performance.now()
+    console.log('消息解析耗时:', parseTime - startTime, 'ms')
+    console.log('解析后时间:', new Date().toISOString())
+    console.log('消息类型:', data.type)
+    
+    if (data.data === 'pong') {
+      return
+    }
 
     // 获取初始化记录和当前进度
     if (data.type === 'CURRENT_PROGRESS') {
+      // 存储服务器时间戳
+      serverTimeOffset.value = data.timestamp
+      
       if (data.data.code === 200 && data.data.data) {
         fightData.value = data.data.data
         totalRound.value = data.data.data.team.stageRecordStartList.length
         // 检查是否需要展示倒计时
-        checkFirstRoundStartTime()
+        checkFirstRoundStartTime(data.timestamp)
         // 检测整场游戏的进度
         checkProgress()
       }
     }
+    // 对战开始
+    if (data.type === 'FIGHT_START') {
+      console.log('处理FIGHT_START消息，时间:', new Date().toISOString())
+      // 设置整场游戏状态为进行中
+      fightData.value.status = 1
+      console.log('FIGHT_START: 设置 fightData.status = 1')
+    }
     // 回合开始
     if (data.type === 'ROUND_START') {
+      console.log('处理ROUND_START消息，时间:', new Date().toISOString())
+      console.log('ROUND_START 处理前的状态:')
+      console.log('currTeamPlayer.value:', currTeamPlayer.value)
+      console.log('currTeamPlayer.data:', currTeamPlayer.value.data)
+      console.log('currTeamGameStart.value:', currTeamGameStart.value)
+      console.log('showCountdown.value:', showCountdown.value)
+      
+      // 停止倒计时，因为回合已经开始了
+      showCountdown.value = false
+      // 设置游戏开始状态
+      currTeamGameStart.value = true
+      currOpponentTeamGameStart.value = true
+      // 设置整场游戏状态为进行中
+      fightData.value.status = 1
       // 清空等待下一轮提示文案
       currTeamWaitingNextRoundText.value = ''
       currOpponentTeamWaitingNextRoundText.value = ''
       // ROUND_START会发送两次数据，代表当前队伍玩家和对手队伍玩家
-      // 定位到即将对战的两个用户
+      // 每次都要在两个队伍中都查找一次，确保双方状态都被更新
+      console.log('处理ROUND_START消息，更新双方状态:', {
+        userId: data.data.userId,
+        userStatus: data.data.userStatus,
+        opponentUserId: data.data.opponentUserId,
+        opponentUserStatus: data.data.opponentUserStatus
+      })
+      
+      // 更新当前用户状态
       findFightingUserByUserId(data.data.userId, data.data.userStatus)
-      // 判断当前回合游戏剩余的时间能做些什么(ROUND_START会推2条数据)
-      checkRemainTime(new Date(data.data.endTime), 'ROUND_START')
+      
+      // 更新对方用户状态
+      if (data.data.opponentUserId && data.data.opponentUserStatus !== undefined) {
+        findFightingUserByUserId(data.data.opponentUserId, data.data.opponentUserStatus)
+      }
+      
+      console.log('ROUND_START 处理后的状态:')
+      console.log('currTeamPlayer.value:', currTeamPlayer.value)
+      console.log('currTeamPlayer.data:', currTeamPlayer.value.data)
+      console.log('currTeamPlayer.data.status:', currTeamPlayer.value.data?.status)
+      console.log('currTeamPlayer.data.data:', currTeamPlayer.value.data?.data)
+      console.log('currTeamGameStart.value:', currTeamGameStart.value)
+      console.log('showCountdown.value:', showCountdown.value)
+      console.log('fightData.status:', fightData.value.status)
+      console.log('currOpponentTeamPlayer.data:', currOpponentTeamPlayer.value.data)
+      console.log('currOpponentTeamPlayer.data.status:', currOpponentTeamPlayer.value.data?.status)
+      console.log('currOpponentTeamGameStart.value:', currOpponentTeamGameStart.value)
+      
+      // 检查是否两个用户都已经处理完成
+      const teamUserList = fightData.value.team?.stageRecordStartList || []
+      const opponentTeamUserList = fightData.value.opponentTeam?.stageRecordStartList || []
+      const currTeamPlayerIndex = teamUserList.findIndex(item => item.userId === data.data.userId)
+      const currOpponentTeamPlayerIndex = opponentTeamUserList.findIndex(item => item.userId === data.data.userId)
+      
+      // 如果当前用户在我方队伍，检查对方是否已处理
+      if (currTeamPlayerIndex > -1) {
+        const opponentUserId = data.data.opponentUserId
+        const opponentIndex = opponentTeamUserList.findIndex(item => item.userId === opponentUserId)
+        if (opponentIndex > -1 && opponentTeamUserList[opponentIndex].status === 1) {
+          // 对方已处理，可以调用checkRemainTime
+          checkRemainTime(new Date(data.data.endTime), 'ROUND_START', data.timestamp)
+        }
+      }
+      // 如果当前用户在对方队伍，检查我方是否已处理
+      else if (currOpponentTeamPlayerIndex > -1) {
+        const myUserId = data.data.opponentUserId
+        const myIndex = teamUserList.findIndex(item => item.userId === myUserId)
+        if (myIndex > -1 && teamUserList[myIndex].status === 1) {
+          // 我方已处理，可以调用checkRemainTime
+          checkRemainTime(new Date(data.data.endTime), 'ROUND_START', data.timestamp)
+        }
+      }
     }
     // 回合对战结果
     if (data.type === 'ROUND_RESULT') {
+      console.log('处理ROUND_RESULT消息，时间:', new Date().toISOString())
       // 遍历 设置当前回合的对战结果数据
       setCurrFightResult(data.data)
       // 判断当前回合游戏剩余的时间能做些什么
-      checkRemainTime(new Date(data.data.endTime), 'ROUND_RESULT')
+      checkRemainTime(new Date(data.data.endTime), 'ROUND_RESULT', data.timestamp)
     }
     // 等待对手选择
     if (data.type === 'ROUND_WAITING') {
+      console.log('处理ROUND_WAITING消息，时间:', new Date().toISOString())
       // 遍历 设置当前回合的对战结果数据
       setCurrFightResult(data.data)
     }
     if (data.type === 'FIGHT_END') {
+      console.log('处理FIGHT_END消息，时间:', new Date().toISOString())
       currTeamGameStart.value = false
       currOpponentTeamGameStart.value = false
       // 清空等待下一轮提示文案
@@ -107,11 +195,19 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
       }
     }
     if (data.type === 'ERROR') {
+      console.log('处理ERROR消息，时间:', new Date().toISOString())
       ElMessage.error(data.data)
     }
+    
+    const endTime = performance.now()
+    console.log('消息处理完成，总耗时:', endTime - startTime, 'ms')
   },
-  onClose: () => {},
-  onError: (error) => {}
+  onClose: () => {
+    console.log('WebSocket连接已关闭，时间:', new Date().toISOString())
+  },
+  onError: (error) => {
+    console.error('WebSocket连接错误，时间:', new Date().toISOString(), error)
+  }
 })
 
 const handleClickBack = () => {
@@ -119,12 +215,36 @@ const handleClickBack = () => {
 }
 
 // 检查是否需要展示倒计时
-const checkFirstRoundStartTime = () => {
+const checkFirstRoundStartTime = (serverTimestamp) => {
   const firstRoundData = fightData.value.team.stageRecordStartList.find(item => item.round === 1)
+  
+  if (!firstRoundData || !firstRoundData.startTime) {
+    console.log('未找到第一轮数据或开始时间，不显示倒计时')
+    showCountdown.value = false
+    return
+  }
+  
   targetDate.value = new Date(firstRoundData.startTime)
-  if (targetDate.value > new Date()) {
+  
+  // 检查目标时间是否有效
+  if (isNaN(targetDate.value.getTime())) {
+    console.log('目标时间无效，不显示倒计时')
+    showCountdown.value = false
+    return
+  }
+  
+  // 使用服务器时间戳作为当前时间
+  const serverTime = new Date(serverTimestamp)
+  console.log('第一轮开始时间:', firstRoundData.startTime)
+  console.log('目标时间:', targetDate.value)
+  console.log('服务器时间:', serverTime)
+  console.log('目标时间 > 服务器时间:', targetDate.value > serverTime)
+  
+  if (targetDate.value > serverTime) {
+    console.log('显示倒计时')
     showCountdown.value = true
   } else {
+    console.log('不显示倒计时')
     showCountdown.value = false
   }
 }
@@ -153,7 +273,7 @@ const checkProgress = () => {
       // 定位到正在对战的两个用户
       findFightingUserByCurrRound(fightData.value.recordRound)
       // 判断当前回合游戏剩余的时间能做些什么
-      checkRemainTime(new Date(currTeamPlayer.value.data.endTime), 'CURRENT_PROGRESS')
+      checkRemainTime(new Date(currTeamPlayer.value.data.endTime), 'CURRENT_PROGRESS', data.timestamp)
       break
     // 已结束
     case 2: 
@@ -202,10 +322,20 @@ const findFightingUserByCurrRound = (currRoundNum) => {
 
 // 定位到即将对战的两个用户
 const findFightingUserByUserId = (userId, userStatus) => {
-  const teamUserList = fightData.value.team?.stageRecordStartList
-  const opponentTeamUserList = fightData.value.opponentTeam?.stageRecordStartList
+  const teamUserList = fightData.value.team?.stageRecordStartList || []
+  const opponentTeamUserList = fightData.value.opponentTeam?.stageRecordStartList || []
   const currTeamPlayerIndex = teamUserList.findIndex(item => item.userId === userId)
   const currOpponentTeamPlayerIndex = opponentTeamUserList.findIndex(item => item.userId === userId)
+  
+  console.log('findFightingUserByUserId:', {
+    userId,
+    userStatus,
+    currTeamPlayerIndex,
+    currOpponentTeamPlayerIndex,
+    teamUserListLength: teamUserList.length,
+    opponentTeamUserListLength: opponentTeamUserList.length
+  })
+  
 
   // 说明用户在team里
   if (currTeamPlayerIndex > -1) {
@@ -248,6 +378,27 @@ const findFightingUserByUserId = (userId, userStatus) => {
     nextTick(() => {
       scrollToTarget(opponentTeamScrollRef.value, opponentTeamUserList, currOpponentTeamPlayer.value.index)
     })
+  }
+  
+  // 如果当前用户在我方队伍，同时设置对方队伍的对战用户
+  if (currTeamPlayerIndex > -1) {
+    // 找到对方队伍中相同回合的用户
+    const opponentUser = opponentTeamUserList.find(item => item.round === currRound.value)
+    if (opponentUser) {
+      currOpponentTeamPlayer.value.index = opponentTeamUserList.findIndex(item => item.userId === opponentUser.userId)
+      currOpponentTeamPlayer.value.data = opponentUser
+      currOpponentTeamGameStart.value = true
+    }
+  }
+  // 如果当前用户在对方队伍，同时设置我方队伍的对战用户
+  else if (currOpponentTeamPlayerIndex > -1) {
+    // 找到我方队伍中相同回合的用户
+    const teamUser = teamUserList.find(item => item.round === currRound.value)
+    if (teamUser) {
+      currTeamPlayer.value.index = teamUserList.findIndex(item => item.userId === teamUser.userId)
+      currTeamPlayer.value.data = teamUser
+      currTeamGameStart.value = true
+    }
   }
 }
 
@@ -316,85 +467,108 @@ const showChooseOddsDialog = (timeDiff) => {
 
 // 播放动画
 const playAnimation = () => {
+  console.log('playAnimation 开始执行')
+  console.log('currTeamPlayer.value.index:', currTeamPlayer.value.index)
+  console.log('currOpponentTeamPlayer.value.index:', currOpponentTeamPlayer.value.index)
+  console.log('currTeamFightBoxRef.value:', currTeamFightBoxRef.value)
+  console.log('currOpponentTeamFightBoxRef.value:', currOpponentTeamFightBoxRef.value)
+  
   if (currTeamPlayer.value.index > -1) {
     nextTick(() => {
-      currTeamFightBoxRef.value?.startAnimation()
+      if (currTeamFightBoxRef.value && currTeamFightBoxRef.value.startAnimation) {
+        console.log('执行我方startAnimation')
+        currTeamFightBoxRef.value.startAnimation()
+      } else {
+        console.log('currTeamFightBoxRef.value 未定义或没有startAnimation方法')
+        console.log('currTeamFightBoxRef.value:', currTeamFightBoxRef.value)
+        console.log('currTeamFightBoxRef.value.startAnimation:', currTeamFightBoxRef.value?.startAnimation)
+      }
     })
+  } else {
+    console.log('currTeamPlayer.value.index 不是 > -1，跳过我方动画')
   }
+  
   if (currOpponentTeamPlayer.value.index > -1) {
     nextTick(() => {
-      currOpponentTeamFightBoxRef.value?.startAnimation()
+      if (currOpponentTeamFightBoxRef.value && currOpponentTeamFightBoxRef.value.startAnimation) {
+        console.log('执行对方startAnimation')
+        currOpponentTeamFightBoxRef.value.startAnimation()
+      } else {
+        console.log('currOpponentTeamFightBoxRef.value 未定义或没有startAnimation方法')
+        console.log('currOpponentTeamFightBoxRef.value:', currOpponentTeamFightBoxRef.value)
+        console.log('currOpponentTeamFightBoxRef.value.startAnimation:', currOpponentTeamFightBoxRef.value?.startAnimation)
+      }
     })
+  } else {
+    console.log('currOpponentTeamPlayer.value.index 不是 > -1，跳过对方动画')
   }
 }
 
 // 判断当前回合游戏剩余的时间能做些什么(能调用这个函数说明游戏还在进行中)
-const checkRemainTime = (endTime, type) => {
-  const currentTime = new Date()
-  const timeDiff = endTime - currentTime
-  console.log(endTime)
-  console.log(currentTime)
+const checkRemainTime = (endTime, type, messageTimestamp) => {
+  // 使用消息时间戳而不是当前时间，避免时间不对等问题
+  const messageTime = new Date(messageTimestamp)
+  const timeDiff = endTime - messageTime
+  console.log('endTime:', endTime)
+  console.log('messageTime:', messageTime)
+  console.log('timeDiff:', timeDiff / 1000, '秒')
   console.log(Number.isNaN(timeDiff))
   if (Number.isNaN(timeDiff)) return
 
   const currTeamPlayerData = currTeamPlayer.value.data
   const currOpponentTeamPlayerData = currOpponentTeamPlayer.value.data
 
-  console.log(0)
-  // 当前回合状态非进行中，直接返回
-  // TO DO: if (currTeamPlayerData.status !== 1) return
-  console.log(currTeamPlayerData)
-  console.log(currOpponentTeamPlayerData)
-  if (currOpponentTeamPlayerData.status !== 1) return
-  console.log(1)
-  console.log(timeDiff / 1000)
+  console.log('checkRemainTime 开始执行，type:', type)
+  console.log('currTeamPlayerData:', currTeamPlayerData)
+  console.log('currOpponentTeamPlayerData:', currOpponentTeamPlayerData)
+  
+  // 检查玩家数据是否存在
+  if (!currTeamPlayerData) {
+    console.log('我方玩家数据不存在，直接返回')
+    return
+  }
+  
+  // 对于 ROUND_START 消息，如果对方玩家数据不存在，需要等待第二个消息
+  if (type === 'ROUND_START' && !currOpponentTeamPlayerData) {
+    console.log('ROUND_START 消息：对方玩家数据不存在，等待第二个消息')
+    return
+  }
+  
+  // 对于其他消息类型，如果对方玩家数据不存在，也直接返回
+  if (type !== 'ROUND_START' && !currOpponentTeamPlayerData) {
+    console.log('对方玩家数据不存在，直接返回')
+    return
+  }
+  
+  console.log('通过数据检查，继续执行')
+  console.log('timeDiff:', timeDiff / 1000, '秒')
 
-  // (timeDiff - 30000) / 1000 > 1 表示倒计时超过1s才可以展示弹窗
-  if (timeDiff > 30000 && ((timeDiff - 30000) / 1000 > 1)) {
-    console.log(2)
-    // 只有 ROUND_START 和 CURRENT_PROGRESS 才可以展示弹窗，ROUND_RESULT 和 ROUND_WAITING不行
-    if (type === 'ROUND_START') {
-      // 只有前30s可以展示选择弹窗和倒计时，并且得是当前用户才展示，否则展示“用户选择中”
+  // 根据消息类型决定行为
+  if (type === 'ROUND_START') {
+    console.log('ROUND_START 消息处理，剩余时间:', timeDiff / 1000, '秒')
+    // 只有前30s可以展示选择弹窗和倒计时，并且得是当前用户才展示，否则展示"用户选择中"
+    if (timeDiff > 30000 && ((timeDiff - 30000) / 1000 > 1)) {
+      console.log('前30秒：显示选择弹窗')
       showChooseOddsDialog(timeDiff)
-    } else if (type === 'CURRENT_PROGRESS') {
-      // 当前两个玩家都已经选择概率，播放动画
-      if (currTeamPlayerData.data && currOpponentTeamPlayerData.data) {
-        playAnimation()
-      } else {
-        showChooseOddsDialog(timeDiff)
-      }
-    } else if (type === 'ROUND_RESULT') {
-      // 播放动画
+    } else {
+      console.log('后30秒：ROUND_START 不处理')
+    }
+  } else if (type === 'CURRENT_PROGRESS') {
+    console.log('CURRENT_PROGRESS 消息处理，剩余时间:', timeDiff / 1000, '秒')
+    // CURRENT_PROGRESS 是第一次连接时发送的，不处理动画
+    console.log('CURRENT_PROGRESS 不处理动画')
+  } else if (type === 'ROUND_RESULT') {
+    console.log('ROUND_RESULT 消息处理，剩余时间:', timeDiff / 1000, '秒')
+    // ROUND_RESULT 是收到结果后展示动画
+    if (timeDiff > 0) {
+      console.log('ROUND_RESULT：开始播放动画')
       playAnimation()
-    }
-  } else if (timeDiff > 17000) {
-    console.log(3)
-    // 只有 ROUND_RESULT 和 CURRENT_PROGRESS 才可以播放动画，ROUND_START 和 ROUND_WAITING 不行
-    if (!(type === 'ROUND_RESULT' || type === 'CURRENT_PROGRESS')) return
-
-    // 动画13s，自定义缓冲时间4s，回合一共60s，剩余时间大于17s时可展示动画，否则直接展示结果
-    // 播放动画
-    playAnimation()
-  } else if (timeDiff > 0) {
-    console.log(4)
-    // 只有 ROUND_RESULT 和 CURRENT_PROGRESS 才可以直接展示结果，ROUND_START 和 ROUND_WAITING 不行
-    if (!(type === 'ROUND_RESULT' || type === 'CURRENT_PROGRESS')) return
-
-    console.log(currTeamPlayer.value.index)
-    console.log(currOpponentTeamPlayer.value.index)
-    // 直接展示结果
-    if (currTeamPlayer.value.index > -1) {
-      nextTick(() => {
-        currTeamFightBoxRef.value.jumpToEndPosition()
-      })
-    }
-    if (currOpponentTeamPlayer.value.index > -1) {
-      nextTick(() => {
-        currOpponentTeamFightBoxRef.value.jumpToEndPosition()
-      })
+    } else {
+      console.log('时间已过，显示错误提示')
+      ElMessage.warning('当前回合结束时间有误')
     }
   } else {
-    ElMessage.warning('当前回合结束时间有误')
+    console.log('其他消息类型:', type, '剩余时间:', timeDiff / 1000, '秒')
   }
 }
 
@@ -438,7 +612,7 @@ const test = () => {
   // 定位到即将对战的两个用户
   findFightingUserByUserId(data.data.userId, data.data.userStatus)
   // 判断当前回合游戏剩余的时间能做些什么(ROUND_START会推2条数据)
-  checkRemainTime(new Date(data.data.endTime), 'ROUND_START')
+  checkRemainTime(new Date(data.data.endTime), 'ROUND_START', data.timestamp)
 }
 
 const test2 = () => {
@@ -477,7 +651,7 @@ const test2 = () => {
   // 遍历 设置当前回合的对战结果数据
   setCurrFightResult(data.data)
   // 判断当前回合游戏剩余的时间能做些什么
-  checkRemainTime(new Date(data.data.endTime), 'ROUND_RESULT')
+  checkRemainTime(new Date(data.data.endTime), 'ROUND_RESULT', data.timestamp)
 }
 
 const changeSet = (set) => {
@@ -544,6 +718,7 @@ onUnmounted(() => {
       <Countdown
         v-if="showCountdown"
         :target-time="targetDate"
+        :server-timestamp="serverTimeOffset"
         :show-status="false"
         @finish="handleStopCountdown"
       />

@@ -20,13 +20,19 @@ const isGameOpen = computed(() => isNotEmptyObj(matchData.value));
 
 const getMatchInfo = () => {
   loading.value = true;
-  getMatchInfoApi()
+  return getMatchInfoApi()
     .then((res) => {
+      console.log('getMatchInfo API 响应:', res);
       if (res.code === 200) {
         matchData.value = res.data;
         targetDate.value = new Date(res.data.signUpStartTime);
-        startCount();
+        console.log('设置 matchId 到 sessionStorage:', res.data.id);
         window.sessionStorage.setItem("matchId", res.data.id);
+        console.log('sessionStorage 中的 matchId:', window.sessionStorage.getItem("matchId"));
+        return res.data;
+      } else {
+        console.log('API 返回错误:', res.msg);
+        throw new Error(res.msg || '获取比赛信息失败');
       }
     })
     .finally(() => {
@@ -39,7 +45,24 @@ const handleStopCountdown = () => {
 };
 
 const handleEnter = () => {
-  router.push("/detail");
+  // 确保 matchId 已经设置
+  const currentMatchId = window.sessionStorage.getItem("matchId");
+  console.log('点击进入按钮，当前 matchId:', currentMatchId);
+  
+  if (!currentMatchId || currentMatchId === '0') {
+    console.log('matchId 未设置或为0，重新获取比赛信息');
+    getMatchInfo().then(() => {
+      const newMatchId = window.sessionStorage.getItem("matchId");
+      console.log('重新获取后的 matchId:', newMatchId);
+      if (newMatchId && newMatchId !== '0') {
+        router.push("/detail");
+      } else {
+        ElMessage.error("比赛信息获取失败，请刷新页面重试");
+      }
+    });
+  } else {
+    router.push("/detail");
+  }
 };
 
 onMounted(() => {

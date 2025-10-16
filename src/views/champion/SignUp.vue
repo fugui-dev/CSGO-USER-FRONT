@@ -20,7 +20,11 @@ import DraggableButton from "./components/DraggableButton.vue";
 const route = useRoute()
 const store = useStore()
 
-const matchId = computed(() => Number(window.sessionStorage.getItem('matchId')))
+const matchId = computed(() => {
+  const id = Number(window.sessionStorage.getItem('matchId'));
+  console.log('SignUp.vue 获取 matchId:', id);
+  return id;
+})
 const loading = ref(false)
 const auditListRef = ref()
 const list = ref([]) // 所有队伍列表
@@ -77,6 +81,9 @@ const getMatchInfo = () => {
       matchData.value = res.data
       targetDate.value = new Date(res.data.signUpEndTime)
     }
+  }).catch(err => {
+    console.error('获取比赛详情失败:', err)
+    ElMessage.error('获取比赛详情失败')
   }).finally(() => {
     loading.value = false
   })
