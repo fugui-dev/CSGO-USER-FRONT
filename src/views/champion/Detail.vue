@@ -49,6 +49,7 @@ const props = defineProps({
 
 <template>
   <Layout>
+    <slot name="top"></slot>
     <div
       class="detail-layout-wrapper"
       :style="{

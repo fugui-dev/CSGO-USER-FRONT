@@ -10,7 +10,10 @@ import ChooseOddsDialog from './components/ChooseOddsDialog.vue'
 import FightBox from './components/FightBox.vue'
 import bgm from "@/assets/music/main_battle.mp3";
 import {ElMessage} from "element-plus";
-import Countdown from "./components/Countdown.vue";
+import WaitCountdown from "./components/waitCountdown.vue";
+import FightItem from "./components/fightItem.vue";
+import FightMember from "./components/fightMember.vue";
+import FightGameDetail from "./components/fightGameDetail.vue";
 
 const router = useRouter()
 const store = useStore()
@@ -696,10 +699,14 @@ const handleStopCountdown = () => {
 }
 
 onMounted(() => {
-    musica.src = bgm
-    musica.loop = true
-    musica.load()
-    musica.play()
+  window.scrollTo({
+    top: 0,    // 目标y轴位置（顶部）
+    left: 0,   // 目标x轴位置（不横向滚动）
+  });
+  musica.src = bgm
+  musica.loop = true
+  musica.load()
+  musica.play()
 })
 
 onUnmounted(() => {
@@ -707,474 +714,356 @@ onUnmounted(() => {
   musica.currentTime = 0
 })
 
+import bgImg from "@/assets/images/champion/bg.webp";
 </script>
 <template>
-  <Detail>
-    <div class="against-fight-container" :style="{
-        '--bg-level':requireImg('/level/3.png',true),
-        '--bg-round-num':requireImg('/v2/smelt/jg-bg.png',true),
-      }">
-      <!-- 倒计时 -->
-      <Countdown
-        v-if="showCountdown"
-        :target-time="targetDate"
-        :server-timestamp="serverTimeOffset"
-        :show-status="false"
-        @finish="handleStopCountdown"
-      />
-      <!-- 头部 -->
-      <div class="against-fight-header">
-        <div class="against-fight-header-top">
-          <div class="back" @click="handleClickBack">
-            <img :src="requireImg('/v2/roll/room/back.png')" alt="">
-            返回
+  <Detail :bg="{ img: bgImg, height: '187.5vw' }">
+    <template #top>
+      <div class="wait-content">
+        <WaitCountdown
+          v-if="showCountdown"
+          :target-time="targetDate"
+          :show-status="false"
+          @finish="handleStopCountdown"
+        >
+          <template #count>
+            <div class="wait-count">{{ currRound }}/{{ totalRound }}</div>
+          </template>
+        </WaitCountdown>
+      </div>
+      <div class="button-wrapper">
+        <img
+          class="back"
+          @click="handleClickBack"
+          src="@/assets/images/champion/game/back.png"
+          alt=""
+        />
+        <div class="setting-item">
+          <div class="setting-switch-wrapper" @click="changeSet('music')">
+            <img
+              class="setting-switch"
+              :class="localSet.music ? '' : 'active'"
+              src="@/assets/images/open/switch.png"
+              alt=""
+            />
           </div>
-          <span class="tw-flex tw-items-center tw-gap-1.5 tw-cursor-pointer" @click="changeSet('music')">
-            <span
-              class="tw-relative tw-inline-flex tw-h-[0.875rem] md:tw-h-6 tw-w-[1.75rem] md:tw-w-11 tw-items-center tw-rounded-full tw-bg-[#300000] tw-transition-colors tw-overflow-hidden">
-              <div class="tw-absolute tw-inset-0 tw-rounded-full tw-pointer-events-none" style="border: 2px solid transparent; background: #FFB8B8 ; 
-              mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-              -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-              -webkit-mask-composite: xor; mask-composite: exclude;">
-              </div>
-
-              <span
-                class="tw-relative tw-inline-block tw-h-[0.625rem] md:tw-h-4 tw-w-[0.625rem] md:tw-w-4 tw-transform tw-rounded-full tw-transition-transform"
-                :class="{
-                  'tw-translate-x-[1.125rem] md:tw-translate-x-[1.625rem]': !localSet.music,
-                  'tw-translate-x-[0.25rem] md:tw-translate-x-[0.375rem]': localSet.music,
-                  'tw-bg-white tw-border-2 tw-border-[#FFB8B8]': localSet.music
-                }" :style="!localSet.music ? 'background: #FFB8B8;' : ''">
-              </span>
-            </span>
-            <span class="tw-text-xs md:tw-text-sm">关闭音效</span>
-          </span>
-        </div>
-        <!-- 队伍信息 -->
-        <div class="against-fight-header-content">
-          <div class="team-info">
-            <img :src="fightData.teamAvatar" alt="" class="team-avatar">
-            <div>
-              <p class="alias-name">{{ fightData.team?.aliasName }}</p>
-              <p class="team-name">{{ fightData.teamName }}</p>
-              <p class="team-score">
-                <img :src="requireImg('/coin1.png',false)" alt="">
-                <span>{{currTeamScore}}</span>
-              </p>
-            </div>
-          </div>
-          <div class="round-num">
-            <div class="round-num-bg rotate1"></div>
-            <div class="round-num-bg rotate2"></div>
-            <div class="round-num-bg rotate3"></div>
-            <h3>{{ currRound }} / {{ totalRound }}</h3>
-          </div>
-          <div class="team-info team-info-right">
-            <img :src="fightData.opponentTeamAvatar" alt="" class="team-avatar">
-            <div>
-              <p class="alias-name">{{ fightData.opponentTeam?.aliasName }}</p>
-              <p class="team-name">{{ fightData.opponentTeamName }}</p>
-              <p class="team-score">
-                <img :src="requireImg('/coin1.png',false)" alt="">
-                <span>{{currOpponentTeamScore}}</span>
-              </p>
-            </div>
-          </div>
+          <div class="switch-text">关闭音效</div>
         </div>
       </div>
-      <!-- 中间 -->
-      <div class="against-fight-main">
-        <!-- 左边 -->
-        <div class="against-fight-main-left">
-          <div class="fight-main-wrap">
-            <el-scrollbar max-height="40vh" ref="teamScrollRef">
-              <div class="team-member">
-                <div
-                  :class="['team-member-item', {'magnify': currTeamPlayer?.index === index } ]"
-                  v-for="(item, index) in fightData.team?.stageRecordStartList"
-                  :key="item.userId">
-                    <div class="team-member-item-top">
-                      <img :src="item.userAvatar" alt="" class="user-avatar">
-                      <div class="team-member-item-result">
-                        <div class="user-probability">
-                          <img :src="requireImg('/v2/user/nav1-a.png',false)" alt="">
-                          <span v-if="item.animationEnd">{{item.data}}</span>
-                          <span v-else>0</span>
-                        </div>
-                        <div class="user-score">
-                          <img :src="requireImg('/coin1.png',false)" alt="">
-                          <span v-if="item.animationEnd">{{item.score}}</span>
-                          <span v-else>0</span>
-                        </div>
-                      </div>
-                    </div>
-                    <p>{{ item.userName }}</p>
-                </div>
-              </div>
-            </el-scrollbar>
-            <div class="team-fight">
-              <div class="team-fight-status" v-if="fightData.status === 2">游戏已结束</div>
-              <div class="team-fight-status" v-else-if="fightData.status === 0 || currTeamPlayer.data.status === 0 || showCountdown || !currTeamGameStart">等待游戏开始...</div>
-              <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && !currTeamPlayer.data.data">用户选择中...</div>
-              <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && currTeamPlayer.data.data && !currOpponentTeamPlayer.data.data">用户已选择</div>
-              <div class="team-fight-status" v-else-if="currTeamPlayer.data.status === 1 && currTeamPlayer.data.data && currOpponentTeamPlayer.data.data && currTeamWaitingNextRoundText">{{ currTeamWaitingNextRoundText }}</div>
-              <FightBox
-                v-else-if="currTeamPlayer.data.status === 1 && currTeamPlayer.data.data && currOpponentTeamPlayer.data.data"
-                ref="currTeamFightBoxRef"
-                :fightResult="currTeamPlayer.data"
-                :localSet="localSet"
-                @scrollEnd="handleScrollEnd('currTeam')" />
-              <div class="team-fight-status" v-else>系统错误</div>
-            </div>
+    </template>
+    <div class="against-fight-container">
+      <div class="header tw-flex tw-items-center tw-justify-center">
+        <FightItem
+          :data="{
+            aliasName: fightData.team?.aliasName,
+            teamAvatar: fightData.teamAvatar,
+            teamName: fightData.teamName,
+          }"
+          :score="currTeamScore"
+        />
+        <div class="count">{{ currRound }}/{{ totalRound }}</div>
+        <FightItem
+          :data="{
+            aliasName: fightData.opponentTeam?.aliasName,
+            teamAvatar: fightData.opponentTeamAvatar,
+            teamName: fightData.opponentTeamName,
+          }"
+          :score="currOpponentTeamScore"
+          bg-color="rgba(124, 48, 38, 0.43)"
+        />
+      </div>
+      <div class="detail-wrapper tw-flex tw-items-center tw-justify-center">
+        <el-scrollbar max-height="577px" ref="teamScrollRef">
+          <FightMember
+            class="team-member-item"
+            v-for="(item, index) in fightData.team?.stageRecordStartList"
+            :key="item.userId"
+            :data="{
+              avatar: item.userAvatar,
+              name: item.userName,
+              rate: (item.animationEnd && item.data) || 0,
+              score: (item.animationEnd && item.score) || 0,
+              isCurrent:
+                currTeamPlayer?.index === index
+            }"
+          />
+        </el-scrollbar>
+        <div class="game-detail">
+          <div class="team-fight-status" v-if="fightData.status === 2">
+            游戏已结束
           </div>
-        </div>
-        <!-- VS -->
-        <div class="vs-container">
-          <p class="vs">VS</p>
-        </div>
-        <!-- 右边 -->
-         <div class="against-fight-main-right">
-          <div class="fight-main-wrap">
-            <el-scrollbar max-height="40vh" ref="opponentTeamScrollRef">
-              <div class="team-member">
-                <div
-                  :class="['team-member-item', {'magnify': currOpponentTeamPlayer?.index === index } ]"
-                  v-for="(item, index) in fightData.opponentTeam?.stageRecordStartList"
-                  :key="item.userId">
-                    <div class="team-member-item-top team-member-item-top-reverse">
-                      <img :src="item.userAvatar" alt="" class="user-avatar">
-                      <div class="team-member-item-result">
-                        <div class="user-probability">
-                          <img :src="requireImg('/v2/user/nav1-a.png',false)" alt="">
-                          <span v-if="item.animationEnd">{{item.data}}</span>
-                          <span v-else>0</span>
-                        </div>
-                        <div class="user-score">
-                          <img :src="requireImg('/coin1.png',false)" alt="">
-                          <span v-if="item.animationEnd">{{item.score}}</span>
-                          <span v-else>0</span>
-                        </div>
-                      </div>
-                    </div>
-                    <p>{{ item.userName }}</p>
-                </div>
-              </div>
-            </el-scrollbar>
-            <div class="team-fight">
-              <div class="team-fight-status" v-if="fightData.status === 2">游戏已结束</div>
-              <div class="team-fight-status" v-else-if="fightData.status === 0 || currOpponentTeamPlayer.data.status === 0 || showCountdown || !currOpponentTeamGameStart">等待游戏开始...</div>
-              <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && !currOpponentTeamPlayer.data.data">用户选择中...</div>
-              <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && currOpponentTeamPlayer.data.data && !currTeamPlayer.data.data">用户已选择</div>
-              <div class="team-fight-status" v-else-if="currOpponentTeamPlayer.data.status === 1 && currOpponentTeamPlayer.data.data && currTeamPlayer.data.data && currOpponentTeamWaitingNextRoundText">{{ currOpponentTeamWaitingNextRoundText }}</div>
-              <FightBox
-                v-else-if="currOpponentTeamPlayer.data.status === 1 && currOpponentTeamPlayer.data.data && currTeamPlayer.data.data && !currOpponentTeamWaitingNextRoundText"
-                ref="currOpponentTeamFightBoxRef"
-                :fightResult="currOpponentTeamPlayer.data"
-                :localSet="localSet"
-                @scrollEnd="handleScrollEnd('currOpponentTeam')" />
-              <div class="team-fight-status" v-else>系统错误</div>
-            </div>
+          <div
+            class="team-fight-status"
+            v-else-if="
+              fightData.status === 0 ||
+              currOpponentTeamPlayer.data.status === 0 ||
+              showCountdown ||
+              !currOpponentTeamGameStart
+            "
+          >
+            等待游戏开始...
           </div>
+          <div
+            class="team-fight-status"
+            v-else-if="
+              currOpponentTeamPlayer.data.status === 1 &&
+              !currOpponentTeamPlayer.data.data
+            "
+          >
+            用户选择中...
+          </div>
+          <div
+            class="team-fight-status"
+            v-else-if="
+              currOpponentTeamPlayer.data.status === 1 &&
+              currOpponentTeamPlayer.data.data &&
+              !currTeamPlayer.data.data
+            "
+          >
+            用户已选择
+          </div>
+          <div
+            class="team-fight-status"
+            v-else-if="
+              currOpponentTeamPlayer.data.status === 1 &&
+              currOpponentTeamPlayer.data.data &&
+              currTeamPlayer.data.data &&
+              currOpponentTeamWaitingNextRoundText
+            "
+          >
+            {{ currOpponentTeamWaitingNextRoundText }}
+          </div>
+          <FightGameDetail
+            v-else-if="
+              currTeamPlayer.data.status === 1 &&
+              currTeamPlayer.data.data &&
+              currOpponentTeamPlayer.data.data
+            "
+            ref="currTeamFightBoxRef"
+            :fightResult="currTeamPlayer.data"
+            :localSet="localSet"
+            @scrollEnd="handleScrollEnd('currTeam')"
+          />
+          <div class="team-fight-status" v-else>系统错误</div>
         </div>
+        <img class="vs" src="@/assets/images/champion/history/vs.png" alt="" />
+        <div class="game-detail right">
+          <div class="team-fight-status" v-if="fightData.status === 2">
+            游戏已结束
+          </div>
+          <div
+            class="team-fight-status"
+            v-else-if="
+              fightData.status === 0 ||
+              currOpponentTeamPlayer.data.status === 0 ||
+              showCountdown ||
+              !currOpponentTeamGameStart
+            "
+          >
+            等待游戏开始...
+          </div>
+          <div
+            class="team-fight-status"
+            v-else-if="
+              currOpponentTeamPlayer.data.status === 1 &&
+              !currOpponentTeamPlayer.data.data
+            "
+          >
+            用户选择中...
+          </div>
+          <div
+            class="team-fight-status"
+            v-else-if="
+              currOpponentTeamPlayer.data.status === 1 &&
+              currOpponentTeamPlayer.data.data &&
+              !currTeamPlayer.data.data
+            "
+          >
+            用户已选择
+          </div>
+          <div
+            class="team-fight-status"
+            v-else-if="
+              currOpponentTeamPlayer.data.status === 1 &&
+              currOpponentTeamPlayer.data.data &&
+              currTeamPlayer.data.data &&
+              currOpponentTeamWaitingNextRoundText
+            "
+          >
+            {{ currOpponentTeamWaitingNextRoundText }}
+          </div>
+          <FightGameDetail
+            v-else-if="
+              currOpponentTeamPlayer.data.status === 1 &&
+              currOpponentTeamPlayer.data.data &&
+              currTeamPlayer.data.data &&
+              !currOpponentTeamWaitingNextRoundText
+            "
+            ref="currOpponentTeamFightBoxRef"
+            :fightResult="currOpponentTeamPlayer.data"
+            :localSet="localSet"
+            is-yellow
+            @scrollEnd="handleScrollEnd('currOpponentTeam')"
+          />
+          <div class="team-fight-status" v-else>系统错误</div>
+        </div>
+        <el-scrollbar max-height="577px" ref="opponentTeamScrollRef">
+          <FightMember
+            class="team-member-item"
+            v-for="(item, index) in fightData.opponentTeam
+              ?.stageRecordStartList"
+            :key="item.userId"
+            :data="{
+              avatar: item.userAvatar,
+              name: item.userName,
+              rate: (item.animationEnd && item.data) || 0,
+              score: (item.animationEnd && item.score) || 0,
+              isCurrent:
+                currTeamPlayer?.index === index
+            }"
+          />
+        </el-scrollbar>
       </div>
     </div>
-    <ChooseOddsDialog ref="chooseOddsDialogRef" :start-second="chooseCountdownValue" @choose="handleChooseOdds"/>
+    <ChooseOddsDialog
+      ref="chooseOddsDialogRef"
+      :start-second="chooseCountdownValue"
+      @choose="handleChooseOdds"
+    />
   </Detail>
 </template>
 
 <style scoped lang="scss">
 @use "@/style" as *;
 
-.back {
-  display: flex;
-  height: fit-content;
-  margin: 12px 0 0 0;
-  cursor: pointer;
-  z-index: 2;
-  align-items: center;
-  color: #FFF5F5CC;
-  position: relative;
-;
-  @include mobile {
-    display: none;
-  }
+:deep() {
+  .detail-content {
+    z-index: auto;
 
-  img {
-    height: 24px;
-    margin-right: 8px;
-
-  }
-}
-.against-fight-header {
-  width: 94%;
-  margin: 0 auto;
-  background-color: rgba($color: #111, $alpha: 0.86);
-  border-radius: 12px;
-  padding: 20px;
-  position: relative;
-  .against-fight-header-top {
-    display: flex;
-    justify-content: space-between;
-  }
-  .against-fight-header-content {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 12px;
-    .team-info {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      .team-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        margin-right: 12px;
-        border: 1px solid #9006e5;
-      }
-      .alias-name {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        font-size: 12px;
-        background-color: rgba($color: #c01e1e, $alpha: 0.3);
-        padding: 0 6px;
-        color: #b38181;
-      }
-      .team-name {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        font-size: 14px;
-        color: #dddddd;
-        padding-left: 4px;
-        margin-bottom: 2px;
-      }
-      .team-score {
-        display: flex;
-        align-items: center;
-        padding-left: 4px;
-        img {
-          width: 10px;
-          height: 13px;
-          margin-right: 3px;
-        }
-        span {
-          font-size: 13px;
-        }
-      }
-    }
-    .team-info-right {
-      flex-direction: row-reverse;
-      img {
-        margin-right: 0;
-        margin-left: 12px;
-      }
-      p {
-        text-align: right;
-      }
-      .team-name {
-        padding-right: 4px;
-      }
-    }
-    .round-num {
-      width: 60px;
-      height: 70px;
-      margin-right: 16px;
+    .nav-wrapper {
       position: relative;
-      h3 {
-        width: 100%;
-        text-align: center;
-        position: absolute;
-        z-index: 2;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        font-size: 24px;
-        color: #fff;
-      }
-      .round-num-bg {
-        width: 60px;
-        height: 70px;
-        background-image: var(--bg-round-num);
-        background-size: contain;
-        background-repeat: no-repeat;
-        position: absolute;
-        z-index: 1;
-      }
-      .rotate1 {
-        animation: rotate1 2s linear infinite;
-      }
-      .rotate2 {
-        animation: rotate2 2s linear infinite;
-      }
-      .rotate3 {
-        animation: rotate3 2s linear infinite;
-      }
+      z-index: 3;
     }
   }
 }
-.against-fight-main {
-  width: 94%;
-  margin: 0 auto;
-  padding: 16px 0;
-  display: flex;
-  justify-content: space-between;
-  .against-fight-main-left, .against-fight-main-right {
-    width: 50%;
+
+.wait-content {
+  position: absolute;
+  top: 66px;
+  left: 0;
+  width: 100%;
+  height: 48.23vw;
+  z-index: 2;
+
+  :deep() .content {
+    margin-top: 11vw;
   }
-  .fight-main-wrap {
-    display: flex;
-    justify-content: space-between;
-    .team-member {
-      padding: 14px 0;
-      .team-member-item {
-        padding-bottom: 10px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        .team-member-item-top {
-          display: flex;
-          align-items: end;
-        }
-        .user-avatar {
-          width: 42px;
-          height: 42px;
-          border: 1px solid #ea9918;
-          border-radius: 8px;
-        }
-        p {
-          font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-          font-size: 13px;
-        }
-        .team-member-item-result {
-          background-color: #771818;
-          border-radius: 4px;
-          height: 28px;
-          margin-left: 3px;
-          .user-probability, .user-score {
-            display: flex;
-            align-items: center;
-            padding: 0 4px 0 3px;
-            height: 14px;
-            line-height: 14px;
-            img {
-              width: 10px;
-              height: 10px;
-              margin-right: 2px;
-            }
-            span {
-              font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-              font-size: 12px;
-              color: #eee;
-            }
-          }
-        }
-        .team-member-item-top-reverse {
-          flex-direction: row-reverse;
-          .team-member-item-result {
-            margin-left: 0;
-            margin-right: 3px;
-          }
-        }
-      }
-      .magnify {
-        overflow: visible;
-        img {
-          width: 60px;
-          height: 60px;
-          animation: smooth 2s infinite;
-        }
-        p {
-          font-size: 16px;
-          text-shadow:  0px 0px 6px rgb(247, 219, 77);
-        }
-      }
-    }
-    .team-fight {
-      flex: 1;
-      background-image: var(--bg-level);
-      background-color: rgba(50, 50, 50, 0.66);
-      background-position: bottom;
-      background-repeat: repeat-x;
+
+  .wait-count {
+    font-size: 60px;
+    color: #f2ffef;
+    margin-bottom: 10px;
+  }
+}
+
+.button-wrapper {
+  position: absolute;
+  top: 86px;
+  right: 30px;
+  z-index: 4;
+
+  .back {
+    width: 72px;
+    height: 40px;
+    cursor: pointer;
+  }
+
+  .setting-item {
+    margin-top: 40px;
+
+    .setting-switch-wrapper {
+      width: 71px;
+      height: 26px;
+      background-color: #343a3e;
       border-radius: 12px;
       cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      margin: 16px 6px;
-      max-width: 360px;
-      box-sizing: border-box;
-      padding: 16px 8px;
-      .team-fight-status {
-        width: 100%;
-        color: #ddd;
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        display: flex;
-        justify-content: center;
-        align-items: center;
+      position: relative;
+
+      .setting-switch {
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        top: 1px;
+        left: 1px;
+        transition: all 0.3s;
+
+        &.active {
+          left: auto;
+          right: 1px;
+        }
       }
     }
-  }
-  .against-fight-main-right .fight-main-wrap {
-    flex-direction: row-reverse;
-  }
-}
-.vs-container {
-  display: flex;
-  align-items: center;
-  position: relative;
-  z-index: 5;
-  .vs {
-    font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-    color: #f29614;
-    font-size: 28px;
-    @include mobile {
-      position: absolute;
-      transform: translateX(-50%);
-      font-size: 20px;
+
+    .switch-text {
+      margin-top: 10px;
+      font-weight: 500;
+      font-size: 17px;
+      color: #ffffff;
     }
   }
 }
 
-@keyframes rotate1 {
-  from {
-    transform: rotateZ(0deg);
+.against-fight-container {
+  width: 980px;
+  max-width: 980px;
+  margin: 0 auto;
+  padding-top: 9.5vw;
+  font-family: "PingFang Medium";
+
+  .header {
+    .count {
+      margin: 0 250px;
+      font-size: 38px;
+      font-family: Jijiati;
+    }
   }
 
-  to {
-    transform: rotateZ(360deg);
-  }
-}
-@keyframes rotate2 {
-  from {
-    transform: rotateZ(180deg);
-  }
+  .detail-wrapper {
+    margin-top: 5vw;
 
-  to {
-    transform: rotateZ(-180deg);
-  }
-}
-@keyframes rotate3 {
-  from {
-    transform: rotateZ(90deg);
-  }
+    .member-wrapper {
+      width: 133px;
+    }
 
-  to {
-    transform: rotateZ(270deg);
-  }
-}
-@keyframes smooth {
-  0% {
-    box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.6);
-  }
+    .game-detail {
+      margin-left: 20px;
+      width: 264px;
+      min-width: 264px;
+      max-width: 264px;
+      height: 577px;
+      background: rgba(0, 0, 0, 0.29);
+      border-radius: 16px;
+      border: 3px solid rgba(86, 153, 167, 0.96);
+      font-family: "PingFang Medium";
+      font-weight: 500;
+      font-size: 25px;
+      color: #ffffff;
+      line-height: normal;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-  50% {
-    box-shadow: 0px 0px 27px rgba(255, 255, 255, 0.6);
-  }
+      &.right {
+        margin: 0 20px 0 0;
+        border: 3px solid rgba(198, 128, 102, 0.96);
+      }
+    }
 
-  100% {
-    box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.6);
+    .vs {
+      width: 53px;
+      height: 71px;
+      margin: 0 22px;
+    }
   }
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
 }
 </style>

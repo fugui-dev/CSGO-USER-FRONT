@@ -1,0 +1,98 @@
+<script setup>
+import { requireImg } from "@/utils/common";
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+  score: {
+    type: Number,
+    default: 0,
+  },
+  bgColor: {
+    type: String,
+    default: "rgba(18, 56, 72, 0.58)",
+  },
+});
+</script>
+<template>
+  <div
+    class="level-item tw-flex tw-flex-col tw-items-center"
+    :style="{ backgroundColor: bgColor }"
+  >
+    <div class="alias">{{ data.aliasName }}</div>
+    <div class="avatar-wrapper">
+      <img
+        class="avatar"
+        :src="data.teamAvatar ? data.teamAvatar : requireImg('/v2/nav/u1.png')"
+        alt=""
+      />
+      <img
+        class="avatar-bg"
+        src="@/assets/images/battle/avatar-bg.png"
+        alt=""
+      />
+    </div>
+    <div class="team-name">{{ data.teamName }}</div>
+    <div class="score tw-flex tw-items-center tw-justify-center">
+      <img
+        src="@/assets/images/champion/game/coin.png"
+        alt=""
+        class="coin-image"
+      />
+      {{ score }}
+    </div>
+  </div>
+</template>
+
+<style scoped lang="scss">
+@use "@/style" as *;
+.level-item {
+  width: 158px;
+  height: 252px;
+  border-radius: 6px;
+  font-family: "PingFang Medium";
+  font-weight: 500;
+  font-size: 22px;
+  color: #d4c7af;
+  line-height: normal;
+  .alias {
+    margin-top: 10px;
+    font-size: 24px;
+  }
+  .avatar-wrapper {
+    margin-top: 22px;
+    width: 74px;
+    height: 67px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    .avatar {
+      width: 51px;
+      height: 51px;
+      border-radius: 50%;
+      display: block;
+    }
+    .avatar-bg {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .team-name {
+    margin-top: 12px;
+  }
+  .score {
+    margin-top: 10px;
+    .coin-image {
+      width: 31px;
+      height: 33px;
+      margin-right: 5px;
+    }
+  }
+}
+</style>

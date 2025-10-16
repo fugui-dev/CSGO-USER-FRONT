@@ -5,11 +5,14 @@
       alt=""
       class="waiting-img"
     />
-    <div class="wait-text">游戏等待中</div>
-    <div class="count-time">
-      {{ formattedDays }}{{ labels.days }}{{ formattedHours }}{{ labels.hours
-      }}{{ formattedMinutes }}{{ labels.minutes }}{{ formattedSeconds
-      }}{{ labels.seconds }}
+    <div class="content">
+      <slot name="count" />
+      <div class="wait-text">游戏等待中</div>
+      <div class="count-time">
+        {{ formattedDays }}{{ labels.days }}{{ formattedHours }}{{ labels.hours
+        }}{{ formattedMinutes }}{{ labels.minutes }}{{ formattedSeconds
+        }}{{ labels.seconds }}
+      </div>
     </div>
   </div>
 </template>
@@ -249,10 +252,12 @@ defineExpose({
     height: 100%;
     z-index: 0;
   }
-  .wait-text {
+  .content {
     position: relative;
     margin-top: 16vw;
     text-align: center;
+  }
+  .wait-text {
     font-family: Jijiati;
     font-weight: 400;
     font-size: 43px;
