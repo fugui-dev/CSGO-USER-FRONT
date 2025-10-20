@@ -36,7 +36,7 @@ const props = defineProps({
     <div class="team-name">{{ data.teamName }}</div>
     <div class="score tw-flex tw-items-center tw-justify-center">
       <img
-        src="@/assets/images/champion/game/coin.png"
+        src="@/assets/images/champion/game/money.png"
         alt=""
         class="coin-image"
       />

@@ -130,7 +130,7 @@ const groupData = computed(() => {
       }
     }
   }
-  return res;
+  return res.reverse();
 });
 import round1 from "@/assets/images/champion/history/round1.png";
 import round2 from "@/assets/images/champion/history/round2.png";
@@ -138,11 +138,11 @@ import round3 from "@/assets/images/champion/history/round3.png";
 const headerImage = (index) => {
   switch (index) {
     case 0:
-      return round1;
+      return round3;
     case 1:
       return round2;
     case 2:
-      return round3;
+      return round1;
     default:
       return round1;
   }
