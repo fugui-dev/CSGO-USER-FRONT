@@ -79,6 +79,8 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
       if (data.data.code === 200 && data.data.data) {
         fightData.value = data.data.data
         totalRound.value = data.data.data.team.stageRecordStartList.length
+        // 进入详情或刷新后，基于服务端当前数据重算总分
+        recomputeTotals()
         // 检查是否需要展示倒计时
         checkFirstRoundStartTime(data.timestamp)
         // 检测整场游戏的进度
@@ -188,6 +190,8 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
       currOpponentTeamWaitingNextRoundText.value = ''
       // 设置对战结束
       fightData.value.status = data.data.status
+      // 对战结束后再基于最终数据重算一次总分
+      recomputeTotals()
       currTeamPlayer.value = {
         index: -1,
         data: {}
@@ -432,6 +436,18 @@ const setCurrFightResult = (userResult) => {
       }, 0)
     }
   });
+}
+
+// 依据当前 fightData 重新计算双方总分（用于进入详情/刷新后初始化、或对战结束兜底）
+const recomputeTotals = () => {
+  const teamUserList = fightData.value.team?.stageRecordStartList || []
+  const opponentTeamUserList = fightData.value.opponentTeam?.stageRecordStartList || []
+  currTeamScore.value = teamUserList.reduce((prev, next) => {
+    return new Decimal(next.score || '0').plus(prev).toNumber()
+  }, 0)
+  currOpponentTeamScore.value = opponentTeamUserList.reduce((prev, next) => {
+    return new Decimal(next.score || '0').plus(prev).toNumber()
+  }, 0)
 }
 
 // 用户头像滚动到目标位置
@@ -723,6 +739,7 @@ import bgImg from "@/assets/images/champion/bg.webp";
         <WaitCountdown
           v-if="showCountdown"
           :target-time="targetDate"
+          :server-timestamp="serverTimeOffset"
           :show-status="false"
           @finish="handleStopCountdown"
         >

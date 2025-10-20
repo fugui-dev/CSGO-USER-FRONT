@@ -57,6 +57,11 @@ const props = defineProps({
     default: 1000,
     validator: (value) => value > 0,
   },
+  // 服务端时间戳（建议传 CURRENT_PROGRESS.timestamp）
+  serverTimestamp: {
+    type: Number,
+    default: null,
+  },
 });
 
 const emit = defineEmits(["start", "pause", "finish", "update"]);
@@ -68,6 +73,9 @@ const isFinished = ref(false);
 const timer = ref(null);
 const lastUpdateTime = ref(0);
 const status = ref("waiting"); // waiting | running | paused | finished
+// 基于服务端时间的“现在”计算
+const baseServerTs = ref(null);
+const baseClientTs = ref(0);
 
 // 计算显示的时间部分
 const formattedDays = computed(() =>
@@ -124,7 +132,11 @@ const calculateRemaining = () => {
     return 0;
   }
 
-  const now = Date.now();
+  // 使用服务端时间作为基准：now = serverTs + (clientNow - baseClientTs)
+  let now = Date.now();
+  if (baseServerTs.value) {
+    now = baseServerTs.value + (Date.now() - baseClientTs.value);
+  }
   remainingTime.value = Math.max(0, target - now);
   isFinished.value = remainingTime.value <= 0;
   return remainingTime.value;
@@ -204,8 +216,28 @@ watch(
   { deep: true }
 );
 
+// 监听服务端时间戳变化，刷新基准
+watch(
+  () => props.serverTimestamp,
+  (ts) => {
+    if (typeof ts === 'number' && !Number.isNaN(ts)) {
+      baseServerTs.value = ts;
+      baseClientTs.value = Date.now();
+      // 基准改变后立刻重新计算一次
+      calculateRemaining();
+    } else {
+      baseServerTs.value = null;
+    }
+  }
+);
+
 // 组件挂载时初始化
 onMounted(() => {
+  // 初始化服务端时间基准
+  if (typeof props.serverTimestamp === 'number' && !Number.isNaN(props.serverTimestamp)) {
+    baseServerTs.value = props.serverTimestamp;
+    baseClientTs.value = Date.now();
+  }
   if (props.targetTime !== null && props.targetTime !== undefined) {
     calculateRemaining();
     if (props.autoStart && remainingTime.value > 0) {
