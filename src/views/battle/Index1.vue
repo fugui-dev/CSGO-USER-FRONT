@@ -179,7 +179,7 @@ onMounted(() => {
 <template>
   <Layout>
     <div class="battle-wrapper">
-      <boxList @box-detail="handleClickBoxItem" />
+      <boxList @box-detail="handleClickBoxItem" @allBox="(data => allBoxList = data)" />
       <div class="rule" @click="handleClickGameRule">游戏规则</div>
       <div class="battle-content">
         <div class="creat-wrapper" @click="handleClickCreateRoom">

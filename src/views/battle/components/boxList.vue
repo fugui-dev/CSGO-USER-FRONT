@@ -54,12 +54,19 @@ const getBoxTypeList = () => {
       if (res.data && res.data.length) {
         boxTypeList.value = res.data;
         activeBoxType.value = res.data[0]?.boxTypeId;
+        emits('allBox', flattenBoxData(res.data));
       }
     })
     .finally(() => {
       loading.value = false;
     });
 };
+
+const flattenBoxData = (boxData) => {
+  return boxData.reduce((prev, curr) => {
+    return [...prev, ...curr.boxList]
+  }, [])
+}
 
 const allBoxList = computed(() => {
   if (activeBoxType.value && boxTypeList.value.length) {
@@ -70,7 +77,7 @@ const allBoxList = computed(() => {
   }
   return [];
 });
-const emits = defineEmits(["boxDetail"]);
+const emits = defineEmits(["boxDetail", 'allBox']);
 // 点击获取展示宝箱详情
 const handleClickBoxItem = (item) => {
   emits("boxDetail", item);
