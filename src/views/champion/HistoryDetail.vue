@@ -4,6 +4,7 @@ import { getMatchStageApi, getTeamListApi } from "@/api/champion";
 import Detail from "./Detail.vue";
 import Level from "./components/Level.vue";
 import { requireImg } from "@/utils/common";
+import ChampoinTeam from "./components/championTeam.vue";
 import TeamRank from "./components/teamRank.vue";
 
 const loading = ref(false);
@@ -94,10 +95,19 @@ const getTeamRank = () => {
 onMounted(() => {
   getMatchStageList();
 });
+import championTeamBg from "@/assets/images/champion/champion-team-bg.webp";
+const specialBg = computed(() => {
+  if (active.value === 1) {
+    return {
+      img: championTeamBg,
+      height: "134.95vw",
+    };
+  }
+});
 </script>
 
 <template>
-  <Detail>
+  <Detail :bg="specialBg">
     <div
       class="history-detail-container"
       v-loading="loading"
@@ -119,32 +129,7 @@ onMounted(() => {
       <!-- 晋级图 -->
       <Level v-if="active === 0 && levelData.length" :data="levelData" />
       <!-- 冠军队伍 -->
-      <div class="champion-team" v-if="active === 1">
-        <div class="level-1">
-          <div class="rank-winner">
-            <div class="winner-avatar">
-              <img :src="championTeamInfo.avatar" alt="" />
-            </div>
-            <p>{{ championTeamInfo.name }}</p>
-            <div class="avatar-bg"></div>
-          </div>
-        </div>
-        <!-- 用户列表 -->
-        <div class="user-list">
-          <div
-            class="user-list-item"
-            v-for="item in championTeamInfo.matchUserList"
-            :key="item.id"
-          >
-            <img :src="item.userAvatar" alt="" class="user-avatar" />
-            <p>{{ item.userName }}</p>
-            <div class="mz">
-              <img :src="requireImg('/coin1.png', false)" alt="" />
-              <div class="score">{{ item.totalScore }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ChampoinTeam v-if="active === 1" :data="championTeamInfo" />
       <!-- 队伍排名 -->
       <div v-if="active === 2">
         <TeamRank :data="teamRankList"></TeamRank>
