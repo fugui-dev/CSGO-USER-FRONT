@@ -6,6 +6,7 @@ import {createRoomApi} from "@/api/battle"
 import {ElMessage} from "element-plus"
 import {useStore} from "@/store"
 import { useRouter } from 'vue-router'
+import { useUserInfo } from "@/composables/useUesrInfo.js"
 
 const props = defineProps({
     boxData: {
@@ -15,6 +16,7 @@ const props = defineProps({
 });
 const store = useStore()
 const router = useRouter()
+const { fetchUserInfo } = useUserInfo()
 const visible = ref(false)
 const activeModel = ref(0)
 const activePersonNum = ref(2)
@@ -90,6 +92,8 @@ const handleClickCreateRoom = () => {
   createRoomApi(form.value).then(res => {
     if (res.code === 200) {
       ElMessage.success('房间创建成功')
+      // 更新用户信息（因为创建房间会扣费）
+      fetchUserInfo()
       closeModal()
       // 模式1：创建房间后进入 模式2：进入等待中或进行中的房间 模式3：进入已结束的房间
       store.setCurrRound(1)

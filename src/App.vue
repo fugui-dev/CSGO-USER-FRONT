@@ -1,13 +1,24 @@
 <script setup>
 import { onMounted } from "vue";
 import { useStore } from "@/store/index.js";
+import { useUserInfo } from "@/composables/useUesrInfo.js";
 
-onMounted(() => {
+const store = useStore();
+const { fetchUserInfo } = useUserInfo();
+
+onMounted(async () => {
   try {
-    useStore().setUserInfo(localStorage.getItem("userInfo") ? JSON.parse(localStorage.getItem("userInfo")) : {})
+    const userInfo = localStorage.getItem("userInfo") ? JSON.parse(localStorage.getItem("userInfo")) : {};
+    store.setUserInfo(userInfo);
+    
+    // 如果用户已登录，获取最新的用户信息
+    if (userInfo && userInfo.userId) {
+      await fetchUserInfo();
+    }
   } catch (e) {
     console.log(e)
   }
+  
   useStore().setIsPc(document.body.clientWidth > 1024)
   window.addEventListener('resize', () => {
     useStore().setIsPc(document.body.clientWidth > 1024)

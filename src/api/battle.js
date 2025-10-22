@@ -106,3 +106,12 @@ export const getHistoryDetailApi = (data) => {
       data: data
   })
 }
+
+// 房主结束对战
+export const ownerEndFightApi = (data) => {
+  return request({
+      url: "/api/fight/ownerEndFight",
+      method: "post",
+      data: data
+  })
+}

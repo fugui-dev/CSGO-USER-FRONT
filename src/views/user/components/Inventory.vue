@@ -61,11 +61,15 @@ const getList = () => {
     return
   }
   api(form.value).then(res => {
+    console.log('API响应原始数据：', res)
+    console.log('API响应data字段：', res.data)
     if (res.data && res.data.length) {
       if (form.value.page === 1) {
         list.value = []
       }
+      console.log('准备添加到list的数据：', res.data)
       list.value.push(...res.data)
+      console.log('添加后的list.value：', list.value)
       if (listRef.value.clientHeight < scrollRef.value.$el.clientHeight) {
         form.value.page += 1
         getList()
@@ -133,6 +137,8 @@ const handleDelivery = () => {
 const { fetchUserInfo } = useUserInfo()
 const handleDecomposeOriginal = async () => {
   const ids = list.value.filter(item => item.choosed).map(item => item.id)
+  console.log('选中的饰品列表：', list.value.filter(item => item.choosed))
+  console.log('提取的ID列表：', ids)
   if (ids.length) {
     try {
       const res = await postDecompose({

@@ -4,12 +4,14 @@ import {ref, computed, reactive, onBeforeMount, provide, nextTick, onMounted, on
 } from "vue";
 import {goto, requireImg, deepClone} from "@/utils/common";
 import {getHistoryDetailApi, saveFightBoutApi, endFightApi} from "@/api/battle";
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useStore } from "@/store";
+import { ElMessage } from 'element-plus';
 import RoomCard from './components/RoomCard.vue'
 import CountdownModal from './components/CountdownModal.vue'
 import useWebSocketHeartbeat from '../../composables/useWebSocketHeartbeat'
 import bgm from "@/assets/music/main_battle.mp3";
+import { useUserInfo } from "@/composables/useUesrInfo.js";
 
 const modelMap = {
   '0': '欧皇模式',
@@ -18,11 +20,14 @@ const modelMap = {
 const statusMap = {
   '0': '等待中',
   '1': '进行中',
-  '2': '已结束'
+  '2': '已结束',
+  '3': '房主结束'
 }
 
 const route = useRoute()
+const router = useRouter()
 const store = useStore()
+const { fetchUserInfo } = useUserInfo()
 const currRound = computed(() => store.currRound)
 const roomData = ref({})
 const fightBoxVOList = ref([])
@@ -64,6 +69,16 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
     console.log(data)
     if (data.data !== 'pong') {
       if (data.code === 200 && data.data) {
+        // 处理对战结束事件
+        if (data.type === 'FIGHT_END') {
+          ElMessage.info('房主已结束对战')
+          // 更新用户信息（因为房主结束对战会退款）
+          fetchUserInfo()
+          disconnect()
+          router.push('/battle')
+          return
+        }
+        
         roomData.value = data.data.fight
         fightBoxVOList.value = data.data.fightBoxVOList
         winnerIds.value = data.data.winnerIds
@@ -181,6 +196,16 @@ const handleStartCountdown = () => {
   showBeginAnimation()
 }
 
+// 处理对战结束
+const handleFightEnd = () => {
+  // 更新用户信息（因为对战结束可能会有奖励或结算）
+  fetchUserInfo()
+  // 断开WebSocket连接
+  disconnect()
+  // 返回对战列表页面
+  router.push('/battle')
+}
+
 // 定义一个响应式引用，用于存储所有组件实例的引用
 const RoomCardRefs = ref([]);
 const setRoomCardRefs = (el, index) => {
@@ -272,6 +297,8 @@ const ownerCall = () => {
             if (Array.isArray(fightResult.value) && fightResult.value.length > 0) {
               reCalcBoxList()
             }
+            // 更新用户信息（因为对战结束可能会有奖励或结算）
+            fetchUserInfo()
             disconnect()
           }
         })
@@ -382,6 +409,7 @@ const ownerCall = () => {
             :key="index" 
             class="card-item"
             @start="handleStartCountdown"
+            @end="handleFightEnd"
             @roundEnd="handleRoundEnd" />
         </div>
       </div>

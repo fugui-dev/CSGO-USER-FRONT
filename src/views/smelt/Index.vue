@@ -32,7 +32,7 @@ const openBagModalRef = ref()
 const form = ref({
   exterior: null,
   type: null,
-  sortBy: '2',
+  sortBy: 2,
   minPrice: null,
   maxPrice: null,
   pageNum: 1,

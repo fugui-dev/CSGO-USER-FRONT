@@ -2,11 +2,12 @@
 import {computed, onMounted, ref, watch} from "vue";
 import {requireImg} from "@/utils/common";
 import { useStore } from "@/store";
-import {ElMessage} from "element-plus";
+import {ElMessage, ElMessageBox} from "element-plus";
 import Decimal from 'decimal.js'
-import {joinRoomApi, prepareFightApi, beginFightApi} from "@/api/battle"
+import {joinRoomApi, prepareFightApi, beginFightApi, ownerEndFightApi} from "@/api/battle"
 import FightBox from "./FightBox.vue"
 import FightResult from "./FightResult.vue"
+import { useUserInfo } from "@/composables/useUesrInfo.js"
 
 const props = defineProps({
   cardData: {
@@ -47,9 +48,10 @@ const props = defineProps({
 });
 
 const store = useStore()
+const { fetchUserInfo } = useUserInfo()
 const currUserId = computed(() => store.userInfo.userId)
 const allReady = computed(() => props.isAllReady)
-const emit = defineEmits(['start', 'roundEnd'])
+const emit = defineEmits(['start', 'roundEnd', 'end'])
 const FightBoxRef = ref(null)
 const FightResultRef = ref(null)
 const totalPrice = ref(0)
@@ -99,10 +101,22 @@ const handleJoin = () => {
     ElMessage.warning('房主无法加入自己创建的对战！')
     return
   }
-  joinRoomApi({fightId: props.roomId}).then(res => {
+  joinRoomApi({fightId: props.roomId}).then(async res => {
     if (res.code === 200) {
       ElMessage.success(res.msg)
+      // 更新用户信息（因为加入房间会扣费）
+      console.log('加入房间成功，开始更新用户信息...')
+      try {
+        await fetchUserInfo()
+        console.log('用户信息更新完成')
+      } catch (error) {
+        console.error('更新用户信息失败:', error)
+      }
+    } else {
+      ElMessage.error(res.msg || '加入房间失败')
     }
+  }).catch(err => {
+    ElMessage.error('加入房间失败，请重试')
   })
 }
 
@@ -120,6 +134,29 @@ const handleStartGame = () => {
       ElMessage.success(res.msg)
       emit('start')
     }
+  })
+}
+
+const handleEndFight = () => {
+  ElMessageBox.confirm('确定要结束对战吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    ownerEndFightApi({fightId: props.roomId}).then(res => {
+      if (res.code === 200) {
+        ElMessage.success(res.msg)
+        // 更新用户信息（因为房主结束对战会退款）
+        fetchUserInfo()
+        emit('end')
+      } else {
+        ElMessage.error(res.msg)
+      }
+    }).catch(err => {
+      ElMessage.error('操作失败，请重试')
+    })
+  }).catch(() => {
+    // 用户取消操作
   })
 }
 
@@ -182,8 +219,8 @@ defineExpose({
             <p v-else>已入座</p>
           </div>
           <div v-else-if="cardData.status === 2">
-            <!-- 当前用户为房主，且所有座位都已准备就绪 -->
-            <div class="join-btn" v-if="(roomOwnerId === currUserId) && (currUserId === cardData.playerId) && (roomStatus === 0) && allReady" @click="handleStartGame">开始游戏</div>
+            <!-- 房主可以结束对战（当除了房主没有其他玩家准备时） -->
+            <div class="end-btn" v-if="(roomOwnerId === currUserId) && (currUserId === cardData.playerId) && (roomStatus === 0)" @click="handleEndFight">结束对战</div>
             <p v-else>已准备就绪</p>
           </div>
         </div>
@@ -290,6 +327,22 @@ defineExpose({
       font-size: 14px;
       text-align: center;
       background: linear-gradient(90.15deg, #b43304 -4.19%, #FF952A 99.85%);
+    }
+    .end-btn {
+      width: 70px;
+      height: 32px;
+      line-height: 32px;
+      border-radius: 6px;
+      font-size: 14px;
+      text-align: center;
+      background: linear-gradient(90.15deg, #dc2626 -4.19%, #ef4444 99.85%);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      &:hover {
+        background: linear-gradient(90.15deg, #b91c1c -4.19%, #dc2626 99.85%);
+        transform: translateY(-1px);
+      }
     }
     .winner {
       font-family: "titleFont", "Microsoft YaHei", 'sans-serif';

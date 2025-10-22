@@ -14,9 +14,11 @@ import WaitCountdown from "./components/waitCountdown.vue";
 import FightItem from "./components/fightItem.vue";
 import FightMember from "./components/fightMember.vue";
 import FightGameDetail from "./components/fightGameDetail.vue";
+import { useUserInfo } from "@/composables/useUesrInfo.js";
 
 const router = useRouter()
 const store = useStore()
+const { fetchUserInfo } = useUserInfo()
 
 const musica = new Audio(bgm)
 const stageGroupFightId = Number(window.sessionStorage.getItem('stageGroupFightId'))
@@ -192,6 +194,8 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
       fightData.value.status = data.data.status
       // 对战结束后再基于最终数据重算一次总分
       recomputeTotals()
+      // 更新用户信息（因为对战结束可能会有奖励或结算）
+      fetchUserInfo()
       currTeamPlayer.value = {
         index: -1,
         data: {}

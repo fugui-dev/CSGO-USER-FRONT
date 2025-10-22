@@ -98,7 +98,7 @@ export const getExtractPackSackApi = (data) => {
 export const getShopListApi = (data) => {
     return request({
         url: '/api/shopping/list',
-        method: 'get',
+        method: 'post',
         data: data
     })
 }
