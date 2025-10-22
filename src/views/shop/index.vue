@@ -1,130 +1,113 @@
 <template>
   <Layout>
-    <template #item>
-      <div class="shop-wrapper">
-        <div class="header-wrapper">
-          <div class="select">
-            <div class="select-item">
-              <div class="select-item-name">名称：</div>
-              <el-input
-                v-model="search.name"
-                placeholder="请输入名称"
-                @change="handleSearch((e) => handleSearch('name', e))"
-              />
-            </div>
-            <div class="select-item">
-              <div class="select-item-name">种类：</div>
-              <el-select
-                v-model="search.type"
-                placeholder="不限"
-                @change="handleSearch((e) => handleSearch('type', e))"
-              >
-                <el-option
-                  v-for="item in category.type"
-                  :key="item.value"
-                  :label="item.name"
-                  :value="item.value"
-                  class="options"
-                />
-              </el-select>
-            </div>
-            <div class="select-item">
-              <div class="select-item-name">外观：</div>
-              <el-select
-                v-model="search.exterior"
-                placeholder="不限"
-                @change="handleSearch((e) => handleSearch('exterior', e))"
-              >
-                <el-option
-                  v-for="item in category.exterior"
-                  :key="item.value"
-                  :label="item.name"
-                  :value="item.value"
-                  class="options"
-                />
-              </el-select>
-            </div>
-            <div class="select-item">
-              <div class="select-item-name">排序：</div>
-              <el-select
-                v-model="search.sortBy"
-                placeholder="不限"
-                @change="handleSearch((e) => handleSearch('sortBy', e))"
-              >
-                <el-option
-                  v-for="item in category.sortBy"
-                  :key="item.value"
-                  :label="item.name"
-                  :value="item.value"
-                  class="options"
-                />
-              </el-select>
-            </div>
-            <div class="select-item">
-              <div class="select-item-name">
-                价格区间：
-                <el-input
-                  v-model="search.minPrice"
-                  placeholder="最低价格"
-                  @change="handleSearch((e) => handleSearch('minPrice', e))"
-                />
-                -
-                <el-input
-                  v-model="search.maxPrice"
-                  placeholder="最高价格"
-                  @change="handleSearch((e) => handleSearch('maxPrice', e))"
-                />
-              </div>
-            </div>
+    <div class="shop-wrapper">
+      <div class="header-wrapper">
+        <div class="select">
+          <div class="select-item">
+            <div class="select-item-name">名称：</div>
+            <el-input
+              v-model="search.name"
+              placeholder="请输入名称"
+              @change="handleSearch((e) => handleSearch('name', e))"
+            />
           </div>
-          <div class="right-wrapper">
-            <div class="count" v-if="store.isLogin">
-              弹药余额：{{ store.userInfo?.accountCredits }}
-            </div>
-            <div class="button" @click="handleAmmunitionConversion">
-              弹药转换
+          <div class="select-item">
+            <div class="select-item-name">种类：</div>
+            <el-select
+              v-model="search.type"
+              placeholder="不限"
+              @change="handleSearch((e) => handleSearch('type', e))"
+            >
+              <el-option
+                v-for="item in category.type"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value"
+                class="options"
+              />
+            </el-select>
+          </div>
+          <div class="select-item">
+            <div class="select-item-name">外观：</div>
+            <el-select
+              v-model="search.exterior"
+              placeholder="不限"
+              @change="handleSearch((e) => handleSearch('exterior', e))"
+            >
+              <el-option
+                v-for="item in category.exterior"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value"
+                class="options"
+              />
+            </el-select>
+          </div>
+          <div class="select-item">
+            <div class="select-item-name">排序：</div>
+            <el-select
+              v-model="search.sortBy"
+              placeholder="不限"
+              @change="handleSearch((e) => handleSearch('sortBy', e))"
+            >
+              <el-option
+                v-for="item in category.sortBy"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value"
+                class="options"
+              />
+            </el-select>
+          </div>
+          <div class="select-item">
+            <div class="select-item-name">
+              价格区间：
+              <el-input
+                v-model="search.minPrice"
+                placeholder="最低价格"
+                @change="handleSearch((e) => handleSearch('minPrice', e))"
+              />
+              -
+              <el-input
+                v-model="search.maxPrice"
+                placeholder="最高价格"
+                @change="handleSearch((e) => handleSearch('maxPrice', e))"
+              />
             </div>
           </div>
         </div>
-        <el-scrollbar
-          height="800px"
-          @scroll="onScroll"
-          ref="scrollRef"
-          v-loading="loading"
-        >
-          <div class="list-wrapper" ref="listRef">
-            <boxItem
-              v-for="(item, index) in list"
-              :key="'boxData' + index"
-              :box-data="item"
-              @click="handleCommodityExchange(item)"
-            />
+        <div class="right-wrapper">
+          <div class="count" v-if="store.isLogin">
+            弹药余额：{{ store.userInfo?.accountCredits }}
           </div>
-        </el-scrollbar>
+          <div class="button tw-flex" @click="handleAmmunitionConversion">
+            <img class="icon" src="@/assets/images/shop/ammunition.png" alt="">
+            弹药转换
+          </div>
+        </div>
       </div>
-      <BaseDialog
-        ref="dialogRef"
-        title="弹药转换"
-        :show-confirm="true"
-        @confirm="converseAmmunition"
+      <el-scrollbar
+        height="800px"
+        @scroll="onScroll"
+        ref="scrollRef"
+        v-loading="loading"
       >
-        <template #default>
-          <div style="display: flex; align-items: center; height: 100%">
-            <el-input v-model="credits" placeholder="请输入转换数量" />
-          </div>
-        </template>
-      </BaseDialog>
-      <BaseDialog
-        ref="confirmRef"
-        title="兑换商品"
-        :show-confirm="true"
-        :show-cancel="true"
-        @cancel="closeConfirm"
-        @confirm="exchangecommodity"
-      >
-        <div class="confirm-tip">确定要兑换该商品吗</div>
-      </BaseDialog>
-    </template>
+        <div class="list-wrapper" ref="listRef">
+          <boxItem
+            v-for="(item, index) in list"
+            :key="'boxData' + index"
+            :is-shop="true"
+            :box-data="item"
+            @click="handleCommodityExchange(item)"
+          />
+        </div>
+      </el-scrollbar>
+    </div>
+    <convertDialog ref="dialogRef" />
+    <confirmDialog
+      ref="confirmRef"
+      :id="activeId"
+      @close="closeConfirm" />
   </Layout>
 </template>
 
@@ -132,15 +115,14 @@
 import Layout from "@/components/Layout.vue";
 import BaseDialog from "@/components/dialogs/BaseDialog.vue";
 import { useStore } from "@/store/index.js";
-import { useUserInfo } from "@/composables/useUesrInfo.js";
 import { category } from "@/views/options.js";
 import { nextTick, onMounted, ref } from "vue";
 import { useDebounceFn } from "@vueuse/core";
-import boxItem from "./components/BoxItem.vue";
+import boxItem from "@/views/openBox/components/boxItem.vue";
+import convertDialog from "./components/convertDialog.vue";
+import confirmDialog from "./components/confirmDialog.vue";
 import {
   getShopList,
-  commodityExchange,
-  ammunitionConversion,
 } from "@/api/shop";
 const store = useStore();
 const list = ref([]);
@@ -209,29 +191,13 @@ const getList = () => {
 };
 getList();
 const dialogRef = ref();
-const credits = ref("");
 import { ElMessage } from "element-plus";
 const handleAmmunitionConversion = () => {
   if (!store.isLogin) {
     ElMessage.warning("请先登录");
     return;
   }
-  credits.value = "";
   dialogRef.value.open();
-};
-const { fetchUserInfo } = useUserInfo();
-const converseAmmunition = () => {
-  if (!credits.value || isNaN(credits.value) || credits.value <= 0) {
-    ElMessage.warning("请输入正确的转换数量");
-    return;
-  }
-  ammunitionConversion({ credits: credits.value }).then((res) => {
-    if (res.code === 200) {
-      ElMessage.success("转换成功");
-      fetchUserInfo(); // 刷新用户信息
-      dialogRef.value.close();
-    }
-  });
 };
 const activeId = ref(null);
 const confirmRef = ref();
@@ -243,100 +209,101 @@ const handleCommodityExchange = (item) => {
   activeId.value = item.id;
   confirmRef.value.open();
 };
-const closeConfirm = () => {
-  confirmRef.value.close();
-};
-const exchangecommodity = () => {
-  commodityExchange({ ornamentsId: activeId.value }).then((res) => {
-    if (res.code === 200) {
-      ElMessage.success("兑换成功");
-      fetchUserInfo(); // 刷新用户信息
-      confirmRef.value.close();
-    }
-  });
-};
 </script>
 
 <style scoped lang="scss">
 .shop-wrapper {
+  padding: 68px 37px 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: url("@/assets/images/shop/bg.webp") no-repeat;
+  background-size: 100% auto;
+  background-color: rgba(144, 136, 129);
+  min-height: 100vh;
   width: 100%;
+  font-weight: 500;
+  font-family: "PingFang Medium";
   .header-wrapper {
-    width: 100%;
-    height: 120px;
+    width: 1260px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
-    box-sizing: border-box;
+    padding: 40px 0;
+    font-size: 17px;
     .select {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       flex: 1;
+      gap: 16px 33px;
       &-item {
         display: flex;
         align-items: center;
         margin-bottom: 10px;
         margin-right: 20px;
         .el-input {
-          width: 120px;
+          width: 139px;
+          height: 40px;
           --el-input-text-color: #fff;
           --el-input-placeholder-color: #fff;
           :deep(.el-input__wrapper) {
-            background-color: #fff0f03d;
-            border: 1px solid #e39c33;
+            background-color: #1d3337;
+            border: 0;
+            border-radius: 20px;
             box-shadow: none !important;
           }
         }
         .el-select {
-          width: 120px;
+          width: 139px;
+          height: 40px;
           --el-select-input-focus-border-color: none;
           --el-input-text-color: #fff;
+          --el-text-color-placeholder: #fff;
           :deep(.el-select__wrapper) {
-            background-color: #fff0f03d;
-            border: 1px solid #e39c33;
+            height: 40px;
+            background-color: #1d3337;
+            border: 0;
+            border-radius: 20px;
             box-shadow: none !important;
           }
         }
       }
     }
     .right-wrapper {
-      display: flex;
-      align-items: center;
+      margin-left: 20px;
+      width: 350px;
       .count {
-        font-size: 14px;
-        color: #fff;
+        text-align: center;
+        color: #072523;
       }
       .button {
-        font-size: 12px;
-        min-width: 26px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2px 16px;
-        color: #ffffffcc;
-        width: fit-content;
-        background: linear-gradient(
-          200deg,
-          rgba(255, 225, 225, 0.2) 32.92%,
-          rgba(255, 0, 0, 0.2) 87.52%
-        );
-        border-radius: 25px;
-        border: 1px solid #fc523a;
         cursor: pointer;
-        flex-shrink: 0;
-        margin-left: 15px;
+        margin: 16px auto 0;
+        font-size: 19px;
+        color: #072523;
+        width: 214px;
+        height: 60px;
+        line-height: 55px;
+        background: url("@/assets/images/battle/creat-bg.png") no-repeat;
+        background-size: 100% 100%;
+        .icon {
+          width: 37px;
+          height: 38px;
+          margin: 7px 12px 0 28px;
+        }
       }
     }
   }
   .list-wrapper {
-    width: 100%;
+    width: 1260px;
     display: flex;
     flex-wrap: wrap;
-    padding: 10px 20px;
-    box-sizing: border-box;
-    gap: 20px;
+    padding: 26px 152px;
+    gap: 3px 6px;
+    background-color: rgb(51, 56, 57, 0.28);
+    border-radius: 22px;
   }
 }
 .confirm-tip {

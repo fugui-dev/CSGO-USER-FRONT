@@ -20,6 +20,19 @@
             >
               <span v-if="index > 2">{{ index + 1 }}</span>
             </div>
+            <div class="avatar-wrapper">
+              <img
+                class="avatar"
+                :src="item.avatar ? item.avatar : requireImg('/v2/nav/u1.png')"
+                alt=""
+              />
+              <img
+                class="avatar-bg"
+                src="@/assets/images/battle/avatar-bg.png"
+                alt=""
+              />
+            </div>
+            <div class="team-name">{{ item.name }}</div>
           </div>
           <div class="win">{{ item.winCount }}</div>
           <div class="score tw-flex tw-items-center tw-justify-center">
@@ -115,6 +128,35 @@ const gatRankIcon = (index) => {
           &.top3-icon {
             background-size: 100% 100%;
           }
+        }
+        .avatar-wrapper {
+          margin-left: 28px;
+          width: 79px;
+          height: 71px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          .avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: block;
+          }
+          .avatar-bg {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+          }
+        }
+        .team-name {
+          font-size: 22px;
+          color: #FFFFFF;
+          margin-left: 12px;
         }
       }
       .win {
