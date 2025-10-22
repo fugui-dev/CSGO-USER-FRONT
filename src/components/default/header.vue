@@ -32,11 +32,16 @@ const menuList = [
   { name: "个人中心", path: "/user/base" },
   { name: "分享", path: "/user/promote" },
   { name: "魔方", path: "" },
-  { name: "支付", path: "/rank" },
+  { name: "支付", path: "" },
   { name: "免费折扣", path: "" },
 ];
+import { ElMessage } from "element-plus";
 const toMenu = (item: { name: string; path: string }) => {
-  router.push(item.path);
+  if (item.path) {
+    router.push(item.path);
+  } else {
+    ElMessage("敬请期待");
+  }
 };
 </script>
 
