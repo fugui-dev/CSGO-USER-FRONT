@@ -567,28 +567,28 @@ const checkRemainTime = (endTime, type, messageTimestamp) => {
   console.log('timeDiff:', timeDiff / 1000, '秒')
 
   // 根据消息类型决定行为
-  if (type === 'ROUND_START') {
+    if (type === 'ROUND_START') {
     console.log('ROUND_START 消息处理，剩余时间:', timeDiff / 1000, '秒')
     // 只有前30s可以展示选择弹窗和倒计时，并且得是当前用户才展示，否则展示"用户选择中"
     if (timeDiff > 30000 && ((timeDiff - 30000) / 1000 > 1)) {
       console.log('前30秒：显示选择弹窗')
       showChooseOddsDialog(timeDiff)
-    } else {
+      } else {
       console.log('后30秒：ROUND_START 不处理')
-    }
+      }
   } else if (type === 'CURRENT_PROGRESS') {
     console.log('CURRENT_PROGRESS 消息处理，剩余时间:', timeDiff / 1000, '秒')
     // CURRENT_PROGRESS 是第一次连接时发送的，不处理动画
     console.log('CURRENT_PROGRESS 不处理动画')
-  } else if (type === 'ROUND_RESULT') {
+    } else if (type === 'ROUND_RESULT') {
     console.log('ROUND_RESULT 消息处理，剩余时间:', timeDiff / 1000, '秒')
     // ROUND_RESULT 是收到结果后展示动画
     if (timeDiff > 0) {
       console.log('ROUND_RESULT：开始播放动画')
       playAnimation()
-    } else {
+  } else {
       console.log('时间已过，显示错误提示')
-      ElMessage.warning('当前回合结束时间有误')
+    ElMessage.warning('当前回合结束时间有误')
     }
   } else {
     console.log('其他消息类型:', type, '剩余时间:', timeDiff / 1000, '秒')
@@ -723,10 +723,10 @@ onMounted(() => {
     top: 0,    // 目标y轴位置（顶部）
     left: 0,   // 目标x轴位置（不横向滚动）
   });
-  musica.src = bgm
-  musica.loop = true
-  musica.load()
-  musica.play()
+    musica.src = bgm
+    musica.loop = true
+    musica.load()
+    musica.play()
 })
 
 onUnmounted(() => {
@@ -741,11 +741,11 @@ import bgImg from "@/assets/images/champion/bg.webp";
     <template #top>
       <div class="wait-content">
         <WaitCountdown
-          v-if="showCountdown"
-          :target-time="targetDate"
+        v-if="showCountdown"
+        :target-time="targetDate"
           :server-timestamp="serverTimeOffset"
-          :show-status="false"
-          @finish="handleStopCountdown"
+        :show-status="false"
+        @finish="handleStopCountdown"
         >
           <template #count>
             <div class="wait-count">{{ currRound }}/{{ totalRound }}</div>
@@ -769,8 +769,8 @@ import bgImg from "@/assets/images/champion/bg.webp";
             />
           </div>
           <div class="switch-text">关闭音效</div>
+              </div>
         </div>
-      </div>
     </template>
     <div class="against-fight-container">
       <div class="header tw-flex tw-items-center tw-justify-center">
@@ -779,6 +779,7 @@ import bgImg from "@/assets/images/champion/bg.webp";
             aliasName: fightData.team?.aliasName,
             teamAvatar: fightData.teamAvatar,
             teamName: fightData.teamName,
+            initialScore: fightData.team?.initialScore,
           }"
           :score="currTeamScore"
         />
@@ -788,11 +789,12 @@ import bgImg from "@/assets/images/champion/bg.webp";
             aliasName: fightData.opponentTeam?.aliasName,
             teamAvatar: fightData.opponentTeamAvatar,
             teamName: fightData.opponentTeamName,
+            initialScore: fightData.opponentTeam?.initialScore,
           }"
           :score="currOpponentTeamScore"
           bg-color="rgba(124, 48, 38, 0.43)"
         />
-      </div>
+            </div>
       <div class="detail-wrapper tw-flex tw-items-center tw-justify-center">
         <el-scrollbar max-height="577px" ref="teamScrollRef">
           <FightMember
@@ -832,7 +834,7 @@ import bgImg from "@/assets/images/champion/bg.webp";
             "
           >
             用户选择中...
-          </div>
+            </div>
           <div
             class="team-fight-status"
             v-else-if="
@@ -853,20 +855,20 @@ import bgImg from "@/assets/images/champion/bg.webp";
             "
           >
             {{ currOpponentTeamWaitingNextRoundText }}
-          </div>
+                        </div>
           <FightGameDetail
             v-else-if="
               currTeamPlayer.data.status === 1 &&
               currTeamPlayer.data.data &&
               currOpponentTeamPlayer.data.data
             "
-            ref="currTeamFightBoxRef"
-            :fightResult="currTeamPlayer.data"
-            :localSet="localSet"
+                ref="currTeamFightBoxRef"
+                :fightResult="currTeamPlayer.data"
+                :localSet="localSet"
             @scrollEnd="handleScrollEnd('currTeam')"
           />
-          <div class="team-fight-status" v-else>系统错误</div>
-        </div>
+              <div class="team-fight-status" v-else>系统错误</div>
+            </div>
         <img class="vs" src="@/assets/images/champion/history/vs.png" alt="" />
         <div class="game-detail right">
           <div class="team-fight-status" v-if="fightData.status === 2">
@@ -882,7 +884,7 @@ import bgImg from "@/assets/images/champion/bg.webp";
             "
           >
             等待游戏开始...
-          </div>
+        </div>
           <div
             class="team-fight-status"
             v-else-if="
@@ -891,7 +893,7 @@ import bgImg from "@/assets/images/champion/bg.webp";
             "
           >
             用户选择中...
-          </div>
+        </div>
           <div
             class="team-fight-status"
             v-else-if="
@@ -901,7 +903,7 @@ import bgImg from "@/assets/images/champion/bg.webp";
             "
           >
             用户已选择
-          </div>
+                        </div>
           <div
             class="team-fight-status"
             v-else-if="
@@ -912,7 +914,7 @@ import bgImg from "@/assets/images/champion/bg.webp";
             "
           >
             {{ currOpponentTeamWaitingNextRoundText }}
-          </div>
+                        </div>
           <FightGameDetail
             v-else-if="
               currOpponentTeamPlayer.data.status === 1 &&
@@ -920,14 +922,14 @@ import bgImg from "@/assets/images/champion/bg.webp";
               currTeamPlayer.data.data &&
               !currOpponentTeamWaitingNextRoundText
             "
-            ref="currOpponentTeamFightBoxRef"
-            :fightResult="currOpponentTeamPlayer.data"
-            :localSet="localSet"
+                ref="currOpponentTeamFightBoxRef"
+                :fightResult="currOpponentTeamPlayer.data"
+                :localSet="localSet"
             is-yellow
             @scrollEnd="handleScrollEnd('currOpponentTeam')"
           />
-          <div class="team-fight-status" v-else>系统错误</div>
-        </div>
+              <div class="team-fight-status" v-else>系统错误</div>
+            </div>
         <el-scrollbar max-height="577px" ref="opponentTeamScrollRef">
           <FightMember
             class="team-member-item"
@@ -944,8 +946,8 @@ import bgImg from "@/assets/images/champion/bg.webp";
             }"
           />
         </el-scrollbar>
-      </div>
-    </div>
+          </div>
+        </div>
     <ChooseOddsDialog
       ref="chooseOddsDialogRef"
       :start-second="chooseCountdownValue"
@@ -962,19 +964,19 @@ import bgImg from "@/assets/images/champion/bg.webp";
     z-index: auto;
 
     .nav-wrapper {
-      position: relative;
+  position: relative;
       z-index: 3;
     }
   }
 }
 
 .wait-content {
-  position: absolute;
+        position: absolute;
   top: 66px;
   left: 0;
   width: 100%;
   height: 48.23vw;
-  z-index: 2;
+        z-index: 2;
 
   :deep() .content {
     margin-top: 11vw;
@@ -1008,12 +1010,12 @@ import bgImg from "@/assets/images/champion/bg.webp";
       background-color: #343a3e;
       border-radius: 12px;
       cursor: pointer;
-      position: relative;
+  position: relative;
 
       .setting-switch {
         width: 24px;
         height: 24px;
-        position: absolute;
+      position: absolute;
         top: 1px;
         left: 1px;
         transition: all 0.3s;

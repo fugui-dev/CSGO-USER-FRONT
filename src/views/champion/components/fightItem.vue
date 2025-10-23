@@ -34,13 +34,24 @@ const props = defineProps({
       />
     </div>
     <div class="team-name">{{ data.teamName }}</div>
-    <div class="score tw-flex tw-items-center tw-justify-center">
-      <img
-        src="@/assets/images/champion/game/money.png"
-        alt=""
-        class="coin-image"
-      />
-      {{ score }}
+    <div class="score-section">
+      <div class="score tw-flex tw-items-center tw-justify-center">
+        <img
+          src="@/assets/images/champion/game/money.png"
+          alt=""
+          class="coin-image"
+        />
+        {{ score }}
+      </div>
+      <div class="initial-score" v-if="data.initialScore">
+        <img
+          src="@/assets/images/champion/game/coin.png"
+          alt=""
+          class="coin-icon"
+        />
+        <span class="label">助威:</span>
+        <span class="value">{{ data.initialScore }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -86,12 +97,43 @@ const props = defineProps({
   .team-name {
     margin-top: 12px;
   }
-  .score {
+  .score-section {
     margin-top: 10px;
-    .coin-image {
-      width: 31px;
-      height: 33px;
-      margin-right: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    
+    .score {
+      .coin-image {
+        width: 31px;
+        height: 33px;
+        margin-right: 5px;
+      }
+    }
+    
+    .initial-score {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #ffd700;
+      
+      .coin-icon {
+        width: 14px;
+        height: 14px;
+        margin-right: 4px;
+      }
+      
+      .label {
+        color: #cccccc;
+        margin-right: 4px;
+      }
+      
+      .value {
+        color: #ffd700;
+        font-weight: bold;
+      }
     }
   }
 }

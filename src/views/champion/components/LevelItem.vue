@@ -177,6 +177,7 @@ const handleClickBtn = (teamId) => {
       font-weight: bold;
     }
     
+    
     .level-item-btn {
       cursor: pointer;
       margin-top: 8px;
