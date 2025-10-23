@@ -43,64 +43,57 @@ const handleClickBtn = (teamId) => {
 
 </script>
 <template>
-    <div class="level-item">
-      <div class="level-item-container" v-if="showTitle">
-        <div
-          class="level-item-status"
-          v-if="showStatus"
-          :style="{backgroundColor: statusBgColor}">
-            {{ statusText }}
-        </div>
-        <div class="level-item-wrap">
-          <div class="level-item-content pad-margin-left">
-            <h3>{{ data.team.aliasName }}</h3>
-            <img :src="data.team.teamAvatar" alt="" v-if="data.team.teamAvatar">
-            <img :src="requireImg('/v2/nav/u1.png')" alt="" v-else style="border: none; margin-top: 6px;">
-            <p>{{ data.team.teamName }}</p>
-          </div>
-          <div class="level-item-btn" v-if="showBottomBtn" @click.stop="handleClickBtn(data.team.teamId)">{{ btnText }}</div>
-        </div>
-        <div class="label-item-center">
-          <p v-if="label" class="label">{{ label }}</p>
-          <p class="vs">VS</p>
-        </div>
-        <div class="level-item-wrap level-item-right">
-          <div class="level-item-content pad-margin-right">
-            <h3>{{ data.opponentTeam.aliasName }}</h3>
-            <img :src="data.opponentTeam.teamAvatar" alt="" v-if="data.opponentTeam.teamAvatar">
-            <img :src="requireImg('/v2/nav/u1.png')" alt="" v-else style="border: none; margin-top: 6px;">
-            <p>{{ data.opponentTeam.teamName }}</p>
-          </div>
-          <div class="level-item-btn" v-if="showBottomBtn" @click.stop="handleClickBtn(data.opponentTeam.teamId)">{{ btnText }}</div>
-        </div>
+    <div class="level-item tw-flex tw-items-center tw-justify-center">
+      <!-- 状态标签 -->
+      <div
+        class="level-item-status"
+        v-if="showStatus"
+        :style="{backgroundColor: statusBgColor}">
+          {{ statusText }}
       </div>
-      <div class="level-item-container" v-else>
-        <div
-          class="level-item-status"
-          v-if="showStatus"
-          :style="{backgroundColor: statusBgColor}">
-            {{ statusText }}
+      
+      <div class="left tw-flex tw-flex-col tw-items-center">
+        <div class="alias">{{ data.team.aliasName }}</div>
+        <div class="avatar-wrapper">
+          <img
+            class="avatar"
+            :src="
+              data.team.teamAvatar
+                ? data.team.teamAvatar
+                : requireImg('/v2/nav/u1.png')
+            "
+            alt=""
+          />
+          <img
+            class="avatar-bg"
+            src="@/assets/images/battle/avatar-bg.png"
+            alt=""
+          />
         </div>
-        <div class="level-item-wrap">
-          <div class="level-item-content">
-            <img :src="data.team.teamAvatar" alt="" v-if="data.team.teamAvatar">
-            <img :src="requireImg('/v2/nav/u1.png')" alt="" v-else style="border: none; margin-top: 6px;">
-            <p>{{ data.team.teamName }}</p>
-          </div>
-          <div class="level-item-btn" v-if="showBottomBtn" @click="handleClickBtn">{{ btnText }}</div>
+        <div class="team-name">{{ data.team.teamName }}</div>
+        <div class="level-item-btn" v-if="showBottomBtn" @click.stop="handleClickBtn(data.team.teamId)">{{ btnText }}</div>
+      </div>
+      <img class="vs" src="@/assets/images/champion/history/vs.png" alt="" />
+      <div class="right tw-flex tw-flex-col tw-items-center">
+        <div class="alias">{{ data.opponentTeam.aliasName }}</div>
+        <div class="avatar-wrapper">
+          <img
+            class="avatar"
+            :src="
+              data.opponentTeam.teamAvatar
+                ? data.opponentTeam.teamAvatar
+                : requireImg('/v2/nav/u1.png')
+            "
+            alt=""
+          />
+          <img
+            class="avatar-bg"
+            src="@/assets/images/battle/avatar-bg.png"
+            alt=""
+          />
         </div>
-        <div class="label-item-center">
-          <p v-if="label" class="label">{{ label }}</p>
-          <p class="vs">VS</p>
-        </div>
-        <div class="level-item-wrap level-item-right">
-          <div class="level-item-content">
-            <img :src="data.opponentTeam.teamAvatar" alt="" v-if="data.opponentTeam.teamAvatar">
-            <img :src="requireImg('/v2/nav/u1.png')" alt="" v-else style="border: none; margin-top: 6px;">
-            <p>{{ data.opponentTeam.teamName }}</p>
-          </div>
-          <div class="level-item-btn" v-if="showBottomBtn" @click="handleClickBtn">{{ btnText }}</div>
-        </div>
+        <div class="team-name">{{ data.opponentTeam.teamName }}</div>
+        <div class="level-item-btn" v-if="showBottomBtn" @click.stop="handleClickBtn(data.opponentTeam.teamId)">{{ btnText }}</div>
       </div>
     </div>
 </template>
@@ -108,116 +101,140 @@ const handleClickBtn = (teamId) => {
 <style scoped lang="scss">
 @use "@/style" as *;
 
-.level-item-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 14px 0;
-  background-color: #eee;
-  border-radius: 8px;
-  margin: 10px;
+.level-item {
+  width: 300px;
+  height: 180px;
+  background: url("@/assets/images/champion/history/item-bg.png") no-repeat;
+  background-size: 100% 100%;
+  padding: 6px;
+  font-weight: 500;
+  font-size: 16px;
+  color: #d4c7af;
+  line-height: normal;
+  margin: 8px;
   position: relative;
-  background: linear-gradient(to right, rgb(188, 145, 207), rgb(112, 112, 200));
+  
   .level-item-status {
     position: absolute;
-    top: 0;
+    top: -8px;
     left: 50%;
     transform: translateX(-50%);
     height: 20px;
     line-height: 20px;
-    font-size: 12px;
-    padding: 0 14px;
+    font-size: 11px;
+    padding: 0 12px;
     z-index: 3;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    color: white;
   }
-  .pad-margin-left {
-    background-color: #526fa4;
-    padding: 2px 10px;
-    border-radius: 4px;
-  }
-  .pad-margin-right {
-    background-color: #75559d;
-    padding: 2px 10px;
-    border-radius: 4px;
-  }
-  .level-item-wrap {
-    margin-right: 12px;
-    margin-top: 12px;
-    @include mobile {
-      margin-right: 8px;
+  
+  .left,
+  .right {
+    width: 100px;
+    height: 168px;
+    
+    .alias {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #ffffff;
+      font-weight: bold;
     }
-    .level-item-content {
+    
+    .avatar-wrapper {
+      margin-top: 18px;
+      width: 48px;
+      height: 44px;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      h3 {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        font-size: 13px;
-        color: #701818;
+      position: relative;
+      
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: block;
+        z-index: 2;
       }
-      img {
-        width: 40px;
-        height: 40px;
-        border-radius: 6px;
-        border: 1px solid #060ee8;
-        margin-bottom: 2px;
-        background-color: #666;
-        @include mobile {
-          width: 34px;
-          height: 34px;
-        }
-      }
-      p {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        font-size: 13px;
-        white-space: nowrap; /* 防止文本换行 */
-        overflow: hidden; /* 隐藏溢出的内容 */
-        text-overflow: ellipsis; /* 显示省略符号来代表被修剪的文本 */
-        max-width: 120px;
+      
+      .avatar-bg {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 48px;
+        height: 44px;
+        z-index: 1;
       }
     }
+    
+    .team-name {
+      margin-top: 15px;
+      font-size: 15px;
+      color: #ffffff;
+      font-weight: bold;
+    }
+    
     .level-item-btn {
       cursor: pointer;
-      margin-top: 5px;
+      margin-top: 8px;
       font-size: 12px;
-      height: 22px;
-      line-height: 22px;
+      height: 28px;
+      line-height: 28px;
       text-align: center;
-      border-radius: 11px;
-      background: linear-gradient(to right, rgb(143, 5, 202), rgb(11, 11, 96));
+      border-radius: 14px;
+      background: linear-gradient(135deg, #ff6b35, #f7931e);
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 3px 8px rgba(255, 107, 53, 0.4);
+      transition: all 0.3s ease;
+      min-width: 60px;
+      padding: 0 12px;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 12px rgba(255, 107, 53, 0.6);
+      }
     }
   }
-  .level-item-right {
-    margin-left: 12px;
-    margin-right: 0;
-    @include mobile {
-      margin-left: 8px;
-    }
-    img {
-      border: 1px solid #7414f2;
-    }
+  
+  .left {
+    background: url("@/assets/images/champion/history/blue-bg.png") no-repeat;
+    background-size: 100% 100%;
   }
-  .label-item-center {
-    display: flex;
+  
+  .right {
+    background: url("@/assets/images/champion/history/red-bg.png") no-repeat;
+    background-size: 100% 100%;
+  }
+  
+  .vs {
+    width: 60px;
+    height: 65px;
+    margin: 0 8px 0 12px;
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .level-item {
+    width: 90%;
+    height: auto;
     flex-direction: column;
-    align-items: center;
-    @include mobile {
-      position: absolute;
-      z-index: 3;
+    padding: 12px;
+    margin: 4px;
+    
+    .left,
+    .right {
+      width: 100%;
+      height: auto;
+      margin: 6px 0;
     }
-    .label {
-      font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-      color: #ddd;
-      font-size: 14px;
-      margin-bottom: 2px;
-    }
+    
     .vs {
-      font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-      color: #f29614;
-      font-size: 20px;
-      transform: translateY(-6px);
+      margin: 12px 0;
     }
   }
 }

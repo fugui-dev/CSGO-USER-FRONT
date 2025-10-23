@@ -37,38 +37,55 @@ onMounted(() => {
 <template>
   <Detail>
     <div class="history-container" v-loading="loading">
-      <div class="history-list">
-        <div class="matching" v-for="matchData in historyMatchList" :key="matchData.id">
-          <button class="enter-btn" @click="handleEnter(matchData.id)">查看</button>
-          <img :src="requireImg('/center/bg-item.png')" alt="" class="match-logo">
-          <div class="matching-content">
-            <div class="match-name">
-              <img :src="titleYinhua" alt="">
+      <div class="history-list" v-if="historyMatchList.length">
+        <div class="match-card" v-for="matchData in historyMatchList" :key="matchData.id">
+          <div class="left">
+            <img
+              src="@/assets/images/champion/item-left-icon.png"
+              alt=""
+              class="image"
+            />
+          </div>
+          <div class="right tw-flex-1">
+            <div class="title tw-flex tw-items-center tw-justify-between">
               <div>{{ matchData.name }}</div>
+              <div class="num-wrapper tw-flex tw-items-center">
+                最多
+                <div class="num">{{ matchData.maxTeamNum }}</div>
+                队 每队
+                <div class="num">{{ matchData.teamSize }}</div>
+                人
+              </div>
             </div>
-            <div class="match-desc">{{ matchData.description }}</div>
             <div class="time">
-              <img :src="luckyStar" alt="">
-              <div class="label">活动时间</div>
-              <div class="match-time">{{ matchData.startTime }} - {{ matchData.endTime }}</div>
+              活动时间：{{ matchData.startTime }}-{{ matchData.endTime }}
             </div>
             <div class="time">
-              <img :src="luckyStar" alt="">
-              <div class="label">报名时间</div>
-              <div class="match-signup-time">{{ matchData.signUpStartTime }} - {{ matchData.signUpEndTime }}</div>
+              报名时间：{{ matchData.signUpStartTime }} -
+              {{ matchData.signUpEndTime }}
             </div>
-            <div class="match-price">
-              <img :src="luckyStar" alt="" class="star">
-              <div class="label">报名费用</div>
-              <img :src="requireImg('/coin1.png',false)" alt="" id="price-img">
-              <div>{{ matchData.amount }}</div>
+            <div class="fee tw-flex tw-items-center">
+              报名费用：
+              <div class="fee-num">
+                <img
+                  src="@/assets/images/champion/game/coin.png"
+                  alt=""
+                  class="fee-image"
+                />
+                {{ matchData.amount }}
+              </div>
             </div>
-            <div class="team-scale">
-              <div class="max-team-num">最多<span>{{ matchData.maxTeamNum }}</span>队</div>
-              <div class="team-size">每队<span>{{ matchData.teamSize }}</span>人</div>
+            <div
+              @click="handleEnter(matchData.id)"
+              class="enter-btn"
+            >
+              查看
             </div>
           </div>
         </div>
+      </div>
+      <div class="empty-box" v-else>
+        <p>暂无往期记录</p>
       </div>
     </div>
   </Detail>
@@ -78,137 +95,154 @@ onMounted(() => {
 @use "@/style" as *;
 
 .history-container {
-  .matching {
-    background: url('@/assets/openBox/headerBg.png') no-repeat;
-    background-size: 100% 92%;
-    background-position: right bottom;
+  width: 100%;
+  padding-top: 68px;
+  padding-bottom: 300px;
+  background: url("@/assets/images/champion/bg.webp") no-repeat;
+  background-size: 100% auto;
+  min-height: 100vh;
+  font-family: "PingFang Medium";
+  font-weight: 500;
+  
+  .history-list {
     display: flex;
-    width: 92%;
-    position: relative;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 1200px;
     margin: 0 auto;
-    margin-top: 50px;
-    transform: translateX(10px);
-    .enter-btn {
-      position: absolute;
-      z-index: 2;
-      right: 50px;
-      top: 20%;
-      background-color: #7d2fb1;
-      border-radius: 8px;
-      padding: 4px 45px;
-      font-size: 16px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-      box-shadow: 3px 4px 12px rgba(95, 95, 88, 0.8);
+    padding: 0 20px;
+  }
+  
+  .match-card {
+    margin: 0 auto;
+    padding: 16px;
+    width: 1162px;
+    height: 286px;
+    background: url("@/assets/images/champion/item-bg.png") no-repeat;
+    background-size: 100% 100%;
+    display: flex;
+    align-items: center;
+    
+    .left {
+      width: 223px;
+      height: 253px;
+      background: url("@/assets/images/champion/item-left-bg.png") no-repeat;
+      background-size: 100% 100%;
+      .image {
+        width: 153px;
+        height: 198px;
+        margin-top: 33px;
+        margin-left: 35px;
+      }
     }
-    .match-logo {
-      width: 180px;
-      height: 180px;
-      transform: translate(-30%, 25%);
-    }
-    .matching-content {
-      flex: 1;
-      transform: translate(-5%, -10%);
-      .match-name {
-        display: flex;
-        align-items: center;
-        transform: translateX(-13%);
-        img {
-          width: 30px;
-          transform: translateY(12%);
-          margin-right: 10px;
-        }
-        div {
-          font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-          font-size: 36px;
-          text-shadow:  0px 0px 10px rgb(247, 219, 77);
-        }
-      }
-      .match-desc {
-        font-size: 14px;
-        color: #eee;
-        margin: 10px 0;
-      }
-      .time {
-        display: flex;
-        font-size: 16px;
-        img {
-          width: 22px;
-          height: 22px;
-          transform: translateY(10%);
-          margin-right: 4px;
-        }
-      }
-      .label {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        margin-right: 12px;
-      }
-      .match-time, .match-signup-time {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        text-shadow:  0px 0px 4px rgb(247, 219, 77);
-      }
-      .match-price {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        font-size: 16px;
-        display: flex;
-        align-items: center;
-        img {
-          width: 10px;
-          height: 16px;
-          margin-right: 5px;
-        }
-        .star {
-          width: 22px;
-          height: 22px;
-          transform: translateY(10%);
-          margin-right: 4px;
-        }
-      }
-      .team-scale {
-        display: flex;
-        justify-content: flex-end;
-        .max-team-num, .team-size {
-          font-size: 16px;
-          font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-          margin-right: 10px;
-          span {
-            display: inline-block;
-            background-color: #7d2fb1;
-            width: 28px;
-            height: 24px;
-            line-height: 24px;
+    .right {
+      margin-left: 38px;
+      font-size: 20px;
+      .title {
+        margin-top: 10px;
+        font-size: 30px;
+        color: #ffffff;
+        .num-wrapper {
+          font-size: 22px;
+          line-height: 37px;
+          .num {
+            margin: 0 8px;
             text-align: center;
-            font-size: 14px;
+            width: 37px;
+            height: 37px;
+            background: #cf9627;
             border-radius: 50%;
-            margin: 0 4px;
-            text-shadow:  0px 0px 10px rgb(247, 219, 77);
           }
         }
       }
+      .time {
+        margin-top: 13px;
+        & + .time {
+          margin-top: 10px;
+        }
+      }
+      .fee {
+        margin-top: 13px;
+        .fee-num {
+          width: 120px;
+          height: 36px;
+          line-height: 36px;
+          background: url("@/assets/images/champion/fee-bg.png") no-repeat;
+          background-size: 100% 100%;
+          font-size: 20px;
+          .fee-image {
+            width: 41px;
+            height: 43px;
+            margin-top: -3px;
+            margin-left: -3px;
+            display: inline-block;
+          }
+        }
+      }
+      .enter-btn {
+        text-align: center;
+        position: relative;
+        float: right;
+        right: -4px;
+        width: 302px;
+        height: 81px;
+        line-height: 70px;
+        background: url("@/assets/images/recharge/qrcode.png") no-repeat;
+        background-size: 100% 100%;
+        font-weight: 500;
+        font-size: 24px;
+        color: #072523;
+        cursor: pointer;
+        border: 0;
+      }
     }
+  }
+  
+  .empty-box {
+    text-align: center;
+    padding: 60px 20px;
+    color: #aaaaaa;
+    font-size: 18px;
+    font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
   }
 }
 
 /* 响应式调整 */
 @media (max-width: 768px) {
   .history-container {
-    .matching {
-      .match-logo {
-        width: 80px;
-        height: 80px;
-      }
-      .match-name {
-        div {
-          font-size: 26px !important;
+    .match-card {
+      width: 90%;
+      height: auto;
+      flex-direction: column;
+      text-align: center;
+      
+      .left {
+        width: 100%;
+        height: auto;
+        background: none;
+        
+        .image {
+          width: 100px;
+          height: 100px;
+          margin: 20px auto;
         }
       }
-      .enter-btn {
-        right: 10px !important;
-        top: 8% !important;
-        padding: 3px 25px !important;
+      
+      .right {
+        margin-left: 0;
+        
+        .title {
+          font-size: 24px;
+        }
+        
+        .enter-btn {
+          width: 200px;
+          height: 60px;
+          line-height: 50px;
+          font-size: 20px;
+          margin: 20px auto;
+          float: none;
+        }
       }
     }
   }

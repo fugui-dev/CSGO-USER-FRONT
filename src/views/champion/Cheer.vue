@@ -42,6 +42,7 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
             <div>队伍</div>
             <div>助威用户</div>
             <div>助威金额</div>
+            <div>奖励积分</div>
           </div>
           <div
             class="cheer-list-item-content tw-flex tw-items-center tw-justify-center"
@@ -75,6 +76,14 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
                 alt=""
               />
               <div>{{ item.amount }}</div>
+            </div>
+            <div class="refund-amount tw-flex tw-items-center tw-justify-center">
+              <img
+                src="@/assets/images/battle/battle-coin.png"
+                class="coin"
+                alt=""
+              />
+              <div>{{ item.refundAmount || '0' }}</div>
             </div>
           </div>
         </div>
@@ -113,17 +122,18 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
           no-repeat;
         background-size: 100% 100%;
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
         gap: 3px;
         text-align: center;
       }
       .cheer-list-item-content {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
         gap: 3px;
         .team,
         .user,
-        .amount {
+        .amount,
+        .refund-amount {
           width: 100%;
           height: 129px;
           .coin {
