@@ -18,7 +18,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { computed } from "vue";
 
 const props = defineProps({
@@ -51,9 +51,7 @@ const bgImage = computed(() => {
   if (props.isShop) {
     return defaultBg;
   }
-  return props.isHave
-    ? require('@/assets/images/openBox/box-item-have-bg.png')
-    : require('@/assets/images/openBox/box-item-no-have-bg.png');
+  return props.isHave ? props.boxData.ornamentLevelImg : props.boxData.levelImg
 });
 </script>
 

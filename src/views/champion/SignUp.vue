@@ -10,12 +10,14 @@ import CreateTeamDialog from "./components/CreateTeamDialog.vue";
 import SearchUserDialog from "./components/SearchUserDialog.vue";
 import {useDebounceFn} from "@vueuse/core";
 import {useStore} from "@/store";
-import Countdown from "./components/Countdown.vue";
+import TeamCountdown from "./components/TeamCountdown.vue";
 import Level from "./components/Level.vue";
 import {getMatchInfoApi, handleInviteApi} from "@/api/champion";
 import { useRoute } from 'vue-router';
 import Detail from './Detail.vue';
 import DraggableButton from "./components/DraggableButton.vue";
+import bgImg from "@/assets/images/champion/team/bg.webp";
+import TeamMember from "./components/teamMember.vue";
 
 const route = useRoute()
 const store = useStore()
@@ -190,7 +192,8 @@ const getAuditList = () => {
     loading.value = false
   })
 }
-
+const auditScrollRef= ref()
+const invitedScrollRef= ref()
 const onAuditScroll = (e) => {
   if (subActive.value === 0) {
     let scrollBarHeight = auditScrollRef.value.$el.querySelector(".el-scrollbar__bar:last-child .el-scrollbar__thumb").clientHeight || 200
@@ -307,39 +310,33 @@ onMounted(() => {
   getList()
   getMatchInfo()
 })
-
 </script>
 
 <template>
-  <Detail>
-    <div class="signup-container" v-loading="loading" :style="{
-      '--bg-tab1':requireImg('/home/t0.png',true),
-      '--bg-tab2':requireImg('/home/t1.png',true),
-      '--bg-header':requireImg('/level/3.png',true),
-      }">
-      <!-- 创建队伍 -->
-      <DraggableButton
-        text="创建队伍"
-        @click="handleClickCreateTeam"
-        v-if="userInfo.userType === '01'" />
-      <!-- 头部 -->
-      <div class="signup-header" v-if="matchData.status === 1 && targetDate > new Date()">
-        <h3>战队集结中</h3>
-        <!-- 倒计时 -->
-        <Countdown
-          :target-time="targetDate"
-          :show-status="false"
-          @finish="handleStopCountdown"
-        />
-      </div>
-      
-      <div class="main-list">
-        <div class="nav">
-          <div class="nav-item" v-for="(i,index) in navList" :class="{'active':active===i.value}" :key="index"
-              @click="changeActive(i.value)">
-            <span>{{ i.name }}</span>
-          </div>
+  <Detail :bg="{ img: bgImg, height: '187.5vw' }">
+    <template #top v-if="matchData.status === 1 && targetDate > new Date()">
+      <TeamCountdown
+        :target-time="targetDate"
+        :show-status="false"
+        @finish="handleStopCountdown"
+        >
+        <div v-if="userInfo.userType === '01'" @click="handleClickCreateTeam"
+        class="submit-btn">创建队伍</div>
+      </TeamCountdown>
+    </template>
+    <div class="signup-container" v-loading="loading">
+      <div class="group-wrapper">
+        <div
+          class="goup-item"
+          v-for="(i, index) in navList"
+          :key="'nav' + index"
+          :class="{ active: active === i.value }"
+          @click="changeActive(i.value)"
+        >
+          {{ i.name }}
         </div>
+      </div>
+      <div class="main-list" :style="{ marginTop: matchData.status === 1 && targetDate > new Date() ? '27vw' : '50px' }">
         <!-- 所有队伍 -->
         <div class="team-list" v-loading="loading" style="flex: 1" v-if="active === 0">
           <div class="content">
@@ -353,59 +350,26 @@ onMounted(() => {
         </div>
         <!-- 我的队伍 -->
         <div class="my-team" v-loading="loading" v-if="active === 1">
-          <MyTeamCard :cardData="teamInfo" @onInvite="showSearchUserDialog" v-if="isShowTeamInfo"/>
+          <TeamCard :isMy="true" :cardData="teamInfo" @onInvite="showSearchUserDialog" v-if="isShowTeamInfo"/>
           <!-- 主播且队长权限 -->
           <div class="auth-1" v-if="isShowAuditList">
             <div class="sub-nav">
-              <div class="sub-nav-item" v-for="(i,index) in subNavList" :class="{'sub-active':subActive===i.value}" :key="index"
-                  @click="changeSubActive(i.value)">
-                <span>{{ i.name }}</span>
-              </div>
+              <div class="submit-btn nav-item" :class="subActive === i.value ? '' : 'disable-btn'" v-for="(i,index) in subNavList" :key="'tab' + index"
+                  @click="changeSubActive(i.value)">{{ i.name }}</div>
             </div>
             <!-- 主播且队长：待审批用户列表 -->
             <div class="audit-list" v-if="subActive === 0">
               <el-scrollbar max-height="800px" @scroll="onAuditScroll" ref="auditScrollRef">
-                <div ref="auditListRef" class="audit-list-container" v-if="auditList && auditList.length">
-                  <div :class="['audit-list-item', index % 2 === 1 ? 'highlight' : 'non-highlight']" v-for="(item, index) in auditList" :key="item.userId">
-                    <div class="audit-list-item-left">
-                      <div class="serial-num">{{ index + 1 }}</div>
-                      <img class="avatar" :src="item.userAvatar" alt="">
-                      <span class="nick-name">{{ item.nickName }}</span>
-                    </div>
-                    <div class="audit-btn-wrap" v-if="item.status === 0">
-                      <div class="audit-btn" @click="handleAudit(1, item.id)">同意</div>
-                      <div class="audit-btn" @click="handleAudit(2, item.id)">拒绝</div>
-                    </div>
-                    <div class="audit-status" v-else>
-                      <div v-if="item.status === 1">已接受邀请</div>
-                      <div v-if="item.status === 2">已拒绝邀请</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="empty-box" v-else>
-                  <p>暂无数据</p>
+                <div ref="auditListRef">
+                  <TeamMember :data="auditList || []" is-audit is-leader @audit="(status, id) => handleAudit(status, id)"/>
                 </div>
               </el-scrollbar>
             </div>
             <!-- 主播且队长：已邀请用户列表 -->
             <div class="audit-list" v-if="subActive === 1">
               <el-scrollbar max-height="800px" @scroll="onInvitedScroll" ref="invitedScrollRef">
-                <div ref="invitedListRef" class="audit-list-container" v-if="invitedList && invitedList.length">
-                  <div :class="['audit-list-item', index % 2 === 1 ? 'highlight' : 'non-highlight']" v-for="(item, index) in invitedList" :key="item.invitedUserId">
-                    <div class="audit-list-item-left">
-                      <div class="serial-num">{{ index + 1 }}</div>
-                      <img class="avatar" :src="item.invitedUserAvatar" alt="">
-                      <span class="nick-name">{{ item.invitedUserName }}</span>
-                    </div>
-                    <div class="audit-status">
-                      <div v-if="item.status === 0">未接受邀请</div>
-                      <div v-if="item.status === 1">已接受邀请</div>
-                      <div v-if="item.status === 2">已拒绝邀请</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="empty-box" v-else>
-                  <p>暂无数据</p>
+                <div ref="invitedListRef">
+                  <TeamMember :data="invitedList || []" is-leader />
                 </div>
               </el-scrollbar>
             </div>
@@ -414,25 +378,8 @@ onMounted(() => {
           <div class="auth-2" v-else>
             <div class="audit-list">
               <el-scrollbar max-height="800px" @scroll="onAuditScroll" ref="auditScrollRef">
-                <div ref="invitedListRef" class="audit-list-container" v-if="invitedList && invitedList.length">
-                  <div :class="['audit-list-item', index % 2 === 1 ? 'highlight' : 'non-highlight']" v-for="(item, index) in invitedList" :key="item.userId">
-                    <div class="audit-list-item-left">
-                      <div class="serial-num">{{ index + 1 }}</div>
-                      <img class="avatar" :src="item.invitedUserAvatar" alt="">
-                      <span class="nick-name">{{ item.invitedUserName }}</span>
-                    </div>
-                    <div class="audit-btn-wrap" v-if="item.status === 0">
-                      <div class="audit-btn" @click="handleInvite(1, item.id)">同意邀请</div>
-                      <div class="audit-btn" @click="handleInvite(2, item.id)">拒绝邀请</div>
-                    </div>
-                    <div class="audit-status" v-else>
-                      <div v-if="item.status === 1">已接受邀请</div>
-                      <div v-if="item.status === 2">已拒绝邀请</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="empty-box" v-else>
-                  <p>暂无数据</p>
+                <div ref="invitedListRef">
+                  <TeamMember :data="invitedList || []" @reply="(status, id) => handleInvite(status, id)"/>
                 </div>
               </el-scrollbar>
             </div>
@@ -453,110 +400,66 @@ onMounted(() => {
 
 <style scoped lang="scss">
 @use "@/style" as *;
+:deep() {
+  .detail-content {
+    z-index: auto;
 
+    .nav-wrapper {
+      position: relative;
+      z-index: 3;
+    }
+  }
+}
+.submit-btn {
+  text-align: center;
+  margin: 30px auto 0;
+  width: 302px;
+  height: 81px;
+  line-height: 70px;
+  background: url("@/assets/images/recharge/qrcode.png") no-repeat;
+  background-size: 100% 100%;
+  font-weight: 500;
+  font-size: 24px;
+  color: #072523;
+  cursor: pointer;
+  border: 0;
+  &.disable-btn {
+    background-image: url('@/assets/images/champion/team/status-bg.png');
+    color: #E8B253;
+  }
+}
 .signup-container {
-  width: 96%;
   display: flex;
   flex-direction: column;
-  max-width: 1024px;
-  margin: 6px auto;
   box-sizing: border-box;
-  position: relative;
-  .signup-header {
+  .group-wrapper {
+    height: 60px;
+    margin-top: 56px;
+    display: flex;
+    align-items: center;
     position: relative;
-    h3 {
-      background: var(--bg-header);
-      background-size: 100% 100%;
-      width: 120px;
-      height: 30px;
-      font-size: 14px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-bottom-right-radius: 15px;
-      border-bottom-left-radius: 15px;
-      font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-      position: absolute;
-      left: 50%;
-      top: 8px;
-      z-index: 2;
-      transform: translateX(-60px);
+    z-index: 3;
+    .goup-item {
+      width: 159px;
+      height: 63px;
+      line-height: 57px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 18px;
+      color: #ffffff;
+      cursor: pointer;
+      &.active {
+        color: #8fedd8;
+        background: url("@/assets/images/header/active-menu.png") no-repeat;
+        background-size: 100% 63px;
+      }
     }
   }
   .main-list {
-    .nav {
-      display: flex;
-      align-items: center;
-      margin-top: 30px;
-      @include mobile{
-        justify-content: space-evenly;
-      }
-
-
-      &-item {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "PingFang Regular", sans-serif;
-        cursor: pointer;
-        background: #FFF5F5;
-        flex-shrink: 0;
-
-        width: 153px;
-        height: 48px;
-        border-radius: 30px;
-        font-size: 16px;
-        margin-right: 32px;
-
-        @include mobile{
-          width: 104px;
-          margin-right: 0;
-        }
-
-        span {
-          filter: drop-shadow(0px 0px 4.3px #FF4545A6);
-          font-size: 16px;
-        }
-
-
-        @include mobile {
-          height: 40px;
-        }
-
-        &:first-child {
-          background: linear-gradient(90.15deg, #FF3C2A -4.19%, rgba(149, 0, 0, 0) 99.85%);
-
-        }
-
-        &:nth-child(2) {
-          background: linear-gradient(90.15deg, #FF952A -4.19%, rgba(149, 87, 0, 0) 99.85%);
-
-        }
-
-        &:nth-child(3) {
-          background: linear-gradient(90.15deg, #A27A7A -4.19%, rgba(152, 116, 116, 0) 99.85%);
-
-        }
-
-        &.active {
-          position: relative;
-
-          &::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 4px;
-            border-radius: 34px;
-            background: white;
-            bottom: -2px;
-            left: 50%;
-            transform: translateX(-50%);
-
-          }
-        }
-
-      }
-    }
+    width: 1162px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
     .battle-list {
       .battle-list-container {
         display: grid;
@@ -569,92 +472,12 @@ onMounted(() => {
   .my-team {
     .sub-nav {
       display: flex;
-      align-items: center;
-      margin-top: 30px;
-      @include mobile{
-        justify-content: space-evenly;
-      }
-
-
-      &-item {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "PingFang Regular", sans-serif;
-        cursor: pointer;
-        background: #FFF5F5;
-        flex-shrink: 0;
-
-        width: 153px;
-        height: 48px;
-        border-radius: 30px;
-        font-size: 16px;
-        margin-right: 32px;
-
-        @include mobile{
-          width: 104px;
-          margin-right: 0;
+      margin-top: 40px;
+      .nav-item {
+        margin: 0 0 0 16px;
+        &+ .nav-item {
+          margin: 0 0 0 26px;
         }
-
-        span {
-          filter: drop-shadow(0px 0px 4.3px #FF4545A6);
-          font-size: 16px;
-        }
-
-
-        @include mobile {
-          height: 40px;
-        }
-
-        &:first-child {
-          // background: linear-gradient(90.15deg, #FF3C2A -4.19%, rgba(149, 0, 0, 0) 99.85%);
-          background: var(--bg-tab1);
-          background-size: 100% 100%;
-          background-repeat: no-repeat;
-          width: 48%;
-          height: 80px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 16px;
-          span {
-            font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-          }
-        }
-
-        &:nth-child(2) {
-          // background: linear-gradient(90.15deg, #FF952A -4.19%, rgba(149, 87, 0, 0) 99.85%);
-          background: var(--bg-tab2);
-          background-size: 100% 100%;
-          background-repeat: no-repeat;
-          width: 48%;
-          height: 80px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 16px;
-          span {
-            font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-          }
-        }
-
-        &.sub-active {
-          position: relative;
-
-          &::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 4px;
-            border-radius: 34px;
-            background: white;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-
-          }
-        }
-
       }
     }
   }
@@ -665,7 +488,7 @@ onMounted(() => {
     background: linear-gradient(to right, rgb(105, 94, 116), rgb(24, 24, 36));
   }
   .audit-list {
-    padding: 16px 0;
+    margin-top: -10px;
   }
   .audit-list-item {
     display: flex;
@@ -735,11 +558,12 @@ onMounted(() => {
     }
   }
   .empty-box {
-    font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-    font-size: 18px;
-    color: #eee;
-    text-align: center;
-    min-height: 200px;
+    height: 500px;
+    border-radius: 8px;
+    background-color: #38383894;
+    font-weight: 500;
+    font-size: 19px;
+    color: #C4C4C4;
     display: flex;
     align-items: center;
     justify-content: center;

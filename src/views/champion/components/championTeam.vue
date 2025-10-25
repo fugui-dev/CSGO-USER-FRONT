@@ -45,6 +45,9 @@
           <div>{{ item.totalScore }}</div>
         </div>
       </div>
+      <div v-if="!data.matchUserList || data.matchUserList.length === 0" class="empty">
+        暂无数据
+      </div>
     </div>
   </div>
 </template>
@@ -164,6 +167,13 @@ const props = defineProps({
           margin-right: 8px;
         }
       }
+    }
+    .empty {
+      width: 100%;
+      text-align: center;
+      color: #ffffff;
+      font-size: 20px;
+      margin: 50px;
     }
   }
 }

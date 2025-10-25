@@ -49,7 +49,6 @@ const props = defineProps({
 
 <template>
   <Layout>
-    <slot name="top"></slot>
     <div
       class="detail-layout-wrapper"
       :style="{
@@ -58,6 +57,7 @@ const props = defineProps({
       }"
     >
       <div class="detail-content">
+        <slot name="top"></slot>
         <div class="nav-wrapper tw-flex tw-items-center">
           <router-link
             class="nav-item"
@@ -74,7 +74,9 @@ const props = defineProps({
             <span>{{ i.name }}</span>
           </router-link>
         </div>
-        <slot></slot>
+        <div style="margin-left: 32px;">
+          <slot></slot>
+        </div>
       </div>
     </div>
   </Layout>
@@ -83,7 +85,7 @@ const props = defineProps({
 <style scoped lang="scss">
 @use "@/style" as *;
 .detail-layout-wrapper {
-  padding: 86px 32px 30px;
+  padding: 66px 0 30px;
   background-repeat: no-repeat;
   background-size: 100% auto;
   background-color: #4d3337;
@@ -93,10 +95,13 @@ const props = defineProps({
   .detail-content {
     flex: 1;
     overflow: auto;
+    position: relative;
     &::-webkit-scrollbar {
       display: none;
     }
     .nav-wrapper {
+      margin-top: 20px;
+      margin-left: 32px;
       gap: 10px 12px;
       .nav-item {
         width: 139px;

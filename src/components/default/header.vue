@@ -19,7 +19,8 @@
   <RechargeModal ref="rechargeModalRef" />
 </template>
 
-<script lang="ts" setup>
+<script setup>
+import TopInfo from "@/components/TopInfo.vue";
 import RechargeModal from "@/components/RechargeModal/index.vue";
 import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
@@ -36,7 +37,7 @@ const menuList = [
   { name: "免费折扣", path: "" },
 ];
 import { ElMessage } from "element-plus";
-const toMenu = (item: { name: string; path: string }) => {
+const toMenu = (item) => {
   if (item.path) {
     router.push(item.path);
   } else {
@@ -73,16 +74,16 @@ const toMenu = (item: { name: string; path: string }) => {
     text-align: center;
     line-height: 68px;
     .menu-item {
-      width: 123px;
+      width: 94px;
       height: 100%;
       cursor: pointer;
       &.active {
         background: url("@/assets/images/header/active-menu.png") no-repeat;
-        background-size: 100% 100%;
+        background-size: 100% calc(100% + 5px);
       }
     }
     .top-info {
-      margin-left: 20px;
+      margin-left: 36px;
     }
   }
 }
