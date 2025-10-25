@@ -2,6 +2,7 @@
 import {computed, ref, onMounted} from 'vue'
 import {requireImg} from '@/utils/common'
 import RollingShow from "@/components/RollingShow.vue";
+import bgShop from '@/assets/images/home/bg_shop.png';
 
 const topRef = ref()
 const maskWidth = ref(183)
@@ -24,8 +25,8 @@ window.onresize = () => {
 }
 </script>
 <template>
-  <img class="bgb" :src="requireImg('/v2/home/bgb.png')" alt="">
-  <div class="tw-absolute tw-h-[100vh] tw-w-[100vw] tw-z-[-1]" >
+  <img class="bgb" :src="bgShop" alt="">
+  <!-- <div class="tw-absolute tw-h-[100vh] tw-w-[100vw] tw-z-[-1]" >
     <div class="tw-relative tw-flex tw-flex-col tw-items-end" style="background: linear-gradient(180deg, rgb(33, 15, 11) 90%, rgba(255, 255, 255, 0) 100%);">
       <div class="top tw-relative" ref="topRef">
         <video id="bgVideo" muted loop playsinline autoplay>
@@ -37,16 +38,19 @@ window.onresize = () => {
 
     </div>
 
-  </div>
+  </div> -->
 </template>
 <style lang="scss" scoped>
 @use "@/style" as *;
 
 .bgb {
   position: fixed;
+  top: 0;
   bottom: 0;
   right: 0;
+  left: 0;
   z-index: -10;
+  width: 100%;
 }
 
 #bgVideo {

@@ -9,6 +9,7 @@ import {ElMessage} from "element-plus";
 import {useStore} from "@/store";
 import {Switch} from "@element-plus/icons-vue";
 import BaseButton from "@/components/Btn/BaseButton.vue";
+import bgMini from '@/assets/images/login/login_top_bg.png';
 
 const store=useStore()
 const router=useRouter()
@@ -143,10 +144,8 @@ const getSmsCode = (type) => {
 </script>
 
 <template>
-  <div class="login_mini" :style="{
-    '--bg-mini': requireImg('/login/bg-mini.png',true)
-  }">
-    <img style="width: 100%;" :src="requireImg('/v2/login/top.png',false)" alt="">
+  <div class="login_mini">
+    <img style="width: 100%;" :src="bgMini" alt="">
     <div class="login_mini-container">
       <div class="type">
         <div>登录</div>
@@ -256,7 +255,7 @@ const getSmsCode = (type) => {
       width: 100%;
     }
     .el-input{
-      height: 56px;
+      height: 48px;
       --el-input-bg-color:rgba(255,255,255,.2);
       --el-input-text-color:#fff;
     }

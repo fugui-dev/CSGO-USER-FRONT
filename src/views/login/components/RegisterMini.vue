@@ -7,6 +7,7 @@ import {getSmsCodeApi, registerApi} from "@/api";
 import CountdownButton from "@/components/Btn/CountdownButton.vue";
 import {ElMessage} from "element-plus";
 import BaseButton from "@/components/Btn/BaseButton.vue";
+import bgMini from '@/assets/images/login/register_top_bg.png';
 
 const router=useRouter()
 const route=useRoute()
@@ -93,7 +94,7 @@ const registerFormSubmit = () => {
     '--bg-mini': requireImg('/login/bg-mini.png',true)
   }">
 
-    <img style="width: 100%;" :src="requireImg('/v2/login/top.png',false)" alt="">
+    <img style="width: 100%;" :src="bgMini" alt="">
     <div class="login_mini-container">
       <div class="type">
         <div>注册</div>
@@ -141,10 +142,10 @@ const registerFormSubmit = () => {
         </el-form-item>
       </el-form>
       <el-form-item>
-        <BaseButton name="注册" @click="registerFormSubmit"></BaseButton>
+        <BaseButton name="注册" :isGreen="true" @click="registerFormSubmit"></BaseButton>
       </el-form-item>
       <el-form-item class="form" style="margin-top: auto;">
-        <div style="width: 100%;text-align: center;cursor: pointer" @click="goto('/login')">已有账号，点击登录>></div>
+        <div style="width: 100%;text-align: center;cursor: pointer" @click="goto('/login')">已有账号，点击登录</div>
       </el-form-item>
     </div>
   </div>

@@ -6,20 +6,38 @@ import {ref} from "vue";
 import {getBoxListApi} from "@/api";
 import {useOpenPage} from "@/composables/useOpenBox";
 import Title from "@/components/Title.vue";
-
+import bgShop from '@/assets/images/home/bg_shop.png';
+import nav1 from '@/assets/images/home/nav1.png';
+import nav2 from '@/assets/images/home/nav2.png';
+import nav3 from '@/assets/images/home/nav3.png';
+import nav4 from '@/assets/images/home/nav4.png';
+import coin from '@/assets/images/home/coin.png';
+import arrow from '@/assets/images/home/arrow.png';
 
 const navs = ref([{
   path: "/upgrade",
-  img: requireImg("/v2/home/nav1.png", false),
+  img: nav1,
+  title: '炼金',
+  content: '去炼金',
+  color: '#E4C162'
 }, {
   path: "/center",
-  img: requireImg("/v2/home/nav2.png", false),
+  img: nav2,
+  title: '福利站',
+  content: '去领取',
+  color: '#1EBCAF'
 }, {
   path: "/smelt",
-  img: requireImg("/v2/home/nav3.png", false),
+  img: nav3,
+  title: '熔炼',
+  content: '去熔炼',
+  color: '#B0D05F'
 }, {
   path: "/roll",
-  img: requireImg("/v2/home/nav4.png", false),
+  img: nav4,
+  title: 'ROLL房',
+  content: '去获取',
+  color: '#D280BC'
 },
 
 ])
@@ -50,6 +68,13 @@ const handleClick = (id) => {
         <div class="nav">
           <div class="nav-item" v-for="(i, index) in navs" :key="index" @click="goto(i.path)">
             <img :src="i.img" alt="">
+            <div class="nav-item-content">
+              <p :style="{ color: `${i.color}` }">{{ i.title }}</p>
+              <div class="nav-item-go">
+                <span>{{ i.content }}</span>
+                <img :src="arrow" alt="" class="arrow">
+              </div>
+            </div>
           </div>
         </div>
         <div class="container">
@@ -67,7 +92,7 @@ const handleClick = (id) => {
 
                 </div>
                 <div class="jia">
-                  <img :src="requireImg('/v2/coin3.png', false)" alt="">
+                  <img :src="coin" alt="" class="jia-img">
                   <div>{{ j.price }}</div>
                 </div>
 
@@ -94,7 +119,7 @@ const handleClick = (id) => {
 
   .nav {
     z-index: 2;
-    margin-top: 270px;
+    margin-top: 170px;
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -108,6 +133,12 @@ const handleClick = (id) => {
       .nav-item {
         width: 170px;
         height: 82px;
+        position: relative;
+        .nav-item-content {
+          position: absolute;
+          z-index: 99;
+          left: 20px;
+        }
       }
     }
 
@@ -117,6 +148,35 @@ const handleClick = (id) => {
       height: 130px;
       position: relative;
 
+      .nav-item-content {
+        width: 100px;
+        position: absolute;
+        z-index: 99;
+        left: 12px;
+        top: 17px;
+        p {
+          font-size: 20px;
+          font-family: 'Jijiati';
+        }
+        .nav-item-go {
+          margin-top: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          position: relative;
+          width: 60px;
+          span:nth-of-type(1) {
+            font-size: 12px;
+            color: #B1C5C7;
+          }
+          .arrow {
+            width: 16px;
+            height: 16px;
+            position: absolute;
+            right: 0;
+          }
+        }
+      }
 
       img {
         width: 100%;
@@ -142,7 +202,7 @@ const handleClick = (id) => {
   .container {
     display: flex;
     flex-direction: column;
-    padding: 70px 20px;
+    padding: 35px 20px;
 
     z-index: 2;
     margin: 10px 0 0;
@@ -230,6 +290,7 @@ const handleClick = (id) => {
         flex-direction: column;
         align-items: center;
         width: 100%;
+        background-color: rgba($color: #171718, $alpha: 0.59);
 
         &:hover {
           .bx {
@@ -240,13 +301,14 @@ const handleClick = (id) => {
         }
 
         .bx {
-          height: 170px;
-          width: 100%;
+          height: 158px;
+          width: 88%;
           position: relative;
           background-size: 100% 100%;
+          padding-top: 20px;
 
           @include mobile {
-            height: 150px;
+            height: 120px;
           }
 
           .bj {
@@ -269,15 +331,17 @@ const handleClick = (id) => {
           display: flex;
           align-items: center;
           padding: 0 10px;
-          background: linear-gradient(90.47deg, rgba(202, 62, 39, 0) 0.31%, rgba(234, 87, 42, 0.44) 51.13%, rgba(201, 61, 38, 0) 100.98%);
-          width: 100%;
-          height: 40px;
+          // background: linear-gradient(90.47deg, rgba(202, 62, 39, 0) 0.31%, rgba(234, 87, 42, 0.44) 51.13%, rgba(201, 61, 38, 0) 100.98%);
+          width: 132px;
+          height: 28px;
           margin: 9px 0;
           justify-content: center;
+          border-radius: 6px;
+          background: url('@/assets/images/home/bg_box_title.png') no-repeat;
 
           .name {
-            font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-
+            font-family: "PingFang-SC", "Microsoft YaHei", 'sans-serif';
+            font-size: 13px;
           }
         }
 
@@ -285,19 +349,17 @@ const handleClick = (id) => {
           display: flex;
           align-items: center;
           height: 30px;
-
+          margin-bottom: 26px;
           img {
-            height: 30px;
-            width: 30px;
+            height: 22px;
+            width: 22px;
           }
 
           div {
-            color: #FFD900;
+            color: #F1BA50;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 13px;
             line-height: 100%;
-
-
           }
 
         }

@@ -158,8 +158,8 @@ const getSmsCode = (type) => {
           <el-input type="password" show-password v-model="loginPwdForm.password" placeholder="请输入密码"/>
         </div>
       </el-form-item>
-      <el-form-item prop="checked1">
-        <div style="display: flex;align-items: center;width: 100%">
+      <el-form-item prop="checked1" class="checkbox-container">
+        <div style="display: flex;align-items: center;justify-content: center;width: 100%">
           <el-checkbox size="large" v-model="checked1"/>
           <div class="checkbox_note" @click="checked1=!checked1">
             确认已年满18周岁。<a href="">用户协议</a> 和 <a href="">隐私政策</a>
@@ -179,27 +179,27 @@ const getSmsCode = (type) => {
           </div>
         </div>
       </el-form-item>
-      <el-form-item prop="checked1">
-        <div style="display: flex;align-items: center;width: 100%">
+      <el-form-item prop="checked1" class="checkbox-container">
+        <div style="display: flex;align-items: center;justify-content: center;width: 100%">
           <el-checkbox size="large" v-model="checked1"/>
           <div class="checkbox_note" @click="checked1=!checked1">
-            确认已年满18周岁。<a href="">用户协议</a> 和 <a href="">隐私政策</a>
+            确认已年满18周岁，<a href="">用户协议</a> 和 <a href="">隐私政策</a>
           </div>
         </div>
       </el-form-item>
 
     </el-form>
     <el-form-item>
-      <BaseButton name="登录" @click="isPwd?loginPwdFormSubmit():loginPhoneFormSubmit()"/>
+      <BaseButton name="登 录" fontSize="18px" @click="isPwd?loginPwdFormSubmit():loginPhoneFormSubmit()"/>
     </el-form-item>
     <el-form-item>
       <div class="change_type" @click="isPwd=!isPwd">
-        <el-icon ><Switch /></el-icon>
+        <span class="change-type-icon"></span>
         <div>切换登录方式</div>
       </div>
     </el-form-item>
-    <el-form-item class="form" style="margin-top: auto;">
-      <div style="width: 100%;text-align: center;cursor: pointer" @click="goto('register')">没有账号，点击注册>></div>
+    <el-form-item class="go-register">
+      <div style="width: 100%;text-align: center;cursor: pointer" @click="goto('register')">没有账号，点击去注册</div>
     </el-form-item>
   </div>
 </template>
@@ -213,6 +213,7 @@ const getSmsCode = (type) => {
   height: 100%;
   width: 100%;
   padding: 200px 46px 161px;
+  position: relative;
 
 
   .title {
@@ -237,7 +238,7 @@ const getSmsCode = (type) => {
     div {
       margin-right:19px;
       cursor: pointer;
-      font-size: 36px;
+      font-size: 32px;
     }
 
     div:nth-child(2) {
@@ -247,22 +248,41 @@ const getSmsCode = (type) => {
     div:nth-child(3) {
       font-size: 20px;
       color: #FFFFFFB2;
+      margin-top: 4px;
     }
 
   }
   .form{
     width: 100%;
   }
+  :deep(.el-form-item) {
+    margin-bottom: 14px;
+  }
   .el-input{
-    height: 56px;
-    --el-input-bg-color:rgba(255,255,255,.2);
-    --el-input-text-color:#fff;
+    height: 48px;
+    --el-input-bg-color:#1c1c1c;
+    --el-input-border-color:#1c1c1c;
+    --el-input-border-radius:0;
+    --el-input-text-color:#b9b9b9;
+  }
+  :deep(.el-checkbox__inner) {
+    border: 1px solid #E0A128;
+    &::after {
+      border-color: #E0A128;
+    }
+  }
+  .checkbox-container {
+    :deep(.el-form-item__error) {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
   }
   .checkbox_note{
     font-size: 12px;
-    margin-left: 3px;
+    margin-left: 4px;
     cursor: pointer;
-    color: #FFF5F5B2;
+    color: #b9b9b9;
 
     a {
       text-decoration:underline;
@@ -274,6 +294,24 @@ const getSmsCode = (type) => {
     font-size: 12px;
     align-items: center;
     cursor: pointer;
+    color: #b9b9b9;
+
+    .change-type-icon {
+      width: 17px;
+      height: 15px;
+      display: inline-block;
+      background: url('@/assets/images/login/switch.png') no-repeat;
+      background-size: cover;
+      margin-right: 4px;
+    }
+  }
+  .go-register {
+    position: absolute;
+    z-index: 99;
+    left: 22px;
+    bottom: 12px;
+    margin-bottom: 0;
+    color: #CB9327;
   }
   .login_btn{
     width: 278px;
@@ -291,9 +329,6 @@ const getSmsCode = (type) => {
     &:hover{
       opacity: .85;
     }
-  }
-  .base_button{
-    width: 366px;
   }
 }
 </style>
