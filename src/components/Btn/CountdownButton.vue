@@ -98,7 +98,7 @@ defineExpose({
   cursor: pointer;
   transition: all 0.3s ease;
   user-select: none;
-  height:56px;
+  height:48px;
 
   /* 默认正常状态样式 */
   background: linear-gradient(99.19deg, rgba(166, 131, 131, 0.4) 5.46%, rgba(255, 34, 0, 0.4) 86.69%);

@@ -2,17 +2,18 @@
 const name = defineModel("name", { default: '按钮' })
 const isGoldColor = defineModel("isGoldColor", { default: false })
 const isGray = defineModel("isGray", { default: false })
+const isGreen = defineModel("isGreen", { default: false })
 const fontSize = defineModel("fontSize", { default: '16px' })
 const props = defineProps({
   customStyle: {
     type: Object,
     default: () => ({})
-  }
+  },
 })
 </script>
 
 <template>
-  <div :class="['base_button', { 'gold': isGoldColor, 'gray': isGray }]" 
+  <div :class="['base_button', { 'gold': isGoldColor, 'gray': isGray, 'green': isGreen }]" 
        :style="[{ '--font-size': fontSize }, customStyle]">
     <div class="base_button-name">
       <slot name="name">{{ name }}</slot>
@@ -22,20 +23,24 @@ const props = defineProps({
 
 <style scoped lang="scss">
 .base_button {
-  width: 100%;
-  background: linear-gradient(93.1deg, #FF553C 7.24%, #A70202 98.65%);
+  // background: linear-gradient(93.1deg, #FF553C 7.24%, #A70202 98.65%);
   height: 52px;
-  border-radius: 44px;
+  width: 217px;
   padding: 14px 0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: .3s;
-  filter: drop-shadow(0px 0px 2px #FF553C);
+  // filter: drop-shadow(0px 0px 2px #FF553C);
+  background: url('@/assets/images/login/yellow_btn.png') no-repeat;
 
   &:hover {
-    filter: drop-shadow(0px 0px 4px #FF553C);
+    filter: drop-shadow(0px 0px 4px #f2a917);
+  }
+
+  &.green {
+      background: url('@/assets/images/login/green_btn.png') no-repeat;
   }
 
   &.gold {

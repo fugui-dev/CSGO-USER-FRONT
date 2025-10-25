@@ -13,16 +13,17 @@ const store = useStore()
 </script>
 
 <template>
-  <div class="login" :style="{
-    '--bg-login-pc': requireImg('/v2/bg/bg-login-pc.png', true),
-  }">
-    <div class="tw-w-full tw-h-full tw-overflow-hidden tw-relative" v-if="store.isPC">
+  <div class="login">
+    <!-- <div class="tw-w-full tw-h-full tw-overflow-hidden tw-relative" v-if="store.isPC">
       <video class="tw-w-full tw-h-full tw-object-cover" muted loop playsinline autoplay>
         <source :src="requireImg('/v2/v2.mp4')" type="video/mp4">
       </video>
-    </div>
+      <div class="login-bg tw-w-full tw-h-full tw-object-cover" v-if="store.isPC && route.name === 'Login'"></div>
+      <div class="register-bg" v-if="store.isPC && route.name === 'Register'"></div>
+    </div> -->
 
-    <div class="bg" v-if="store.isPC"></div>
+    <div class="login-bg" v-if="store.isPC && route.name === 'Login'"></div>
+    <div class="register-bg" v-if="store.isPC && route.name === 'Register'"></div>
     <div class="container" v-if="store.isPC">
       <Login v-if="route.name === 'Login'"></Login>
       <Register v-if="route.name === 'Register'"></Register>
@@ -54,15 +55,24 @@ const store = useStore()
     background-color: transparent;
   }
 
-  .bg {
+  .login-bg {
     //背景图保持高度100%，宽度为图片大小 图片保持右边完整展示 左边压缩
-    background-image: var(--bg-login-pc);
+    background-image: url('@/assets/images/login/login_bg.png');
     background-size: 100% 100%;
     background-position: right top;
     background-repeat: no-repeat;
     width: 100%;
     height: 100%;
+  }
 
+  .register-bg {
+    //背景图保持高度100%，宽度为图片大小 图片保持右边完整展示 左边压缩
+    background-image: url('@/assets/images/login/register_bg.png');
+    background-size: 100% 100%;
+    background-position: right top;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100%;
   }
 
   .container {
@@ -70,8 +80,7 @@ const store = useStore()
     right: 0;
     width: 500px;
     height: 100%;
-    background: #200E0AE5;
-
+    background: rgba(0, 0, 0, 0.55);
   }
 }
 </style>

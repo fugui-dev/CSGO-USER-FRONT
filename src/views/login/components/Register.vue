@@ -130,20 +130,20 @@ const registerFormSubmit = () => {
           <el-input v-model="registerForm.parentInvitationCode" placeholder="请输入邀请码（选填）"/>
         </div>
       </el-form-item>
-      <el-form-item prop="checked1">
-        <div style="display: flex;align-items: baseline">
+      <el-form-item prop="checked1" class="checkbox-container">
+        <div style="width: 100%;display: flex;align-items: baseline;justify-content: center;">
           <el-checkbox size="large" v-model="checked1"/>
           <div class="checkbox_note" @click="checked1=!checked1">
-            确认已年满18周岁。<a href="">用户协议</a> 和 <a href="">隐私政策</a>
+            确认已年满18周岁，<a href="">用户协议</a> 和 <a href="">隐私政策</a>
           </div>
         </div>
       </el-form-item>
     </el-form>
     <el-form-item>
-      <BaseButton name="注册" @click="registerFormSubmit"></BaseButton>
+      <BaseButton name="注册" :isGreen="true" @click="registerFormSubmit"></BaseButton>
     </el-form-item>
     <el-form-item class="form" style="margin-top: auto;">
-      <div style="width: 100%;text-align: center;cursor: pointer" @click="goto('/login')">已有账号，点击登录>></div>
+      <div style="width: 100%;text-align: center;cursor: pointer" @click="goto('/login')">已有账号，点击登录</div>
     </el-form-item>
   </div>
 </template>
@@ -179,7 +179,7 @@ const registerFormSubmit = () => {
     div {
       margin-right:19px;
       cursor: pointer;
-      font-size: 36px;
+      font-size: 32px;
     }
 
     div:nth-child(2) {
@@ -194,20 +194,36 @@ const registerFormSubmit = () => {
   }
   .form{
     width: 100%;
+    color: #b9b9b9;
   }
   .el-input{
-    height: 56px;
-    --el-input-bg-color:rgba(255,255,255,.2);
-    --el-input-text-color:#fff;
+    height: 48px;
+    --el-input-bg-color:#1c1c1c;
+    --el-input-border-color:#1c1c1c;
+    --el-input-border-radius:0;
+    --el-input-text-color:#b9b9b9;
+  }
+  :deep(.el-checkbox__inner) {
+    border: 1px solid #E0A128;
+    &::after {
+      border-color: #E0A128;
+    }
   }
   .checkbox_note{
     font-size: 12px;
-    margin-left: 3px;
+    margin-left: 4px;
     cursor: pointer;
-    color: #FFF5F5B2;
+    color: #b9b9b9;
 
     a {
       text-decoration:underline;
+    }
+  }
+  .checkbox-container {
+    :deep(.el-form-item__error) {
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
   }
   .change_type{
@@ -233,9 +249,6 @@ const registerFormSubmit = () => {
     &:hover{
       opacity: .85;
     }
-  }
-  .base_button{
-    width: 366px;
   }
 }
 </style>

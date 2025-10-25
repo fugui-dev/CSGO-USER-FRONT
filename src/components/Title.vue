@@ -46,12 +46,13 @@ const name =defineModel("name",{default:"标题"})
       width: 80%;
     }
     div{
-      font-family: "FZZJ-JHTJW","titleFont", "Microsoft YaHei", 'sans-serif';
-      background: linear-gradient(90deg, #FFE7E6 0%, #FFD792 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      white-space: nowrap;
-
+      // font-family: "FZZJ-JHTJW","titleFont", "Microsoft YaHei", 'sans-serif';
+      // background: linear-gradient(90deg, #FFE7E6 0%, #FFD792 100%);
+      // -webkit-background-clip: text;
+      // -webkit-text-fill-color: transparent;
+      // white-space: nowrap;
+      color: #fff;
+      font-size: 14px;
     }
   }
 }
