@@ -17,6 +17,7 @@
         alt=""
       />
     </div>
+    <div class="team-name">{{ data.name }}</div>
     <div class="list-wrapper">
       <div
         class="user-list-item"
@@ -67,7 +68,7 @@ const props = defineProps({
   width: 100%;
   padding: 0 20px;
   .champion {
-    margin: 61px auto;
+    margin: 61px auto 20px;
     width: 236px;
     height: 230px;
     display: flex;
@@ -99,6 +100,10 @@ const props = defineProps({
       height: auto;
       z-index: -1;
     }
+  }
+  .team-name {
+    text-align: center;
+    font-size: 28px;
   }
   .list-wrapper {
     width: 1018px;
