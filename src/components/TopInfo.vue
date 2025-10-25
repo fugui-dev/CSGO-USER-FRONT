@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import UAvatar from "@/components/UAvatar.vue";
+import Avatar from "@/components/avatar.vue";
 
 import { useStore } from "@/store/index.js";
 import LoginDialog from "@/components/dialogs/LoginDialog.vue";
@@ -67,24 +67,30 @@ const userNav = ref([
   },
 ]);
 
+import envelopeIcon from '@/assets/images/header/envelope.png';
+import CDKIcon from '@/assets/images/header/cdk.png';
+import kefuIcon from '@/assets/images/header/kefu.png';
 const icoNav = ref([
   {
     name: "红包",
-    img: requireImg("/v2/nav/hb.png"),
+    img: envelopeIcon,
+    width: "24px",
     func: () => {
       redEnvelopeDialogRef.value.open();
     },
   },
   {
     name: "CDK兑换",
-    img: requireImg("/v2/nav/cdk.png"),
+    img: CDKIcon,
+    width: "39px",
     func: () => {
       cdkDialogRef.value.open();
     },
   },
   {
     name: "客服",
-    img: requireImg("/v2/nav/kf.png"),
+    img: kefuIcon,
+    width: "30px",
     func: () => {
       kefuRef.value.open();
     },
@@ -119,6 +125,7 @@ const kefuRef = ref();
           :key="index"
           :title="i.name"
           :src="i.img"
+          :style="{ width: i.width }"
           @click="i.func"
         />
       </div>
@@ -128,13 +135,12 @@ const kefuRef = ref();
         @click="rechargeModalRef.open"
         style="margin-right: 5px"
       >
-        <img :src="requireImg('/v2/jine.png')" alt="" />
         充值
       </div>
       <div v-if="store.isPC" style="display: flex">
         <div class="item">
-          <img :src="requireImg('/coin1.png', false, false)" alt="" />
-          余额：{{ store.userInfo?.accountAmount || 0.0 }}
+          <img src="@/assets/images/champion/game/coin.png" alt="" />
+          {{ store.userInfo?.accountAmount || 0.0 }}
         </div>
         <!-- <div class="item">
           <img :src="requireImg('/coin2.png',false,false)"
@@ -153,25 +159,13 @@ const kefuRef = ref();
       <!--        </div>-->
       <!--      </div>-->
       <div class="charge item" v-if="store.isPC" @click="rechargeModalRef.open">
-        <img :src="requireImg('/v2/jine.png', false)" alt="" />
         充值
       </div>
-      <UAvatar style="cursor: pointer; flex-shrink: 0" v-if="!store.isLogin" />
-
       <el-dropdown
-        v-else
         popper-class="user-popper"
         @visible-change="visibleChange"
       >
-        <UAvatar
-          style="cursor: pointer; flex-shrink: 0"
-          :src="
-            store.userInfo && store.userInfo.avatar
-              ? store.userInfo.avatar
-              : null
-          "
-          size="55"
-        />
+        <Avatar :src="store.userInfo && store.userInfo.avatar ? store.userInfo.avatar : null" width="56" inWidth="42" />
         <template #dropdown>
           <el-dropdown-menu
             style="
@@ -244,9 +238,9 @@ const kefuRef = ref();
   display: flex;
 
   img {
-    width: 20px;
-    margin-right: 12px;
+    margin-right: 20px;
     cursor: pointer;
+    object-fit: contain;
   }
 }
 
@@ -353,11 +347,12 @@ const kefuRef = ref();
 
     .item {
       margin-right: 20px;
-      font-size: 0.8em;
+      font-size: 18px;
+      color: #B1C5C7;
 
       img {
-        width: 18px;
-        margin-right: 5px;
+        width: 28px;
+        margin-right: 6px;
       }
     }
 
@@ -365,27 +360,15 @@ const kefuRef = ref();
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 112px;
-      height: 40px;
-      background: linear-gradient(180deg, #ff553c 0%, #a70202 100%);
-
-      border-radius: 28px;
-      border: 1px solid #a70202;
-
-      font-size: 16px;
-      cursor: pointer;
+      width: 110px;
+      height: 34px;
+      background: url('@/assets/images/header/charge-bg.png') no-repeat;
+      background-size: 100% 100%;
+      font-size: 18px;
+      color: #FFFFFF;
       transition: 0.3s;
-      font-weight: bold;
-
-      &:hover {
-        filter: drop-shadow(0 0 5px #ff553c);
-      }
-
-      img {
-        width: 24px;
-        height: 24px;
-        transition: 0.1s;
-      }
+      font-weight: 500;
+      cursor: pointer;
       @include mobile {
         width: 80px;
         height: 29px;

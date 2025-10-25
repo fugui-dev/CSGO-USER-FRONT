@@ -971,8 +971,8 @@ import bgImg from "@/assets/images/champion/bg.webp";
 }
 
 .wait-content {
-        position: absolute;
-  top: 66px;
+  position: absolute;
+  top: 0;
   left: 0;
   width: 100%;
   height: 48.23vw;
@@ -991,7 +991,7 @@ import bgImg from "@/assets/images/champion/bg.webp";
 
 .button-wrapper {
   position: absolute;
-  top: 86px;
+  top: 20px;
   right: 30px;
   z-index: 4;
 
