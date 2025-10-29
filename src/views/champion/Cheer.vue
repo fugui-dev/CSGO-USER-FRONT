@@ -41,6 +41,7 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
           <div class="cheer-list-item-header">
             <div>队伍</div>
             <div>助威用户</div>
+            <div>阶段名称</div>
             <div>助威金额</div>
             <div>奖励积分</div>
           </div>
@@ -68,6 +69,9 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
                 />
               </div>
               {{ item.userName }}
+            </div>
+            <div class="stage-name tw-flex tw-items-center tw-justify-center">
+              {{ item.stageName || '未知阶段' }}
             </div>
             <div class="amount tw-flex tw-items-center tw-justify-center">
               <img
@@ -122,16 +126,17 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
           no-repeat;
         background-size: 100% 100%;
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
         gap: 3px;
         text-align: center;
       }
       .cheer-list-item-content {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
         gap: 3px;
         .team,
         .user,
+        .stage-name,
         .amount,
         .refund-amount {
           width: 100%;

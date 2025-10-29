@@ -65,6 +65,10 @@ const handleEnter = () => {
   }
 };
 
+const goToIntroduction = () => {
+  router.push("/champion-intro");
+};
+
 onMounted(() => {
   getMatchInfo();
 });
@@ -123,12 +127,20 @@ onMounted(() => {
                   {{ matchData.amount }}
                 </div>
               </div>
-              <div
-                v-if="matchData.status === 1"
-                @click="handleEnter"
-                class="enter-btn"
-              >
-                进入
+              <div class="button-group">
+                <div
+                  v-if="matchData.status === 1"
+                  @click="handleEnter"
+                  class="enter-btn"
+                >
+                  进入
+                </div>
+                <div
+                  @click="goToIntroduction"
+                  class="intro-btn"
+                >
+                  玩法介绍
+                </div>
               </div>
             </div>
           </div>
@@ -213,21 +225,54 @@ onMounted(() => {
             }
           }
         }
+        .button-group {
+          display: flex;
+          gap: 20px;
+          justify-content: flex-end;
+          margin-top: 20px;
+        }
+        
         .enter-btn {
           text-align: center;
-          position: relative;
-          float: right;
-          right: -4px;
-          width: 302px;
-          height: 81px;
-          line-height: 70px;
-          background: url("@/assets/images/recharge/qrcode.png") no-repeat;
-          background-size: 100% 100%;
+          width: 140px;
+          height: 50px;
+          line-height: 50px;
+          background: linear-gradient(135deg, #ff6b35, #f7931e);
+          backdrop-filter: blur(10px);
+          border: 2px solid rgba(255, 107, 53, 0.3);
+          border-radius: 25px;
           font-weight: 500;
-          font-size: 24px;
-          color: #072523;
+          font-size: 18px;
+          color: #ffffff;
           cursor: pointer;
-          border: 0;
+          transition: all 0.3s ease;
+          
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+          }
+        }
+        
+        .intro-btn {
+          text-align: center;
+          width: 140px;
+          height: 50px;
+          line-height: 50px;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-radius: 25px;
+          font-weight: 500;
+          font-size: 18px;
+          color: #ffffff;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          
+          &:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+          }
         }
       }
     }

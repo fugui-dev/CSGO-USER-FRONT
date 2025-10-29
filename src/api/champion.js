@@ -9,6 +9,23 @@ export const getMatchInfoApi = (data) => {
     })
 }
 
+// 获取助威配置列表
+export const getStageCheerConfigListApi = () => {
+    return request({
+        url: "/admin/match/stage/cheer/list",
+        method: "get"
+    })
+}
+
+// 获取宝箱列表
+export const getBoxListApi = (data) => {
+    return request({
+        url: "/api/bindbox/getBoxList",
+        method: "get",
+        data: data
+    })
+}
+
 // 获取队伍列表
 export const getTeamListApi = (data) => {
     return request({

@@ -116,6 +116,14 @@ const routes = [
         },
       },
       {
+        path: "/champion-intro",
+        component: () => import("../views/champion/Introduction.vue"),
+        name: "ChampionIntro",
+        meta: {
+          title: "夺冠之路介绍",
+        },
+      },
+      {
         path: "/detail",
         component: () => import("../views/champion/Detail.vue"),
         name: "Detail",
