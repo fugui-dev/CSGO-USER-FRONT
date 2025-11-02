@@ -17,6 +17,7 @@ import {ElMessage} from "element-plus";
 import BaseDialog from "@/components/dialogs/BaseDialog.vue";
 import BaseButton from "@/components/Btn/BaseButton.vue";
 import NewBoxs from "@/components/Box/NewBoxs.vue";
+import back from '@/assets/images/upgrade/back.png'
 
 const store = useStore()
 const route = useRoute()
@@ -231,19 +232,25 @@ getDetails()
   <layout :style="{
     '--roll-l':requireImg('/roll/l.png',true),
     '--btn-join':requireImg('/roll/btn-join.png',true),
-    '--roll-r':requireImg('/roll/r.png',true),
-    '--bg-border':requireImg('/v2/roll/room/border.png',true)
+    '--roll-r':requireImg('/roll/r.png',true)
   }">
     <template #item>
-      <div class="bg" :style="{backgroundImage:requireImg('/v2/bg/bg-roll-room.png',true)}"></div>
+      <div class="bg"></div>
       <div class="roll_room">
-        <div class="back">
-          <img :src="requireImg('/v2/roll/room/back.png')" alt="" @click="goto('/roll')">
-          返回
+        <div class="roll-room-top">
+          <div class="back tw-text-[#B1C5C7] tw-text-[14px]" @click="goto('/roll')">
+          <img :src="back" alt="" class="tw-w-[2rem] tw-h-[1.8rem]">
+            返回
+          </div>
+          <div class="nav">
+            <div class="nav-item" v-for="(i,index) in navList" :class="{'active':active===i.value}" :key="index"
+                  @click="changeActive(i.value)" v-show="!(index===2&&data.rollStatus=='0')">
+              <span>{{ i.name }}</span>
+            </div>
+          </div>
         </div>
         <div class="room" v-if="data">
           <div class="room-info" v-if="store.isPC">
-            <div class="title">{{ data.rollName || '标题' }}</div>
             <div class="deadline">
               <el-countdown
                   format="D天HH时mm分ss秒"
@@ -253,19 +260,18 @@ getDetails()
               <div v-else>已结束</div>
             </div>
             <div class="ico">
+              <div class="title">{{ data.rollName || '标题' }}</div>
               <img class="bx" :src="requireImg('/v2/roll/bx.png',false)" alt="">
-              <BaseButton @click="joinRoll" class="btn_n" name="参与活动"></BaseButton>
-            </div>
-            <div class="desc">
-              <p>房间说明：</p>
-              {{ data.description || '暂无描述' }}
+              <div class="desc">
+                <p>房间说明：</p>
+                {{ data.description || '暂无描述' }}
+              </div>
             </div>
 
           </div>
           <div class="room-info" v-else style="margin-top: 20px;padding :  0 10px">
             <div style="display: flex;height: fit-content;width: 100%;justify-content: space-between;align-items: flex-end">
               <div style="display: flex;flex-direction: column">
-                <div class="title" style="font-size: 16px">{{ data.rollName || '标题' }}</div>
                 <div class="deadline">
                   <el-countdown
                       format="D天HH时mm分ss秒"
@@ -274,26 +280,19 @@ getDetails()
                       v-if="new Date(data.endTime) > new Date()"/>
                   <div v-else>已结束</div>
                 </div>
-                <BaseButton :custom-style="{height:'31px',marginTop:'30px'}" font-size="14px" @click="joinRoll" class="btn_n" name="参与活动"></BaseButton>
               </div>
               <div class="ico" style="height: 120px;width: 120px">
+                <div class="title" style="font-size: 16px">{{ data.rollName || '标题' }}</div>
                 <img class="bx" style="width: 105px;margin-top: 0" :src="requireImg('/v2/roll/bx.png',false)" alt="">
+                <div class="desc" style="margin: 40px 10px;padding: 8px 12px;height: fit-content">
+                  <p>房间说明：</p>
+                  {{ data.description || '暂无描述' }}
+                </div>
               </div>
-            </div>
-            <div class="desc" style="margin: 40px 10px;padding: 8px 12px;height: fit-content">
-              <p>房间说明：</p>
-              {{ data.description || '暂无描述' }}
             </div>
 
           </div>
           <div class="room-content" v-loading="loading">
-
-            <div class="nav">
-              <div class="nav-item" v-for="(i,index) in navList" :class="{'active':active===i.value}" :key="index"
-                   @click="changeActive(i.value)" v-show="!(index===2&&data.rollStatus=='0')">
-                <span>{{ i.name }}</span>
-              </div>
-            </div>
             <div class="number" v-show="active===0">
               饰品件数: {{ data.ornamentsNum || 0 }}
             </div>
@@ -325,6 +324,9 @@ getDetails()
               </div>
             </div>
           </div>
+        </div>
+        <div class="join-btn-wrap" v-if="data">
+          <BaseButton @click="joinRoll" class="btn_n" name="参与活动"></BaseButton>
         </div>
       </div>
     </template>
@@ -358,6 +360,10 @@ getDetails()
 <style scoped lang="scss">
 @use "@/style" as *;
 
+.bg {
+  background: url('@/assets/images/roll/bg.png') no-repeat;
+  background-size: 100% 100%;
+}
 .my_prize {
   display: flex;
   width: 100%;
@@ -415,7 +421,6 @@ getDetails()
     cursor: pointer;
     z-index: 2;
     align-items: center;
-    color: #FFF5F5CC;
   ;
     @include mobile {
       display: none;
@@ -430,9 +435,8 @@ getDetails()
 
   .room {
     display: flex;
-    background-image: var(--bg-border);
-    background-size: 100% 100%;
     margin-left: 20px;
+    background-color: #1e2c30;
     @include mobile {
       flex-direction: column;
       background-image: none;
@@ -440,12 +444,10 @@ getDetails()
     }
 
     &-info {
-      height: 700px;
-      width: 400px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 80px 20px 40px 70px;
+      padding: 10px;
       flex-shrink: 0;
       @include mobile {
         width: 100%;
@@ -456,14 +458,14 @@ getDetails()
       }
 
       .title {
-        font-size: 24px;
-        color: #FFF5F5;
-        filter: drop-shadow(0px 0px 4.3px #FF4545A6);
+        font-size: 16px;
+        color: #ffffff;
         white-space: nowrap;
-        margin-top: 0;
+        margin-top: 28px;
         z-index: 2;
+        font-weight: 600;
+        padding-left: 5px;
         @include mobile {
-          font-size: 38px;
           margin-top: 20px;
           white-space: wrap;
 
@@ -471,19 +473,19 @@ getDetails()
       }
 
       .ico {
-        width: 240px;
-        height: 277px;
-        border-radius: 9.6px;
+        width: 258px;
+        height: 346px;
+        margin-top: 20px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        box-shadow: 0 3.2px 27.12px 0 #500B0557;
-        background: linear-gradient(180deg, rgba(56, 49, 49, 0) 0%, rgba(222, 67, 32, 0.27) 100%);
         position: relative;
+        background: url('@/assets/images/roll/roll_bg.png') no-repeat;
+        background-size: 100% 100%;
         .bx{
-          width: 211px;
-          height: 211px;
-          margin-top: 24px;
+          width: 120px;
+          height: 119px;
+          margin-top: 8px;
         }
 
         .btn_n{
@@ -496,14 +498,16 @@ getDetails()
       }
 
       .deadline {
-        display: flex;
-        align-items: center;
-        margin: 12px 0 4px;
+        align-self: flex-start;
+        background-color: #53372e;
+        margin-left: -10px;
+        padding: 3px 10px;
+        position: relative;
       }
 
       .desc {
-        margin: 30px 10px;
-        padding: 0 20px;
+        margin: 25px;
+        padding: 0 50px;
         width: 100%;
         box-sizing: border-box;
         flex: 1;
@@ -511,8 +515,12 @@ getDetails()
         display: flex;
         flex-direction: column;
         align-items: center;
-        color: #FFFFFFA8;
-        font-size: 14px;
+        color: #FFFFFF;
+        font-size: 12px;
+        p {
+          margin-bottom: 26px;
+          font-size: 14px;
+        }
         @include mobile {
           border: none;
           background-color: rgba(186, 186, 186, 0.35);
@@ -525,11 +533,11 @@ getDetails()
     }
 
     &-content {
-      height: 700px;
+      height: 480px;
       flex: 1;
-      padding: 40px 20px 80px;
+      padding: 10px 20px 30px 0;
       box-sizing: border-box;
-      margin-left: 20px;
+      margin-left: 0;
       z-index: 3;
       display: flex;
       flex-direction: column;
@@ -539,68 +547,11 @@ getDetails()
         padding: 10px 20px 80px;
       }
 
-      .nav {
-        display: flex;
-        align-items: center;
-        margin-top: 33px;
-        flex-wrap: wrap;
-        @include mobile {
-          margin-top: 0;
-          flex-wrap: nowrap;
-          justify-content: space-evenly;
-        }
-
-        &-item {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-family: "PingFang Regular", sans-serif;
-          cursor: pointer;
-          background: #FFF5F5;
-          flex-shrink: 0;
-
-          width: 153px;
-          height: 48px;
-          border-radius: 30px;
-          font-size: 16px;
-          margin-right: 32px;
-          @include mobile {
-            height: 40px;
-            width: 30%;
-            margin: 0;
-          }
-
-          &:first-child {
-            background: linear-gradient(90.15deg, #FF3C2A -4.19%, rgba(149, 0, 0, 0) 99.85%);
-          }
-
-          &:nth-child(2) {
-            background: linear-gradient(90.15deg, #FF952A -4.19%, rgba(149, 87, 0, 0) 99.85%);
-          }
-
-          &:last-child {
-            background: linear-gradient(90.15deg, #A27A7A -4.19%, rgba(152, 116, 116, 0) 99.85%);
-          }
-
-          &.active {
-
-            span {
-              filter: drop-shadow(2px 2px 10px black);
-              color: white;
-              border-bottom: 3px solid white;
-            }
-          }
-
-        }
-      }
-
       .number {
-        margin: 18px 0;
+        margin: 4px 0;
         font-size: 14px;
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        padding-right: 100px;
         text-align: right;
-        color: #FFFFFFB2;
+        color: #FFFFFF;
         @include mobile {
           margin: 6px auto 0;
           padding-right: 0;
@@ -613,7 +564,7 @@ getDetails()
         flex-wrap: wrap;
         margin-top: 15px;
         &-bx{
-          margin: 5px;
+          margin: 2px;
         }
 
         &-item {
@@ -732,6 +683,60 @@ getDetails()
 
     }
   }
+}
+.roll-room-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  @include mobile {
+    margin-top: 0;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+  }
+
+  &-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "PingFang Regular", sans-serif;
+    cursor: pointer;
+    background: #FFF5F5;
+    flex-shrink: 0;
+
+    width: 120px;
+    height: 36px;
+    border-radius: 30px;
+    font-size: 14px;
+    margin-right: 32px;
+    background: linear-gradient(to right, #122c2e, #214147);
+    @include mobile {
+      height: 36px;
+      width: 30%;
+      margin: 0;
+    }
+
+    &.active {
+      background: linear-gradient(to right, #175e64, #508594);
+      span {
+        filter: drop-shadow(2px 2px 10px black);
+        color: white;
+      }
+    }
+
+  }
+}
+.join-btn-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 27px;
+  color: #072523 !important;
 }
 
 .f1-auto-y {

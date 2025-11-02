@@ -19,6 +19,7 @@ const onConfirm = () => {
   emit('confirm')
 }
 const onCancel = () => {
+  close()
   emit('cancel')
 }
 
@@ -33,19 +34,15 @@ defineExpose({
     <van-popup class="dialog" v-model:show="visible" teleport="body"
       :style="{
       '--bg':requireImg('/dialog/bg2.png',true),
-      '--base-close':requireImg('/dialog/base_close.png',true),
       '--base-title':requireImg('/dialog/bg_base_title.png',true),
       }"
     >
       <div class="dialog-container">
-        <div class="close" @click="close">x</div>
+        <div class="close" @click="close"></div>
         <div class="title">
-          <div class="line"></div>
           <div class="txt">
             <slot name="title">{{title}}</slot>
           </div>
-
-          <div class="line"></div>
         </div>
         <div class="content">
           <slot name="default">
@@ -56,7 +53,7 @@ defineExpose({
 
         </div>
         <div class="buttons">
-          <BaseButton :is-gold-color="true" name="取消" @click="onCancel" v-if="showCancel" style="margin-right: 10px"></BaseButton>
+          <BaseButton :is-green="true" name="取消" @click="onCancel" v-if="showCancel" style="margin-right: 10px"></BaseButton>
           <BaseButton name="确定" @click="onConfirm" v-if="showConfirm"></BaseButton>
         </div>
 
@@ -70,29 +67,30 @@ defineExpose({
 @use "@/style" as *;
 
 .dialog {
-  color: white;
+  background: url('@/assets/images/user/dialog_bg.png') no-repeat;
   background-size: 100% 100%;
   width: 100%;
-  background: #4A1D13;
-
-  max-width: 662px;
+  max-width: 858px;
   padding: 32px;
-  min-height: 267px;
+  min-height: 456px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   border-radius: 12px;
+  z-index: 99;
   @include mobile {
     padding: 50px 60px;
   }
 
   .close {
     position: absolute;
-    width: 40px;
-    height: 40px;
-    top: 20px;
-    right: 0;
+    width: 52px;
+    height: 128px;
+    top: 10px;
+    right: 26px;
     cursor: pointer;
+    background: url('@/assets/images/user/close_btn.png') no-repeat;
+    background-size: cover;
   }
 
   &-container {
@@ -105,22 +103,14 @@ defineExpose({
     .title {
       width:90%;
       height: 30px;
-      margin: 10px auto 32px;
+      margin: 30px auto 32px;
       display: flex;
       align-items: center;
-      .line{
-        flex:1;
-        height: 8px;
-        background: linear-gradient(90deg, rgba(141, 43, 30, 0) 0%, #F34A34 100%);
-
-        &:last-child{
-          background: linear-gradient(90deg, #F34A34 0%, rgba(141, 43, 30, 0) 100%);
-        }
-      }
+      justify-content: center;
       .txt{
         margin: 0 16px;
-        color: #FFF5F5;
-
+        color: #1D1F22;
+        font-size: 20px;
       }
 
     }
@@ -129,12 +119,13 @@ defineExpose({
       width: 100%;
       flex: 1;
       overflow: auto;
+      padding: 40px 60px;
     }
 
     .buttons {
       display: flex;
       width: 80%;
-      margin: 40px auto 32px;
+      margin: 60px auto 32px;
       justify-content: space-evenly;
     }
 

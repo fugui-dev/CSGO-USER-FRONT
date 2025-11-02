@@ -173,16 +173,17 @@ const afterRead = (file) => {
 
 <template>
   <div class="tabs-container">
-    <div class="tabs-container-item user_info" style="height: 140px">
+    <div class="tabs-container-item user_info" style="height: 100px">
 
       <div style="position: relative">
-        <u-avatar :src="store.userInfo.avatar" size="100"/>
+        <u-avatar :src="store.userInfo.avatar" size="80"/>
         <van-uploader :after-read="afterRead"
                       style="opacity: 0;--van-uploader-size:100px;--van-padding-xs:0px;position: absolute;left: 50%;top:50%;width: 100%;height: 100%;transform: translate(-50%,-50%)"/>
       </div>
       <div
+          class="tw-text-[13px] tw-text-[#1D1F22]"
           style="display: flex;flex-direction: column;margin-left: 20px;height: 100%;justify-content: space-evenly">
-        <div style="font-size: 1.1em" class="tw-flex">
+        <div class="tw-flex">
           {{ store.userInfo.nickName }}
           <div class="button" style="height: fit-content" @click="openDialog(0)">编辑</div>
         </div>
@@ -194,35 +195,32 @@ const afterRead = (file) => {
       </div>
     </div>
     <div class="tabs-container-title">
-      <span>交易链接</span>
-      <div></div>
+      <h3>交易链接</h3>
     </div>
     <div class="tabs-container-item">
-      <div style="display: flex;align-items: center;margin-top: 10px">
-        <el-input v-model="link" style="max-width: 650px" readonly/>
-        <BaseButton name="修改" font-size="14px" style="width: 107px;height: 41px;margin-left: 20px" @click="openDialog(3)"></BaseButton>
+      <div style="display: flex;align-items: center;">
+        <p class="tw-text-[#1D1F22] tw-text-[12px]">{{ link }}</p>
+        <BaseButton name="修改" font-size="12px" style="width: 80px;height: 26px;margin-left: 20px;color: #072523;" @click="openDialog(3)"></BaseButton>
       </div>
     </div>
     <div class="tabs-container-title">
-      <span>账号管理</span>
-      <div></div>
+      <h3>账号管理</h3>
     </div>
     <div class="tabs-container-item account_manage">
       <div>登录账号：{{ store.userInfo.userName }}</div>
       <div style="display:flex;align-items: center">
-        <div>登录密码：**********</div>
+        <div class="tw-mr-[200px]">登录密码：**********</div>
         <div class="button" @click="openDialog(1)">修改密码</div>
         <div class="button" @click="openDialog(2)" v-if="store.userInfo.isRealCheck!=='1'">实名认证</div>
-        <div class="button" style="filter: grayscale(100%);cursor: not-allowed" v-else>已实名</div>
+        <div class="button" style="cursor: not-allowed" v-else>已实名</div>
       </div>
     </div>
     <div class="tabs-container-title">
-      <span>绑定上级邀请码</span>
-      <div></div>
+      <h3>绑定上级邀请码</h3>
     </div>
     <div class="tabs-container-item" style="height: 100px">
       <div style="display: flex;align-items: center;">
-        <el-input v-model="invitationCode" style="max-width: 650px" placeholder="输入上级邀请码"
+        <el-input v-model="invitationCode" style="max-width: 650px" placeholder="输入上级邀请码" class="invite-code"
                   :disabled="store.userInfo.parentInvitationCode!==null && store.userInfo.parentInvitationCode!==''"/>
         <BaseButton name="修改" font-size="14px" style="width: 107px;height: 41px;margin-left: 20px" @click="handleBindPatent"
                     v-if="store.userInfo.parentInvitationCode===null || store.userInfo.parentInvitationCode===''"></BaseButton>
@@ -269,10 +267,10 @@ $primary-color-user: #FF4545A6;
   width: 100%;
   .el-input{
     --el-input-bg-color:none;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+    background: #74705E;
     --el-input-border:0px;
     --el-input-border-color:tranparent;
-    --el-input-text-color:#ffffffaa;
+    --el-input-text-color:#ffffff;
     --el-input-focus-border-color: rgba(255, 255, 255, 0.2);
     --el-input-focus-border: rgba(255, 255, 255, 0.2);
     height: 45px;
@@ -280,10 +278,12 @@ $primary-color-user: #FF4545A6;
   }
 }
 .tabs-container {
-  padding: 20px;
+  padding: 60px 210px 60px 80px !important;
   display: flex;
   flex-direction: column;
   font-size: 14px;
+  background: url('@/assets/images/user/user_info_bg.png') no-repeat;
+  background-size: 90% 90%;
 
   .button {
     font-size: 12px;
@@ -293,12 +293,9 @@ $primary-color-user: #FF4545A6;
     justify-content: center;
     padding: 2px 16px;
     height: 100%;
-    color: #FFFFFFCC;
-
+    color: #072523;
     width: fit-content;
-    background: linear-gradient(200deg, rgba(255, 225, 225, 0.2) 32.92%, rgba(255, 0, 0, 0.2) 87.52%);
-    border-radius: 25px;
-    border: 1px solid #FC523A;
+    background: url('@/assets/images/login/yellow_btn.png') no-repeat;
     cursor: pointer;
     flex-shrink: 0;
     margin-left: 8px;
@@ -311,28 +308,14 @@ $primary-color-user: #FF4545A6;
   &-title {
     position: relative;
     width: fit-content;
-    margin: 20px 0;
+    margin: 5px 0;
 
-    span {
+    h3 {
       position: relative;
-      font-size: 16px;
+      font-size: 14px;
       font-family: "Source Han Sans CN", "Microsoft YaHei", 'sans-serif';
-      filter: drop-shadow(0px 0px 4.3px #FF4545A6);
-
-
       z-index: 2;
-    }
-
-    div {
-      content: '';
-      position: absolute;
-      width: 91px;
-      height: 10px;
-      bottom: -7px;
-      left: 0;
-      background: linear-gradient(90deg, #F34A34 0%, rgba(141, 43, 30, 0) 100%);
-
-      z-index: 0;
+      color: #1D1F22;
     }
   }
 
@@ -342,23 +325,31 @@ $primary-color-user: #FF4545A6;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    padding: 10px 0;
+    padding: 6px 0;
 
 
 
     &.user_info {
-      background: linear-gradient(270deg, rgba(56, 49, 49, 0) 0%, rgba(222, 67, 32, 0.27) 100%);
-      box-shadow: 0px 3.2px 27.12px 0px #500B0557;
       flex-direction: row;
-      padding: 20px 20px;;
+      padding: 4px;
+      background-color: rgba($color: #70603F, $alpha: 0.59);
     }
     &.account_manage{
-      background: linear-gradient(270deg, rgba(56, 49, 49, 0) 0%, rgba(222, 67, 32, 0.27) 100%);
-      box-shadow: 0px 3.2px 27.12px 0px #500B0557;
-      padding: 20px 20px;
+      padding: 10px 0;
+      font-size: 12px;
+      color: #1D1F22;
     }
 
-
+    .invite-code {
+      background: rgba($color: #70603F, $alpha: 0.59);
+      --el-disabled-bg-color: none;
+      --el-disabled-text-color: #1D1F22;
+      font-size: 12px;
+      height: 35px;
+      :deep(.el-input__wrapper) {
+        box-shadow: none;
+      }
+    }
   }
 }
 </style>

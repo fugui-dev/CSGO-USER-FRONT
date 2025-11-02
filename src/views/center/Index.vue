@@ -144,7 +144,9 @@ getRNList()
       <div class="bg center-bg"></div>
       <div class="center">
         <div class="center-content">
-          <Title name="新人实名福利"></Title>
+          <div class="center-title">
+            <span>新人实名福利</span>
+          </div>
           <div class="center-content-fl">
             <div class="center-content-fl-item" v-for="(i,index) in RNList" :key="index">
 
@@ -156,11 +158,9 @@ getRNList()
                 </div>
                 <img :src="requireImg('/v2/center/bx.png',false)" alt="">
               </div>
-              <BaseButton :is-gray="i.getStatus==1"  @click="getRNAward(index+1)" class="btn_n" font-size="14px">
-                <template #name>
-                  <div v-if="i.getStatus==0">立即领取</div>
-                  <div v-else-if="i.getStatus==1">已领取</div>
-                </template>
+              <BaseButton v-if="i.getStatus==0" @click="getRNAward(index+1)" class="btn_n ungetted" font-size="13px" name="立即领取">
+              </BaseButton>
+              <BaseButton v-else-if="i.getStatus==1" :is-gray="true"  @click="getRNAward(index+1)" class="btn_n" font-size="13px" name="已领取" style="color: #b9b9b9;">
               </BaseButton>
             </div>
           </div>
@@ -168,7 +168,9 @@ getRNList()
       </div>
       <div class="center">
         <div class="center-content">
-          <Title name="充值福利"></Title>
+          <div class="center-title">
+            <span>充值福利</span>
+          </div>
           <div class="center-content-fl">
             <div class="center-content-fl-item" v-for="(i,index) in list" :key="index">
 
@@ -180,7 +182,7 @@ getRNList()
                 <img :src="requireImg('/v2/center/bx.png',false)" alt="">
               </div>
 
-              <BaseButton :is-gray="!(i.getStatus==1&&i.recharge>=i.rechargeThreshold)"  @click="getAward(i)" class="btn_n" font-size="14px">
+              <BaseButton :is-gray="!(i.getStatus==1&&i.recharge>=i.rechargeThreshold)"  @click="getAward(i)" class="btn_n ungetted2" font-size="12px">
                 <template #name>
                   <div v-if="i.getStatus==0&&i.recharge>=i.rechargeThreshold">
                     已达到领取门槛 ({{ i.recharge }}/{{ i.rechargeThreshold }})
@@ -213,19 +215,49 @@ $primary-color-user: rgb(138, 15, 198);
   z-index: 1;
   left: 0;
   top: 0;
-  background-image: var(--bg-center);
+  background-image: url('@/assets/images/roll/bg.png');
   background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-size: 100% 96%;
+  background-position: left bottom;
 }
 .center {
   z-index: 2;
   width:100%;
+
+  &-title {
+    width: 70%;
+    height: 36px;
+    background: url('@/assets/images/roll/title_bg.png') no-repeat;
+    background-size: 100% 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    padding-bottom: 6px;
+    box-sizing: border-box;
+    span {
+      font-family: "jijiati";
+      font-size: 19px;
+      background: linear-gradient(to bottom, #FFF3C8, #FFCE79); /* 渐变方向和颜色 */
+      -webkit-background-clip: text; /* 仅限WebKit浏览器 */
+      background-clip: text; /* 现代浏览器支持 */
+      color: transparent; /* 文本颜色设为透明 */
+    }
+  }
   .btn_n{
-    width: 90%;
+    width: 75%;
     position: absolute;
-    bottom: -10px;
-    height: 41px;
-    font-size: 14px;
+    bottom: 16px;
+    height: 26px;
+    border-radius: 6px;
+    background: linear-gradient(to right, #252525, #383838);
+  }
+  .ungetted {
+    background: linear-gradient(to right, #12382b, #33492a);
+  }
+  .ungetted2 {
+    background: linear-gradient(to right, #2e291c, #463e2b);
   }
   .center-content {
     width: 100%;
@@ -280,20 +312,22 @@ $primary-color-user: rgb(138, 15, 198);
       }
 
       &-item {
-        width: 240px;
+        width: 214px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        height: 277px;
-        border-radius: 9.6px;
-        box-shadow: 0 3.2px 27.12px 0 #500B0557;
-        background: linear-gradient(180deg, rgba(56, 49, 49, 0) 0%, rgba(222, 67, 32, 0.27) 100%);
+        height: 281px;
+        border-radius: 6px;
+        background-color: rgba($color: #1C2529, $alpha: 0.78);
         position: relative;
+        img {
+          width: 80%;
+        }
         @include mobile{
           width: 161px;
           height: 210px;
           img{
-            width: 130px;
+            width: 100px;
           }
         }
 
@@ -307,12 +341,11 @@ $primary-color-user: rgb(138, 15, 198);
           display: flex;
           flex-direction: column;
           align-items: center;
-
+          margin-top: 12px;
 
           div:nth-child(1) {
             color: #fff;
             filter: drop-shadow(0 0 2px black);
-            font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
             font-size: 14px;
             white-space: nowrap;
             margin: 6px 0;

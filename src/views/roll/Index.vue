@@ -117,12 +117,11 @@ onMounted(() => {
 <template>
   <Layout :style="{
       '--bg-card':requireImg('/roll/bg-card.png',true),
-      '--bg-card-title':requireImg('/roll/bg-card-title.png',true),
-      '--bg-roll':requireImg('/v2/bg/bg-roll.png',true),
+      '--bg-card-title':requireImg('/roll/bg-card-title.png',true)
     }">
     <template #item>
       <div class="bg bg-roll">
-        <img :src="requireImg('/v2/roll/fish.png',false)" alt="">
+        <!-- <img :src="requireImg('/v2/roll/fish.png',false)" alt=""> -->
       </div>
       <div class="roll">
         <div class="content">
@@ -161,8 +160,6 @@ onMounted(() => {
                   </div>
                   <BaseButton name="进入房间"  class="enter-btn" @click="enterRoom(i.id)" :font-size="store.isPC?null:'12px'"/>
                 </div>
-                <img class="bg1" :src="requireImg('/v2/roll/item-bg.png',false)" alt="">
-                <img class="bg2" :src="requireImg('/v2/roll/item-bg2.png',false)" alt="">
                 <img class="bx" :src="requireImg('/v2/roll/bx.png',false)" alt="">
                 <img class="wq" :src="parseImgList(i.ornamentsList)[0].imgUrl" alt="">
               </div>
@@ -179,7 +176,8 @@ onMounted(() => {
 @use "@/style" as *;
 
 .bg-roll {
-  background-image: var(--bg-roll);
+  background: url('@/assets/images/roll/bg2.png') no-repeat;
+  background-size: cover;
 
   img {
     position: fixed;
@@ -194,7 +192,7 @@ onMounted(() => {
   font-size: 16px;
 
   .content {
-    padding: 20px 20px 80px;
+    padding: 0 20px 30px 0;
     width: 100%;
     box-sizing: border-box;
     z-index: 3;
@@ -205,7 +203,6 @@ onMounted(() => {
     .nav {
       display: flex;
       align-items: center;
-      margin-top: 30px;
       @include mobile{
         justify-content: space-evenly;
       }
@@ -220,56 +217,28 @@ onMounted(() => {
         background: #FFF5F5;
         flex-shrink: 0;
 
-        width: 153px;
-        height: 48px;
+        width: 120px;
+        height: 36px;
         border-radius: 30px;
-        font-size: 16px;
+        font-size: 14px;
         margin-right: 32px;
+        background: linear-gradient(to right, #122c2e, #214147);
 
         @include mobile{
           width: 104px;
           margin-right: 0;
         }
 
-        span {
-          filter: drop-shadow(0px 0px 4.3px #FF4545A6);
-          font-size: 16px;
-        }
-
-
         @include mobile {
           height: 40px;
         }
 
-        &:first-child {
-          background: linear-gradient(90.15deg, #FF3C2A -4.19%, rgba(149, 0, 0, 0) 99.85%);
-
-        }
-
-        &:nth-child(2) {
-          background: linear-gradient(90.15deg, #FF952A -4.19%, rgba(149, 87, 0, 0) 99.85%);
-
-        }
-
-        &:nth-child(3) {
-          background: linear-gradient(90.15deg, #A27A7A -4.19%, rgba(152, 116, 116, 0) 99.85%);
-
-        }
-
         &.active {
           position: relative;
-
-          &::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 4px;
-            border-radius: 34px;
-            background: white;
-            bottom: -2px;
-            left: 50%;
-            transform: translateX(-50%);
-
+          background: linear-gradient(to right, #175e64, #508594);
+          span {
+            filter: drop-shadow(2px 2px 10px black);
+            color: white;
           }
         }
 
@@ -280,17 +249,22 @@ onMounted(() => {
       display: flex;
       width: 100%;
       justify-content: center;
-      height: 45px;
+      height: 36px;
       @include mobile{
         margin-top: 21px;
       }
+      :deep(.el-input__wrapper) {
+        height: 36px;
+      }
       .el-input {
         max-width: 237px;
-        --el-input-bg-color: #FFF1F145;
+        --el-input-bg-color: #222527de;
         --el-input-text-color: #fff;
         --el-input-border-color: transparent;
-        --el-input-border-radius: 41px;
-        --el-input-focus-border-color: #FF952A;
+        --el-input-border-radius: 0;
+        --el-input-inner-height: 36px;
+        --el-input-focus-border-color: #222527;
+        --el-input-placeholder-color: #ffffff;
         @include mobile {
           max-width:100%;
 
@@ -299,17 +273,18 @@ onMounted(() => {
       }
 
       .btn {
+        background: url('@/assets/images/login/yellow_btn.png') no-repeat;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #210F0B;
-        margin-left: 10px;
+        margin-left: 4px;
         cursor: pointer;
         width: 76px;
-        height: 41px;
-        border-radius: 25px;
-        gap: 4px;
-        border: 1px solid #FC523A
+        height: 36px;
+        box-sizing: border-box;
+        gap: 2px;
+        font-size: 14px;
+        color: #072523;
       }
     }
 
@@ -318,7 +293,6 @@ onMounted(() => {
       grid-template-columns: repeat(2, 1fr);
       grid-template-rows: auto;
       grid-gap: 30px;
-      margin-top: 20px;
       @include maxWidth(756px) {
         //grid-template-columns: repeat(1, 1fr);
         display: flex;
@@ -333,11 +307,10 @@ onMounted(() => {
 
       &-item {
         max-width: 480px;
-        height: 168px;
-        border-radius: 12px;
+        height: 148px;
         padding: 24px;
 
-        background: #4A1D13;
+        background: rgba($color: #1C2529, $alpha: 0.82);
         display: flex;
         flex-direction: column;
         position: relative;
@@ -345,32 +318,13 @@ onMounted(() => {
           height: 112px;
           padding: 12px;
         }
-
-
-        .bg1{
-          position: absolute;
-          top:0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 0;
-
-        }
-        .bg2{
-          position: absolute;
-          right: 0;
-          bottom: 0;
-          height: 100%;
-          z-index: 0;
-
-        }
         .bx{
           position: absolute;
           right: 30px;
           top: 50%;
           transform: translateY(-50%);
-          width: 155px;
-          height: 155px;
+          width: 125px;
+          height: 125px;
           @include mobile{
             width: 100px;
             height: 100px;
@@ -389,10 +343,10 @@ onMounted(() => {
         }
 
         .title {
-          font-size: 20px;
+          font-size: 15px;
           color: #fff;
           @include mobile {
-            font-size: 16px;
+            font-size: 14px;
           }
         }
 
@@ -415,7 +369,8 @@ onMounted(() => {
 
           &-btn {
             width: 104px;
-            height: 41px;
+            height: 36px;
+            color: #072523;
             @include mobile {
               width: 80px;
               height: 28px;

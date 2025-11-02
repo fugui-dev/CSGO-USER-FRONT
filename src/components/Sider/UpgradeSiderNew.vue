@@ -2,12 +2,12 @@
   <div class="tw-relative tw-w-[calc(100vw-4rem)] md:tw-w-[37.5rem] tw-mx-auto tw-select-none" ref="sliderRef"
     @contextmenu.prevent @click="handleTrackClick">
     <!-- 背景轨道 -->
-    <div class="tw-h-[2rem] tw-w-full tw-relative tw-rounded-full tw-border-2 tw-border-[#FFF646]">
+    <div class="tw-h-[16px] tw-w-full tw-relative tw-rounded-full tw-bg-[#000000] tw-opacity-60">
       <!-- 纯色背景 -->
     </div>
 
     <!-- 已滑过的区域 -->
-    <div class="tw-absolute tw-top-0 tw-left-0 tw-h-[2rem] tw-overflow-hidden tw-rounded-l-full tw-rounded-r-full tw-bg-[#FFF646]"
+    <div class="tw-absolute tw-top-0 tw-left-0 tw-h-[16px] tw-overflow-hidden tw-rounded-l-full tw-rounded-r-full tw-bg-[#E59700]"
      
       :style="{ width: `${percentage}%` }">
       <!-- 纯色背景 -->
@@ -15,13 +15,13 @@
 
     <!-- 发光效果 -->
     <div
-      class="tw-absolute tw-top-0 tw-left-0 tw-h-[2rem] tw-pointer-events-none tw-rounded-l-full tw-opacity-50 tw-blur-[10px]"
+      class="tw-absolute tw-top-0 tw-left-0 tw-h-[16px] tw-pointer-events-none tw-rounded-l-full tw-opacity-50 tw-blur-[10px]"
       :style="{ width: `${percentage}%`, background: 'linear-gradient(93deg, #FFC43C 7.24%, #E36C0A 98.65%)' }">
     </div>
 
     <!-- 自定义滑块 -->
     <div
-      class="tw-absolute tw-top-[0px] tw--translate-x-1/2 tw-h-[2rem] tw-bg-[#493632] tw-rounded-full tw-w-[2rem] tw-cursor-pointer hover:tw-scale-110 tw-transition-transform tw-z-20"
+      class="tw-absolute tw-top-[0px] tw-translate-y-[-5px] tw-h-[28px] tw-bg-[#493632] tw-rounded-full tw-w-[28px] tw-cursor-pointer hover:tw-scale-110 tw-transition-transform tw-z-20"
       :style="{ left: `${percentage - 2.5}%` }" @mousedown.stop="startDragging" @touchstart.stop="startDragging"
       @contextmenu.prevent>
       <img :src="siderModal" class="tw-w-full tw-h-full tw-pointer-events-none" alt="滑块" draggable="false" />
@@ -32,7 +32,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useMousePressed, useDebounceFn } from '@vueuse/core'
-import siderModal from '@/assets/sider/siderModal2.png'
+import siderModal from '@/assets/images/upgrade/slider_circle.png'
 const props = defineProps({
   min: {
     type: Number,

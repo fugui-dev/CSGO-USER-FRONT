@@ -74,23 +74,26 @@ getList()
 </template>
 
 <style scoped lang="scss">
-$primary-color-user: rgba(245, 76, 54, 0.6);
+$primary-color-user: #B3B586;
 
 .records {
   padding: 20px;
   display: flex;
   flex-direction: column;
   width: 100%;
+  font-size: 13px;
   &-list{
     display: flex;
     flex-direction: column;
     width: 100%;
   }
   &-item {
-    width: 100%;
-    height:80px;
+    align-self: center;
+    width: 80%;
+    height: 48px;
+    background: rgba($color: #000000, $alpha: 0.59);
     border: 1px solid $primary-color-user;
-    border-radius: 5px;
+    border-radius: 8px;
     margin-bottom: 10px;
     display: flex;
     .item{

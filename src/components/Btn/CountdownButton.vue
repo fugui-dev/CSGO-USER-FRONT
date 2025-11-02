@@ -101,10 +101,8 @@ defineExpose({
   height:48px;
 
   /* 默认正常状态样式 */
-  background: linear-gradient(99.19deg, rgba(166, 131, 131, 0.4) 5.46%, rgba(255, 34, 0, 0.4) 86.69%);
-
-  color: white;
-  border: 1px solid #FC523A
+  background: url('@/assets/images/login/yellow_btn.png') no-repeat;
+  color: #072523;
 }
 
 /* 禁用状态样式 - 在此处添加你的自定义样式 */

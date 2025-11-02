@@ -11,6 +11,12 @@ import Promotion from "@/views/user/components/Promotion.vue";
 import BoxRecords from "@/views/user/components/BoxRecords.vue";
 import AmountRecords from "@/views/user/components/AmountRecords.vue";
 import Mail from "@/views/user/components/Mail.vue";
+import email from '@/assets/images/user/email.png';
+import record from '@/assets/images/user/record.png';
+import share from '@/assets/images/user/share.png';
+import openRecord from '@/assets/images/user/open_record.png';
+import storage from '@/assets/images/user/storage.png';
+import userInfo from '@/assets/images/user/user_info.png';
 
 const route = useRoute()
 const store = useStore()
@@ -21,27 +27,33 @@ const active = ref('base')
 const tabs = ref([
   {
     label: '个人资料',
-    value: 'base'
+    value: 'base',
+    icon: userInfo
   },
   {
     label: '饰品库存',
-    value: 'inventory'
+    value: 'inventory',
+    icon: storage
   },
   {
     label: '开箱记录',
-    value: 'record'
+    value: 'record',
+    icon: openRecord
   },
   {
     label: '推广用户',
-    value: 'promote'
+    value: 'promote',
+    icon: share
   },
   {
     label: '帐变记录',
-    value: 'log'
+    value: 'log',
+    icon: record
   },
   {
     label: '邮件信息',
-    value: 'mail'
+    value: 'mail',
+    icon: email
   }
 ])
 
@@ -66,7 +78,7 @@ watchEffect(() => {
             <template #title>
 
               <div class="tab-item">
-                <img :src="requireImg(`/v2/user/nav${index+1}${index===active?'-a':''}.png`)" alt="">
+                <img :src="i.icon" alt="">
 
                 <span>{{ i.label }}</span>
               </div>
@@ -130,7 +142,7 @@ watchEffect(() => {
   .nav{
     display: flex;
     align-items: center;
-    margin-top: 33px;
+    margin-top: 29px;
     flex-wrap: wrap;
     @include mobile {
       margin-top: 11px;
@@ -144,14 +156,13 @@ watchEffect(() => {
       justify-content: center;
       font-family: "PingFang Regular", sans-serif;
       cursor: pointer;
-      background: #FFF5F5;
+      background: linear-gradient(to right, #122c2e, #214147);
       flex-shrink: 0;
-
-      width: 153px;
-      height: 48px;
+      width: 120px;
+      height: 36px;
       border-radius: 30px;
-      font-size: 16px;
-      margin-right: 32px;
+      font-size: 14px;
+      margin-right: 10px;
       @include mobile {
         margin: 0;
       }
@@ -162,22 +173,11 @@ watchEffect(() => {
         justify-content: center;
       }
 
-      &:first-child {
-        background: linear-gradient(0.56deg, rgba(255, 60, 42, 0.2) 0.48%, rgba(149, 0, 0, 0) 97.45%);
-
-      }
-
-      &:nth-child(2) {
-        background: linear-gradient(0.56deg, rgba(255, 221, 187, 0.3) 0.48%, rgba(57, 36, 6, 0) 99.52%);
-      }
-
       &.active {
-
+        background: linear-gradient(to right, #175e64, #508594);
         span {
           filter: drop-shadow(2px 2px 10px black);
           color: white;
-          border-bottom: 3px solid white;
-
         }
       }
 
@@ -187,7 +187,6 @@ watchEffect(() => {
 </style>
 <style scoped lang="scss">
 @use "@/style" as *;
-$primary-color-user: #FF4545;
 
 .user {
 
@@ -249,28 +248,23 @@ $primary-color-user: #FF4545;
 
 
   .tabs {
-    margin-top: 30px;
     width: 100%;
     z-index: 3;
     --van-tabs-nav-background: trasparent;
     --van-tab-active-text-color: #fff;
     --van-tabs-line-height:100px;
-  :deep(.van-tabs__wrap){
-    border-bottom: 1px solid #FFFFFF29
-  }
     .tab-item{
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       font-size: 16px;
+      position: relative;
 
       img{
-        width: 32px;
+        width: 36px;
         margin-bottom: 10px;
-        height: 32px;
-      }
-      &:hover {
+        height: 42px;
       }
     }
 
@@ -279,22 +273,27 @@ $primary-color-user: #FF4545;
     }
 
     :deep(.van-tabs__line) {
-      background: $primary-color-user;
+      background: none;
+      position: relative;
       width: 100px;
-      height: 2px;
-      z-index: 4;
-      border-radius: 0;
+      height: 10px;
+      &::after {
+        display: inline-block;
+        content: "";
+      }
     }
 
     :deep(.van-tab__text) {
-      font-size: 24px;
+      font-size: 16px;
       transform: translateY(5px);
-      font-family: 'titleFont', 'sans-serif';
-      color: #fff;
+      color: #FFFBD4;
+      span {
+        font-family: 'Jijiati' !important;
+      }
     }
 
     :deep(.van-tab--active) {
-      filter: drop-shadow(0 0 4px $primary-color-user);
+      background: linear-gradient(180deg, rgba(255, 225, 225, 0) 12.92%, rgba($color: #DCD9BF, $alpha: 0.38) 87.52%);
     }
 
   }

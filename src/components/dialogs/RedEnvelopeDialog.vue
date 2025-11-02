@@ -40,10 +40,10 @@ defineExpose({
 <style scoped lang="scss">
 .el-input{
   --el-input-bg-color:none;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+  background: #74705E;
   --el-input-border:0px;
   --el-input-border-color:tranparent;
-  --el-input-text-color:#ffffffaa;
+  --el-input-text-color:#ffffff;
   --el-input-focus-border-color: rgba(255, 255, 255, 0.2);
   --el-input-focus-border: rgba(255, 255, 255, 0.2);
   height: 45px;
