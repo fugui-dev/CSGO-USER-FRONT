@@ -7,8 +7,9 @@ import {ElMessage} from "element-plus";
 import {goto} from "@/utils/common";
 import NewBoxs from "@/components/Box/NewBoxs.vue";
 import {postDecompose} from "@/views/openBox/server/api";
-import Money from '@/assets/icons/money.svg'
+import Money from '@/assets/images/home/coin.png'
 import {useUserInfo} from '@/composables/useUesrInfo'
+import arrow from '@/assets/images/user/arrow.png'
 
 const active = ref(0)
 const list = ref([])
@@ -211,10 +212,11 @@ const totalDecomposePrice = computed(() => {
     <div v-show="active === 0" style="display:flex;flex-direction: column" class="tabs-container">
       <div style="display:flex;font-size: .8em;justify-content: space-between">
         <div style="display: flex;flex-wrap: wrap">
-          <div @click="changeSort" style="color: #f7ba2a;line-height: 1.5em;cursor: pointer;margin-right: 15px">
-            价格{{ form.orderByFie == 1 ? '升序 ↑' : '降序 ↓' }}</div>
+          <div @click="changeSort" style="color: #fff;line-height: 1.5em;cursor: pointer;margin-right: 15px;display: flex;">
+            <span v-if="form.orderByFie == 1">价格升序<img :src="arrow" alt="" style="transform: rotateZ(180deg);width: 8px;display: inline-block;margin-left: 4px;"/></span>
+            <span v-else>价格降序<img :src="arrow" alt="" style="width: 8px;display: inline-block;margin-left: 4px;"/></span>
+          </div>
           <div>库存饰品总数：{{ total.totalOrnamentNumber }}</div>
-
         </div>
         <div style="display: flex;align-items: center;flex-wrap: wrap;justify-content: flex-end">
           <el-checkbox style="--el-checkbox-text-color:#fff;--el-color-primary:rgb(138, 15, 198)"
@@ -225,7 +227,7 @@ const totalDecomposePrice = computed(() => {
             提取
           </div>
           <div class="button" @click="goto('/smelt')">熔炼饰品</div>
-          <div class="button" @click="handleDecompose">分解饰品 <img :src="Money" class="tw-h-[16px] md:tw-h-[1.5rem]" /> {{
+          <div class="button" @click="handleDecompose">分解饰品 <img :src="Money" class="tw-h-[10px] md:tw-h-[1rem] tw-ml-[4px] tw-mr-[2px]" /> {{
             totalDecomposePrice }}</div>
         </div>
       </div>
@@ -265,25 +267,12 @@ $primary-color-user: rgb(138, 15, 198);
     justify-content: center;
     padding: 2px 16px;
     height: 80%;
-    color: #FFFFFFCC;
-
+    color: #072523;
     width: fit-content;
-    background: linear-gradient(200deg, rgba(255, 225, 225, 0.2) 32.92%, rgba(255, 0, 0, 0.2) 87.52%);
-    border-radius: 25px;
-    border: 1px solid #FC523A;
     cursor: pointer;
     flex-shrink: 0;
     margin-left: 15px;
-
-    &:last-child {
-      background: linear-gradient(117.41deg, rgba(255, 250, 225, 0.2) 32.92%, rgba(255, 191, 0, 0.2) 87.52%);
-      border: 1px solid #FF7A21
-    }
-
-    &:nth-child(3) {
-      background: linear-gradient(117.41deg, rgba(255, 250, 225, 0.2) 32.92%, rgba(255, 191, 0, 0.2) 87.52%);
-      border: 1px solid #FCC53A
-    }
+    background: url('@/assets/images/login/yellow_btn.png') no-repeat;
 
     @include mobile {
       height: 30px;

@@ -2,46 +2,44 @@
 import { ref, onMounted, onUnmounted, watch, nextTick, computed } from "vue";
 import m1 from "@/assets/music/m1.wav";
 import m2 from "@/assets/music/m2.wav";
-import endCenter from '@/assets/boxroom/endCenter.png'
-import endLeft from '@/assets/boxroom/endLeft.png'
-import endRight from '@/assets/boxroom/endRight.png'
-import end1 from '@/assets/boxroom/end1.svg'
-import end2 from '@/assets/boxroom/end2.svg'
-import end3 from '@/assets/boxroom/end3.svg'
-import end4 from '@/assets/boxroom/end4.svg'
-import end5 from '@/assets/boxroom/end5.svg'
+import end1 from '@/assets/images/open/golden-bg.png'
+import end2 from '@/assets/images/open/red-bg.png'
+import end3 from '@/assets/images/open/purple-bg.png'
+import end4 from '@/assets/images/open/blue-bg.png'
+import end5 from '@/assets/images/open/green-bg.png'
 import { requireImg } from "@/utils/common";
-import lightLeft from '@/assets/boxroom/dengLeft.png'
-import lightRight from '@/assets/boxroom/dengRight.png'
-import lightUp from '@/assets/boxroom/q565@2x(1).png'
-import lightDown from '@/assets/boxroom/q565@2x.png'
-import Money from '@/assets/icons/money.svg'
+import line from '@/assets/images/open/line.png'
+import lineHeng from '@/assets/images/open/line-heng.png'
+import lineLeft from '@/assets/images/open/line-left.png'
+import lineRight from '@/assets/images/open/line-right.png'
+import congratulation from '@/assets/images/open/congratulation.png'
+import Money from '@/assets/images/upgrade/coin.png'
 import { postDecompose } from '@/views/openBox/server/api'
 import { ElMessage } from 'element-plus'
 const leavel = {
     1: {
         color: '#FFBD4E',
-        background: 'linear-gradient(180deg, rgba(97, 58, 1, 0.00) 38.42%, rgba(255, 180, 57, 0.26) 100%)',
+        background: 'golden-bg',
         img: end1
     },
     2: {
         color: '#FF352E',
-        background: 'linear-gradient(180deg, rgba(97, 8, 1, 0) 38.42%, rgba(222, 67, 32, 0.26) 100%)',
+        background: 'red-bg',
         img: end2
     },
     3: {
         color: '#984EFF',
-        background: 'linear-gradient(180deg, rgba(52, 49, 56, 0.00) 0%, rgba(105, 39, 181, 0.51) 100%)',
+        background: 'purple-bg',
         img: end4
     },
     4: {
         color: '#35B2FF',
-        background: 'linear-gradient(180deg, rgba(1, 43, 97, 0) 38.42%, rgba(32, 102, 222, 0.26) 100%)',
+        background: 'blue-bg',
         img: end3
     },
     5: {
         color: '#1FEBC4',
-        background: 'linear-gradient(180deg, rgba(0, 117, 103, 0.00) 0%, rgba(31, 235, 196, 0.65) 100%)',
+        background: 'green-bg',
         img: end5
     }
 }
@@ -458,43 +456,36 @@ defineExpose({
         <van-popup class="dialog no-scrollbar tw-font-SourceHanSansCN" v-model:show="visible"
             :close-on-click-overlay="false" :lock-scroll="true" teleport="body">
             <div class="">
-                <div class="tw-relative tw-w-full tw-h-screen md:tw-gap-32 tw-flex tw-flex-col  md:tw-justify-center tw-items-center tw-bg-black tw-bg-opacity-[0.74] "
+                <div class="tw-relative tw-w-full tw-h-screen md:tw-gap-32 tw-flex tw-flex-col  md:tw-justify-center tw-items-center tw-bg-black tw-bg-opacity-[0.5] "
                     v-if="!show">
-                    <img :src="endCenter" alt=""
+                    <!-- <img :src="endCenter" alt=""
                         class="tw-absolute tw-top-1/2 tw-translate-x-[-50%] md:tw-w-auto tw-w-3/4 tw-translate-y-[-50%] tw-left-1/2 ">
                     <img :src="endLeft" alt="" class=" tw-absolute md:tw-w-auto tw-w-1/2 tw-top-0 tw-left-0 ">
-                    <img :src="endRight" alt="" class=" tw-absolute md:tw-w-auto tw-w-1/2 tw-top-0 tw-right-0 ">
-                    <div class="tw-flex tw-items-center tw-gap-3 md:tw-gap-6 tw-mt-[6.25rem] md:tw-mt-0 ">
-                        <div class="md:tw-w-[12.5rem] tw-h-[0.3125rem] tw-w-[6.25rem] md:tw-h-2.5 tw-rotate-180"
-                            style="background: linear-gradient(90deg, #F34A34 0%, rgba(141, 43, 30, 0.00) 100%);">
-                        </div>
-                        <div class="tw-text-[#FFF5F5] tw-text-lg md:tw-text-[1.75rem] tw-font-bold"
-                            style="text-shadow: 0px 0px 4.3px rgba(255, 69, 69, 0.65);">恭喜获得</div>
-                        <div class="md:tw-w-[12.5rem] tw-h-[0.3125rem] tw-w-[6.25rem] md:tw-h-2.5 tw-relative"
-                            style="background: linear-gradient(90deg, #F34A34 0%, rgba(141, 43, 30, 0.00) 100%);">
-
-                        </div>
-
+                    <img :src="endRight" alt="" class=" tw-absolute md:tw-w-auto tw-w-1/2 tw-top-0 tw-right-0 "> -->
+                    <div class="tw-flex tw-items-center tw-gap-3 md:tw-gap-6 tw-mt-[3.25rem] md:tw-mt-[2rem] ">
+                        <img :src="lineLeft" alt="">
+                        <img :src="congratulation" alt="" class="tw-w-[13rem]">
+                        <img :src="lineRight" alt="">
                     </div>
 
-                    <div class="tw-flex tw-justify-center tw-gap-3 tw-flex-wrap tw-mt-[3.125rem] md:tw-gap-6">
+                    <div class="tw-flex tw-justify-center tw-gap-3 tw-flex-wrap tw-mt-[-4rem] md:tw-gap-6">
                         <div v-for="(item, index) in openData" :key="index"
-                            class="tw-relative tw-cursor-pointer md:tw-w-[13.75rem] tw-w-[8.75rem] tw-h-[7.5rem] md:tw-h-[11.875rem] tw-flex tw-flex-col tw-justify-end tw-items-center"
+                            class="tw-relative tw-cursor-pointer md:tw-w-[11.75rem] tw-w-[8.75rem] tw-h-[7.5rem] md:tw-h-[8.875rem] tw-flex tw-flex-col tw-justify-end tw-items-center"
                             :class="{
                                 'tw-transform tw-scale-105 tw-transition-all tw-duration-200': selectedItems.includes(index),
                                 'tw-transition-all tw-duration-200 hover:tw-shadow-lg hover:tw-scale-[1.02]': !selectedItems.includes(index)
                             }" @click="toggleSelectItem(index)">
-                            <div class="tw-absolute tw-w-full tw-h-[4.5rem] md:tw-h-[7.125rem] tw-border-b-2"
-                                :style="{ borderColor: leavel[item.openBox2Gift ? 5 : item.ornamentsLevelId].color, background: leavel[item.openBox2Gift ? 5 : item.ornamentsLevelId].background }">
-                            </div>
+                            <!-- <div class="tw-absolute tw-w-full tw-h-[4.5rem] md:tw-h-[7.125rem] tw-border-b-2"
+                                :style="{ borderColor: leavel[item.openBox2Gift ? 5 : item.ornamentsLevelId].color }">
+                            </div> -->
                             <img :src="leavel[item.openBox2Gift ? 5 : item.ornamentsLevelId].img"
-                                class="tw-absolute tw-w-full tw-h-full" alt="">
-                            <div class="tw-flex tw-justify-center tw-gap-1 tw-mb-1 tw-absolute tw-top-2 tw-right-1">
+                                class="tw-absolute tw-w-full tw-h-full tw-scale-[114%]" alt="">
+                            <div class="tw-flex tw-justify-center tw-gap-1 tw-mb-1 tw-absolute tw-top-1 tw-right-1">
                                 <span
                                     class="  tw-text-xs  tw-text-white tw-px-2 tw-py-px  tw-border tw-border-[#1FEBC4]  tw-rounded-full tw-bg-[#1FEBC4]"
                                     v-if="item.openBox2Gift">赠品</span>
                                 <span
-                                    class="tw-text-xs tw-text-white tw-px-2 tw-py-px tw-flex tw-items-center tw-border-[#FF7A21] tw-bg-[#FF7A21] tw-border tw-rounded-full tw-gap-px"
+                                    class="tw-text-xs tw-text-white tw-px-2 tw-py-px tw-flex tw-items-center tw-gap-px"
                                     v-if="item.ornamentsPrice"> <img :src="Money"
                                         class="tw-h-[16px] md:tw-h-[1.25rem]" /> {{ item.ornamentsPrice }}</span>
                             </div>
@@ -503,10 +494,10 @@ defineExpose({
                                 class="tw-w-[70%] tw-absolute tw-top-1/2 tw-left-1/2 tw-transform-gpu tw-animate-float"
                                 alt="">
                             <div
-                                class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-pb-1 tw-w-[80%] tw-relative">
-                                <span class="tw-text-base" style="color: rgba(255, 245, 245, 0.80);">{{
+                                class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-pb-2 tw-w-[80%] tw-relative">
+                                <span class="tw-text-[13px]" style="color: rgba(255, 245, 245, 0.80);align-self: flex-start;">{{
                                     parseOrnamentName(item.ornamenName).sub }}</span>
-                                <span class="tw-font-bold tw-text-[#FFF5F5] tw-w-full tw-line-clamp-1 tw-text-center"
+                                <span class="tw-font-bold tw-text-[#FFF5F5] tw-text-[13px] tw-w-full tw-line-clamp-1" style="align-self: flex-start;"
                                     :title="parseOrnamentName(item.ornamenName).main">{{
                                         parseOrnamentName(item.ornamenName).main
                                     }}</span>
@@ -541,19 +532,18 @@ defineExpose({
                             </svg>
                         </div>
                         <div @click="handleOpenAgain"
-                            class="md:tw-relative tw-w-1/2 tw-py-3 tw-rounded-full tw-flex tw-justify-center tw-items-center md:tw-text-lg tw-font-bold tw-cursor-pointer tw-text-white tw-text-center"
-                            style="background: linear-gradient(93deg, #FF553C 7.24%, #A70202 98.65%);box-shadow: 0px 4px 13.4px 0px rgba(214, 47, 34, 0.49);">
-                            再开一次 <img :src="Money" class="tw-h-[1rem] md:tw-h-[1.75rem]" /> <span class="tw-text-sm">{{
-                                props.price }}</span>
+                            class="md:tw-relative tw-w-1/2 tw-py-3 tw-flex tw-justify-center tw-items-center md:tw-text-lg tw-font-bold tw-cursor-pointer tw-text-[#072523] tw-text-center open-again-btn">
+                            <img :src="Money" class="tw-h-[1.4rem] md:tw-h-[1.75rem] tw-mr-[10px]" /> <span class="tw-text-[16px]">{{
+                                props.price }} </span>
+                                <span class="tw-ml-[20px]">再开一次</span>
                         </div>
                         <div @click="confirmDecompose"
-                            class="md:tw-relative tw-w-1/2 tw-py-3 tw-rounded-full md:tw-text-lg tw-font-bold tw-cursor-pointer tw-text-white tw-text-center tw-flex tw-justify-center tw-items-center tw-gap-1"
-                            style="background: linear-gradient(93deg, #2DD4BF 0%, #0F766E 100%); box-shadow: 0px 4px 13.4px 0px rgba(15, 118, 110, 0.49);">
-                            <span>分解</span>
+                            class="md:tw-relative tw-w-1/2 tw-py-3 md:tw-text-lg tw-font-bold tw-cursor-pointer tw-text-white tw-text-[#072523] tw-flex tw-justify-center tw-items-center tw-gap-1 break-down-btn">
                             <span v-if="selectedItems.length > 0 || openData.length > 0"
-                                class="tw-font-bold tw-flex tw-items-center tw-text-sm">
-                                <img :src="Money" class="tw-h-[16px] md:tw-h-[1.75rem]" /> {{ totalDecomposePrice }}
+                                class="tw-font-bold tw-flex tw-items-center tw-text-[16px]">
+                                <img :src="Money" class="tw-h-[1.4rem] md:tw-h-[1.75rem] tw-mr-[10px]" /> {{ totalDecomposePrice }}
                             </span>
+                            <span class="tw-ml-[20px]">分解</span>
                         </div>
 
                     </div>
@@ -561,14 +551,14 @@ defineExpose({
                 </div>
 
                 <div v-if="show && curindex > 1"
-                    class="  tw-w-full tw-bg-[#000] tw-bg-opacity-[0.7]  tw-h-screen tw-overflow-hidden">
+                    class="  tw-w-full tw-bg-[#000] tw-bg-opacity-[0.5]  tw-h-screen tw-overflow-hidden">
                     <div class="tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-screen  tw-flex tw-flex-col  tw-z-20 ">
-                        <div class=" tw-flex tw-justify-between tw-w-full tw-absolute tw-top-0 tw-left-0 tw-z-10">
+                        <!-- <div class=" tw-flex tw-justify-between tw-w-full tw-absolute tw-top-0 tw-left-0 tw-z-10">
                             <img :src="requireImg('/v2/bg/openBgLeft.png')"
                                 class="tw-w-1/2 md:tw-w-[25.9375rem] tw-h-auto" alt="" />
                             <img :src="requireImg('/v2/bg/openBgRight.png')"
                                 class="tw-w-1/2 md:tw-w-[25.9375rem] tw-h-auto" alt="" />
-                        </div>
+                        </div> -->
                         <div class="tw-relative tw-w-full tw-flex-col tw-flex tw-justify-between tw-h-screen  ">
                             <div class="tw-w-full tw-h-1/3 md:tw-h-1/4"
                                 style="background: linear-gradient(180deg, #000 10.55%, rgba(0, 0, 0, 0.00) 100%);">
@@ -592,21 +582,20 @@ defineExpose({
                                     </div>
                                 </div>
                                 <div
-                                    class="tw-absolute tw-top-1/2 tw-left-1/2 tw-w-[110%] tw-flex tw-justify-center tw-items-center tw-z-10 tw-translate-x-[-50%] tw-translate-y-[-50%]">
-                                    <img :src="lightLeft" class="tw-w-[2.25rem]" alt="" />
-                                    <div class="tw-h-[0.0625rem] tw-w-0 tw-transition-all tw-duration-500 tw-ease-out tw-relative tw-rounded-full"
+                                    class="tw-absolute tw-top-1/2 tw-left-1/2 tw-w-[100%] tw-flex tw-justify-center tw-items-center tw-z-10 tw-translate-x-[-50%] tw-translate-y-[-50%]">
+                                    <!-- <img :src="lightLeft" class="tw-w-[2.25rem]" alt="" /> -->
+                                    <!-- <div class="tw-h-[0.0625rem] tw-w-0 tw-transition-all tw-duration-500 tw-ease-out tw-relative tw-rounded-full"
                                         style="background: linear-gradient(90deg, #FFC74A 0%, #FF7C2B 100%);">
-                                    </div>
-                                    <img :src="lightRight" class="tw-w-[2.25rem]" alt="" />
+                                    </div> -->
+                                    <img :src="line" class="tw-w-[4.8rem]" alt="" style="transform: rotateZ(90deg);">
+                                    <!-- <img :src="lightRight" class="tw-w-[2.25rem]" alt="" /> -->
                                 </div>
-                                <div class="rooling_animin_wai md:tw-h-[100vh] tw-h-[300vh] tw-bg-[#20194F]"
+                                <div class="rooling_animin_wai md:tw-h-[100vh] tw-h-[300vh]"
                                     v-for="(item, index) in box" :key="index"
                                     :style="{ transitionDelay: `${(index) * 0.3}s` }">
                                     <div :class="['rooling_animation ', `animation${index}`]" v-for="(v, i) in item"
                                         :key="i">
-                                        <div class="tw-w-full tw-h-full tw-relative tw-overflow-hidden tw-flex tw-justify-center tw-items-center tw-border-b-2"
-                                            :style="{ borderColor: leavel[v.ornamentsLevelId].color }"
-                                            style=" background:linear-gradient(180deg, rgba(56, 49, 49, 0.50) 0%, #383131 100%); ">
+                                        <div class="tw-w-full tw-h-full tw-relative tw-overflow-hidden tw-flex tw-justify-center tw-items-center">
                                             <img :src="v.imageUrl" alt="">
                                             <div
                                                 class="tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-px-2 tw-py-1  tw-flex  tw-justify-between tw-items-center">
@@ -619,8 +608,11 @@ defineExpose({
                                                 }}</div>
                                             </div>
                                             <!-- <span class="tw-absolute ">{{ i }}</span> -->
-                                            <div class="tw-absolute tw-top-3 tw-left-0 tw-w-full tw-h-full"
+                                            <!-- <div class="tw-absolute tw-top-3 tw-left-0 tw-w-full tw-h-full"
                                                 :style="{ background: leavel[v.ornamentsLevelId].background }">
+                                            </div> -->
+                                            <div class="tw-absolute tw-top-0 tw-left-0 tw-right-0 tw-w-full tw-h-full tw-z-[-1]">
+                                              <img :src="leavel[v.ornamentsLevelId].img" alt="" style="width: 106%;height: 108%;"> 
                                             </div>
                                         </div>
                                     </div>
@@ -630,14 +622,14 @@ defineExpose({
                     </div>
                 </div>
                 <div v-if="show && curindex === 1"
-                    class="tw-w-[100%]  tw-h-screen tw-overflow-hidden transition-opacity duration-500 tw-bg-[#000] tw-bg-opacity-[0.7]">
+                    class="tw-w-[100%]  tw-h-screen tw-overflow-hidden transition-opacity duration-500 tw-bg-[#000] tw-bg-opacity-[0.5]">
                     <div class="tw-absolute tw-inset-0 tw-flex tw-flex-col tw-z-20">
-                        <div class=" tw-flex tw-justify-between tw-w-full tw-absolute tw-top-0 tw-left-0  tw-z-10">
+                        <!-- <div class=" tw-flex tw-justify-between tw-w-full tw-absolute tw-top-0 tw-left-0  tw-z-10">
                             <img :src="requireImg('/v2/bg/openBgLeft.png')"
                                 class="tw-w-1/2 md:tw-w-[25.9375rem] tw-h-auto" alt="" />
                             <img :src="requireImg('/v2/bg/openBgRight.png')"
                                 class="tw-w-1/2 md:tw-w-[25.9375rem] tw-h-auto" alt="" />
-                        </div>
+                        </div> -->
                         <div class="tw-relative tw-w-full tw-hidden md:tw-flex tw-justify-between  tw-h-full">
                             <div class="tw-w-1/4 tw-h-full"
                                 style="background: linear-gradient(90deg, #000 10.55%, rgba(0, 0, 0, 0.00) 100%);">
@@ -653,11 +645,12 @@ defineExpose({
                             <div class="rooling_animin tw-relative">
                                 <div
                                     class="tw-absolute tw-top-1/2 tw-left-1/2 tw-h-[16.25rem] tw-flex tw-flex-col tw-justify-center tw-items-center tw-z-10 tw-translate-x-[-50%] tw-translate-y-[-50%]">
-                                    <img :src="lightUp" class="tw-w-[2.25rem]" alt="" />
+                                    <img :src="line" class="tw-w-[2.25rem]" alt="" />
+                                    <!-- <img :src="lightUp" class="tw-w-[2.25rem]" alt="" />
                                     <div class="tw-w-px tw-h-0 tw-transition-all tw-duration-500 tw-ease-out"
                                         style="background: linear-gradient(90deg, #FFC74A 0%, #FF7C2B 100%);">
                                     </div>
-                                    <img :src="lightDown" class="tw-w-[2.25rem]" alt="" />
+                                    <img :src="lightDown" class="tw-w-[2.25rem]" alt="" /> -->
                                     <div
                                         class=" tw-text-white tw-text-sm tw-absolute tw-gap-6 -tw-bottom-28 tw-flex tw-flex-col tw-justify-center tw-items-center ">
                                         <div class="three-body">
@@ -668,16 +661,15 @@ defineExpose({
                                         <span class=" tw-w-[2.625rem] tw-text-white/70">开启中</span>
                                     </div>
                                 </div>
-                                <div class="rooling_animin_wai  tw-flex tw-flex-row tw-gap-0.5 tw-border-b tw-border-t tw-border-[#FF2121] tw-border-opacity-30 tw-py-2"
+                                <div class="rooling_animin_wai tw-flex tw-flex-row tw-gap-0.5 tw-py-2"
                                     v-for="(item, index) in box" :key="index">
                                     <div :class="['rooling_animation tw-shrink-0 ', `animation0`]"
                                         :style="{ animationDelay: `${index * 0.5}s` }" v-for="(v, i) in item" :key="i">
-                                        <div class="tw-w-full tw-h-full tw-relative tw-overflow-hidden tw-flex tw-justify-center tw-items-center tw-border-b-2"
-                                            :style="{ borderColor: leavel[v.ornamentsLevelId].color }"
-                                            style=" background:linear-gradient(180deg, rgba(56, 49, 49, 0.50) 0%, #383131 100%); ">
-                                            <img :src="v.imageUrl" alt="">
+                                        <div class="tw-w-full tw-h-full tw-relative tw-overflow-hidden tw-flex tw-justify-center tw-items-center"
+                                            >
+                                            <img :src="v.imageUrl" alt="" style="width: 60%;">
                                             <div
-                                                class="tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-px-2 tw-py-1  tw-flex  tw-justify-between tw-items-center">
+                                                class="tw-absolute tw-bottom-[10px] tw-left-0 tw-w-full tw-px-2 tw-py-1  tw-flex  tw-justify-between tw-items-center">
                                                 <div class="tw-text-white tw-text-xs tw-font-bold tw-line-clamp-1">{{
                                                     v.shortName ? v.shortName : parseOrnamentName(v.ornamenName).main
                                                     }}</div>
@@ -687,8 +679,11 @@ defineExpose({
                                                 }}</div>
                                             </div>
                                             <!-- <span class="tw-absolute ">{{ i }}</span> -->
-                                            <div class="tw-absolute tw-top-3 tw-left-0 tw-w-full tw-h-full"
+                                            <!-- <div class="tw-absolute tw-top-3 tw-left-0 tw-w-full tw-h-full"
                                                 :style="{ background: leavel[v.ornamentsLevelId].background }">
+                                            </div> -->
+                                            <div class="tw-absolute tw-top-0 tw-left-0 tw-right-0 tw-w-full tw-h-full tw-z-[-1]">
+                                              <img :src="leavel[v.ornamentsLevelId].img" alt="" style="width: 106%;height: 108%;"> 
                                             </div>
                                         </div>
                                     </div>
@@ -819,7 +814,8 @@ defineExpose({
 }
 
 .dialog {
-    background: none;
+    background: url('@/assets/images/open/open-box-bg.png') no-repeat;
+    background-size: cover;
 }
 
 .btn {
@@ -885,8 +881,6 @@ defineExpose({
         background-size: 100% 100%;
         position: relative;
         padding: 0 0.9375rem;
-        border-left: 1px solid rgba(255, 33, 33, 0.30);
-        border-right: 1px solid rgba(255, 33, 33, 0.30);
 
         .rooling_animin {
             display: flex;
@@ -1753,5 +1747,28 @@ defineExpose({
     100% {
         transform: translate(-50%, -50%) rotate(0deg);
     }
+}
+
+.open-again-btn {
+  background: url('@/assets/images/login/green_btn.png') no-repeat;
+  margin-right: 60px;
+}
+.break-down-btn {
+  background: url('@/assets/images/login/yellow_btn.png') no-repeat;
+}
+.golden-bg {
+  background: url('@/assets/images/open/golden-bg.png') no-repeat;
+}
+.red-bg {
+  background: url('@/assets/images/open/red-bg.png') no-repeat;
+}
+.purple-bg {
+  background: url('@/assets/images/open/purple-bg.png') no-repeat;
+}
+.blue-bg {
+  background: url('@/assets/images/open/blue-bg.png') no-repeat;
+}
+.green-bg {
+  background: url('@/assets/images/open/green-bg.png') no-repeat;
 }
 </style>

@@ -122,12 +122,13 @@ const showDialog=(item)=>{
 </template>
 
 <style scoped lang="scss">
-$primary-color-user: rgba(245, 76, 54, 0.6);
+$primary-color-user: #B3B586;
 .records {
   padding: 20px;
   display: flex;
   flex-direction: column;
   width: 100%;
+  font-size: 13px;
 
   .tabs {
     margin-top: 10px;
@@ -145,13 +146,14 @@ $primary-color-user: rgba(245, 76, 54, 0.6);
   &-list {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 80%;
   }
 
   &-item {
-    width: 100%;
-    height: 80px;
+    width: 70vw;
+    height: 48px;
     border: 1px solid $primary-color-user;
+    background: rgba($color: #000000, $alpha: 0.59);
     border-radius: 5px;
     margin-bottom: 10px;
     display: flex;

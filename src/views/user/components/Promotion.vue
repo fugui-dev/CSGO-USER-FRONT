@@ -69,33 +69,31 @@ getS()
   <div class="promotion">
     <div class="self-title">
       <span>推广链接</span>
-      <div></div>
     </div>
     <div class="promotion-item no_border">
       <div class="link">
         <div class="link-title">我的推广码:</div>
         <el-input class="link-content" readonly v-model="userInfo.invitationCode"></el-input>
-        <BaseButton  font-size="14px" class="link-btn" @click="onCopy(userInfo.invitationCode)" name="复制"></BaseButton>
+        <BaseButton font-size="13px" style="width: 80px;height: 26px;transform: translateX(-110px);color: #072523;" class="link-btn" @click="onCopy(userInfo.invitationCode)" name="复制"></BaseButton>
       </div>
     </div>
     <div class="promotion-item no_border">
       <div class="link">
         <div class="link-title">我的推广链接:</div>
         <el-input class="link-content" readonly v-model="link"></el-input>
-        <BaseButton  font-size="14px" class="link-btn" @click="onCopy(link)" name="复制"></BaseButton>
+        <BaseButton  font-size="13px" style="width: 80px;height: 26px;transform: translateX(-110px);color: #072523;" class="link-btn" @click="onCopy(link)" name="复制"></BaseButton>
 
       </div>
       <img :src="qrcode" alt="" class="qr">
     </div>
     <div class="self-title">
       <span>推广明细</span>
-      <div></div>
     </div>
     <div class="promotion-item no_padding">
         <div class="total">
           <div class="total-item">
-            <div class="item ellipsis">推广人数</div>
-            <div class="item ellipsis">{{summarize.people}}</div>
+            <div class="item ellipsis top-left">推广人数</div>
+            <div class="item ellipsis bottom-left">{{summarize.people}}</div>
           </div>
           <div class="total-item">
             <div class="item ellipsis">总返佣金额</div>
@@ -106,12 +104,12 @@ getS()
             <div class="item ellipsis">{{summarize.commissions}}</div>
           </div>
           <div class="total-item">
-            <div class="item ellipsis">下级总充值</div>
-            <div class="item ellipsis">{{summarize.rechargeTotal}}</div>
+            <div class="item ellipsis top-right">下级总充值</div>
+            <div class="item ellipsis bottom-right">{{summarize.rechargeTotal}}</div>
           </div>
           <div class="total-item">
-            <div class="item ellipsis">已结算金额</div>
-            <div class="item ellipsis">{{summarize.balancedPrice}}</div>
+            <div class="item ellipsis top-left">已结算金额</div>
+            <div class="item ellipsis bottom-left">{{summarize.balancedPrice}}</div>
           </div>
           <div class="total-item">
             <div class="item ellipsis">未结算金额</div>
@@ -122,12 +120,12 @@ getS()
             <div class="item ellipsis">{{summarize.afterDayPre}}</div>
           </div>
           <div class="total-item">
-            <div class="item ellipsis">今日总充值</div>
-            <div class="item ellipsis">{{summarize.todayRechargeTotal}}</div>
+            <div class="item ellipsis top-right">今日总充值</div>
+            <div class="item ellipsis bottom-right">{{summarize.todayRechargeTotal}}</div>
           </div>
           <div class="total-item">
-            <div class="item ellipsis">今日总返佣</div>
-            <div class="item ellipsis">{{summarize.todayRebateTotal}}</div>
+            <div class="item ellipsis top-left">今日总返佣</div>
+            <div class="item ellipsis bottom-left">{{summarize.todayRebateTotal}}</div>
           </div>
           <div class="total-item">
             <div class="item ellipsis">本周总充值</div>
@@ -138,8 +136,8 @@ getS()
             <div class="item ellipsis">{{summarize.thisWeekRebateTotal}}</div>
           </div>
           <div class="total-item">
-            <div class="item ellipsis"></div>
-            <div class="item ellipsis"></div>
+            <div class="item ellipsis top-right"></div>
+            <div class="item ellipsis bottom-right"></div>
           </div>
         </div>
     </div>
@@ -152,16 +150,15 @@ $primary-color-user: rgba(245, 76, 54, 0.6);
 .self-title{
   position: relative;
   width: fit-content;
-  margin: 20px 0;
+  margin: 6px 0 !important;
 
   span {
     position: relative;
     font-size: 16px;
     font-family: "Source Han Sans CN", "Microsoft YaHei", 'sans-serif';
-    filter: drop-shadow(0px 0px 4.3px #FF4545A6);
-
-
     z-index: 2;
+    filter: none !important;
+    color: #1D1F22;
   }
 
   div {
@@ -171,17 +168,16 @@ $primary-color-user: rgba(245, 76, 54, 0.6);
     height: 10px;
     bottom: -7px;
     left: 0;
-    background: linear-gradient(90deg, #F34A34 0%, rgba(141, 43, 30, 0) 100%);
-
     z-index: 0;
   }
 }
 .qr{
   height: 100%;
   width: 100%;
-  max-width: 150px;
-  margin-left: 100px;
+  max-width: 100px;
+  margin-left: 106px;
   margin-top: 24px;
+  margin-bottom: -32px;
 
   //@include mobile{
   //  margin: 0 auto;
@@ -200,13 +196,20 @@ $primary-color-user: rgba(245, 76, 54, 0.6);
   display: flex;
   flex-direction: column;
   position: relative;
+  background: url('@/assets/images/user/user_info_bg.png') no-repeat;
+  background-size: 90% 90%;
+  padding: 80px;
   .el-input{
     width: 100%;
+    height: 36px;
+    background: rgba($color: #70603F, $alpha: 0.59);
+    --el-disabled-bg-color: none;
+    --el-input-text-color: #1D1F22;
   }
   &-title {
     position: relative;
     width: fit-content;
-    margin: 20px 30px;
+    margin: 0 30px;
 
     span {
       position: relative;
@@ -233,25 +236,17 @@ $primary-color-user: rgba(245, 76, 54, 0.6);
     width: 100%;
     height: fit-content;
     border-radius: 10px;
-    border: 1px solid $primary-color-user;
     display: flex;
     flex-direction: column;
     margin-bottom: 10px;
-    &.no_border{
-      border: none !important;
-    }
-    &.no_padding{
-      padding: 0;
-    }
     .link{
       display: flex;
       align-items: center;
-      height: 60px;
+      height: 35px;
       width: 100%;
       font-size: 14px;
       &-title{
-        color: #FFF5F5;
-
+        color: #1D1F22;
         width: 100px;
         margin-right: 5px;
       }
@@ -274,6 +269,21 @@ $primary-color-user: rgba(245, 76, 54, 0.6);
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  font-size: 12px;
+  color: #1D1F22;
+  width: 80%;
+  .top-left {
+    border-top-left-radius: 8px;
+  }
+  .top-right {
+    border-top-right-radius: 8px;
+  }
+  .bottom-left {
+    border-bottom-left-radius: 8px;
+  }
+  .bottom-right {
+    border-bottom-right-radius: 8px;
+  }
   &-item{
     display: flex;
     flex-direction: column;
@@ -286,11 +296,11 @@ $primary-color-user: rgba(245, 76, 54, 0.6);
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 3em;
-      &:first-child{
-        background: #FFD9D933;
+      height: 1.6em;
+      background: rgba($color: #70603F, $alpha: 0.59);
+      &:nth-child(2) {
+        margin-bottom: 10px;
       }
-
     }
   }
 }

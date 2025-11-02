@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
-import Money from "@/assets/icons/money.svg";
+import Money from "@/assets/images/home/coin.png";
 const level = {
     1: {
         color: '#f2a105',
@@ -145,26 +145,26 @@ const boxUser = computed(() => {
 </script>
 <template>
     <div @mouseenter="hover = true" @mouseleave="hover = false" :class="{ 'tw-rounded': props.isRound }"
-        class=" tw-relative tw-text-white  tw-text-sm tw-font-bold tw-w-[10.625rem] tw-bg-[#383131] md:tw-w-[11.625rem] tw-overflow-hidden">
+        class=" tw-relative tw-text-white  tw-text-sm tw-font-bold tw-w-[8.625rem] md:tw-w-[10.8rem] tw-overflow-hidden">
 
-        <div class=" tw-relative tw-w-full tw-h-[7.9375rem] tw-overflow-hidden">
+        <div class=" tw-relative tw-w-full tw-h-[8rem] tw-overflow-hidden">
             <img :src="displayLevelImg" class="tw-w-full tw-h-full tw-absolute tw-top-0 tw-left-0" />
             <div class="tw-absolute tw-inset-0 tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center">
                 <img :src="displayImageUrl" class="tw-w-[80%]" />
             </div>
-            <div class="tw-h-full tw-w-full tw-flex tw-flex-col tw-justify-between tw-p-2">
+            <div class="tw-h-full tw-w-full tw-flex tw-flex-col tw-justify-between tw-p-3">
                 <div class="tw-flex tw-items-center tw-w-full tw-justify-between tw-flex-row-reverse">
                     <span v-if="isOpenBox2Gift" :class="{ 'tw-rounded': props.isRound }"
                         class=" tw-text-xs tw-text-white tw-px-2 tw-py-1 tw-border tw-border-[#1FEBC4]   tw-bg-[#1FEBC4]">赠品</span>
                     <span>{{ oddsResult }}</span>
                 </div>
-                <div class=" tw-flex tw-flex-col tw-gap-px tw-text-sm">
+                <div class=" tw-flex tw-flex-col tw-gap-px tw-text-xs">
                     <span class="tw-line-clamp-1">{{ displayExteriorName }}</span>
                     <span class="tw-line-clamp-1">{{ displayShortName }}</span>
                 </div>
             </div>
           <div v-if="showPrice" class="tw-text-sm" style="position: absolute;right: .6rem;top: .2rem;display: flex;align-items: center;font-size: .8rem">
-            <img :src="Money" class="tw-h-[16px] md:tw-h-[1.5rem]" />
+            <img :src="Money" class="tw-h-[12px] md:tw-h-[1.2rem]" />
             <div>{{props.boxData.ornamentsPrice}}</div>
           </div>
         </div>

@@ -11,6 +11,9 @@ import {ElMessage} from "element-plus";
 import NewBoxs from "@/components/Box/NewBoxs.vue";
 import {useStore} from "@/store";
 import SmeltShopModal from "@/views/smelt/SmeltShopModal.vue";
+import startSmelt from '@/assets/images/smelt/start_smelt.png';
+import smeltSuccess from '@/assets/images/smelt/smelt_success.png';
+import smeltSuccessBg from '@/assets/images/smelt/smelt_success_bg.png';
 
 const store = useStore()
 
@@ -313,18 +316,8 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
         <div style="display:flex;flex-direction: column;" v-show="store.isPC">
           <div class="self-title">
             <span>我的饰品</span>
-            <div></div>
           </div>
           <div class="smelt-container">
-            <el-scrollbar style="height: 80vh">
-              <div class="wq">
-                <NewBoxs class="item" v-for="(i,index) in packList" :class="{'choose':selectPackIds?.includes(i.id)}"
-                         :key="index" @click="handleSelectPack(i)" :title="i.ornamentName" :box-data="i">
-
-                </NewBoxs>
-
-              </div>
-            </el-scrollbar>
             <el-pagination
                 background
                 layout="prev, pager, next"
@@ -335,13 +328,24 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
                 class="page"
                 pager-count="4"
             />
+            <el-scrollbar style="height: 80vh">
+              <div class="wq">
+                <NewBoxs class="item" v-for="(i,index) in packList" :class="{'choose':selectPackIds?.includes(i.id)}"
+                         :key="index" @click="handleSelectPack(i)" :title="i.ornamentName" :box-data="i">
+
+                </NewBoxs>
+
+              </div>
+            </el-scrollbar>
           </div>
         </div>
 
         <div class="status">
           <div class="img">
-            <img class="img-bg" :src="requireImg('/v2/smelt/rl.png')" alt="">
-            <div class="result" v-if="selectShopItem" :style="{backgroundImage:requireImg('/v2/smelt/jg-bg.png',true)}">
+            <div class="smelt-btn">
+              <img :src="startSmelt" alt="">
+            </div>
+            <div class="result" v-if="selectShopItem" style="top: -90%">
               <img :src="selectShopItem.imageUrl" alt="">
               <div class="close" @click="selectId=null">x</div>
             </div>
@@ -350,7 +354,7 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
             <div class="select_list">
               <el-scrollbar>
                 <div class="result_list_box">
-                  <div class="result" :style="{backgroundImage:requireImg('/v2/smelt/bb-bg.png',true)}"
+                  <div class="result"
                        v-for="i in selectPackItems">
                     <img :src="i.imageUrl" alt="">
                     <div class="close" @click="handleSelectPack(i)">x</div>
@@ -365,7 +369,6 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
         <div class="shop" v-show="store.isPC">
           <div class="self-title orange">
             <span>熔炼饰品库</span>
-            <div></div>
           </div>
           <div class="smelt-container">
 
@@ -433,8 +436,8 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
   <van-popup v-model:show="showPopup" teleport="body" style="background:transparent;max-width: 100vw"
              @close="closePopup">
     <div class="succ" v-if="selectShopItem" @click="showPopup=false">
-      <img class="bgg" :src="requireImg('/v2/smelt/succ-bg.png')" alt="">
-      <img class="tit" :src="requireImg('/v2/smelt/succ-tit.png')" alt="">
+      <img class="bgg" :src="smeltSuccessBg" alt="">
+      <img class="tit" :src="smeltSuccess" alt="">
       <div class="name">{{ selectShopItem.ornamentName }}</div>
       <img class="wq" :src="selectShopItem.imageUrl" alt="">
     </div>
@@ -481,15 +484,16 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: 440px;
-    height: 452px;
+    width: 300px;
+    height: 300px;
   }
 
   .tit {
     position: absolute;
-    left: 60%;
-    top: 55%;
-    transform: translate(0, -50%);
+    left: 50%;
+    top: 28%;
+    transform: translate(-50%, -50%);
+    width: 240px;
     @include mobile {
       width: 130px;
       left: 65%;
@@ -500,12 +504,11 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
   .name {
     position: absolute;
     left: 50%;
-    top: 70%;
+    top: 72%;
     transform: translate(-50%, -50%);
-    color: #FFF5F5;
+    color: #FFFFFF;
     font-weight: 700;
-    font-size: 24px;
-    filter: drop-shadow(0px 0px 4.3px #FF4545A6);
+    font-size: 18px;
     width: 90vw;
     text-align: center;
     @include mobile {
@@ -535,25 +538,22 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
   position: relative;
   width: fit-content;
   margin: 20px 0;
+  height: 32px;
+  width: 120px;
+  background: linear-gradient(to right, #306145, #5f9180);
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   &.orange {
-    span {
-      filter: drop-shadow(0px 0px 4.3px #FFB545A6);
-    }
-
-    div {
-      background: linear-gradient(90deg, #F3A734 0%, rgba(141, 123, 30, 0) 100%);
-
-    }
+    background: linear-gradient(to right, #5c1f1b, #8b5c51);
   }
 
   span {
     position: relative;
-    font-size: 16px;
+    font-size: 14px;
     font-family: "Source Han Sans CN", "Microsoft YaHei", 'sans-serif';
-    filter: drop-shadow(0px 0px 4.3px #FF4545A6);
-
-
     z-index: 2;
   }
 
@@ -579,19 +579,26 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
   &-container {
     display: flex;
     flex-direction: column;
-    border: 0.8px solid;
-    border-image-source: linear-gradient(180deg, rgba(255, 112, 112, 0) -2.75%, rgba(255, 201, 201, 0.690307) 43.49%, #994343 100%);
-    border-image-slice: 1;
     align-items: center;
     padding-top: 10px;
-    box-shadow: 0px 3.2px 27.12px 0px #500B0557;
 
 
   }
 
   .page {
-    margin-top: 10px;
-
+    margin-bottom: 10px;
+    background-color: rgba($color: #0F1011, $alpha: 0.74);
+    border-radius: 6px;
+    width: 98%;
+    :deep(.el-pager li.is-active) {
+      border: none;
+    }
+  }
+  :deep(.el-pagination .btn-prev) {
+    border: none;
+  }
+  :deep(.el-pagination .btn-next) {
+    border: none;
   }
 
   .wq {
@@ -641,7 +648,7 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
 
     .confirm {
       width: 80%;
-      height: 150px;
+      height: 200px;
       position: absolute;
       left: 50%;
       top: 50%;
@@ -659,12 +666,14 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
       top: -15%;
       left: 50%;
       transform: translateX(-50%);
-      width: 164px;
-      height: 164px;
+      width: 140px;
+      height: 140px;
       background-size: 100% 100%;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: url('@/assets/images/smelt/item_bg.png') no-repeat;
+      background-size: cover;
 
       img {
         width: 70%;
@@ -683,12 +692,6 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
       width: 100%;
       position: relative;
 
-      .img-bg {
-        width: 100%;
-        max-width: 300px;
-        margin: 0 auto;
-
-      }
 
 
     }
@@ -708,9 +711,10 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
       .result_list_box {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
+        margin-top: 60px;
 
         .result {
-          top: 0;
+          top: 30%;
           left: 50%;
         }
 
@@ -744,11 +748,17 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
     .select {
       display: flex;
       flex-direction: column;
+      align-self: flex-start;
 
       &-item {
         display: flex;
         align-items: center;
         margin-bottom: 10px;
+        background-color: rgba($color: #0F1011, $alpha: 0.74);
+        border-radius: 6px;
+        height: 26px;
+        font-size: 12px;
+        padding-left: 10px;
 
         .el-select {
           width: 200px;
@@ -756,9 +766,10 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
           --el-input-text-color: #fff;
 
           :deep(.el-select__wrapper) {
-            background: #FFF0F03D;
-            border: 1px solid #E39C33;
+            background: none;
+            // border: 1px solid #E39C33;
             box-shadow: none !important;
+            font-size: 12px;
           }
         }
       }
@@ -768,5 +779,18 @@ const handleSmeltShopModalConfirm = ({selectedIds, totalPrice, selectedItems}) =
   }
 
 }
-
+.smelt-btn {
+  background: url('@/assets/images/smelt/smelt_btn.png') no-repeat;
+  background-size: cover;
+  width: 100%;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  img {
+    width: 30%;
+  }
+}
 </style>

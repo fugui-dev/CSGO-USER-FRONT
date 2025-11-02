@@ -13,8 +13,14 @@ import silderBg from '@/assets/upgrade/open/silderBg.png'
 import monde from '@/assets/upgrade/open/monde.png'
 import m3Sound from '@/assets/music/m3.mp3'
 import { requireImg } from '@/utils/common'
-import Money from '@/assets/icons/money.svg'
+import Money from '@/assets/images/upgrade/coin.png'
 import endCenter from '@/assets/boxroom/endCenter.png'
+import upgradeRecordImg from '@/assets/images/upgrade/upgrade_record.png'
+import logoBg1 from '@/assets/images/upgrade/logo_bg1.png'
+import logoBg2 from '@/assets/images/upgrade/logo_bg2.png'
+import logoBg3 from '@/assets/images/upgrade/logo_bg3.png'
+import logoBg4 from '@/assets/images/upgrade/logo_bg4.png'
+import back from '@/assets/images/upgrade/back.png'
 // 动画配置参数（提取到顶部方便调试）
 const ANIMATION_CONFIG = {
   totalSpins: 5,        // 总旋转圈数
@@ -335,33 +341,30 @@ const getSegmentOffset = (index) => {
 
 <template>
   <div class="tw-flex tw-relative tw-flex-col ">
-    <div class="tw-flex tw-gap-2 tw-mt-8 tw-px-10 tw-mb-5 tw-text-xl md:tw-text-3xl tw-font-bold tw-cursor-pointer tw-text-[#FFF646]"
-      style="text-shadow: 0px 0px 4.3px rgba(255, 202, 69, 0.65);" @click="handleBack">
-      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none">
-        <path
-          d="M19.176 9.8445C20.5785 10.6935 22.299 12.987 23.016 15.747C23.493 17.587 23.692 19.331 23.613 20.979C22.995 19.964 22.5605 19.279 22.3095 18.924C21.9345 18.39 20.3505 16.401 17.892 15.249C16.253 14.481 14.064 14.1655 11.325 14.3025V19.0995L0 10.9455L11.325 2.7915V7.6335C13.138 7.7715 14.5185 7.9405 15.4665 8.1405C17.0635 8.4765 18.3 9.0445 19.176 9.8445Z"
-          fill="#FFF646" />
-      </svg>
-      返回列表
+    <div class="tw-flex tw-gap-2 tw-mt-8 tw-px-10 tw-mb-5 tw-text-xl md:tw-text-[14px] tw-font-bold tw-cursor-pointer tw-text-[#B1C5C7]"
+ @click="handleBack">
+      <img :src="back" alt="" class="tw-w-[2rem] tw-h-[1.8rem]">
+      返回
     </div>
-    <div class="tw-w-full tw-flex tw-justify-center tw-relative tw-overflow-hidden tw-h-[37.5rem] md:tw-h-auto ">
+    <div class="tw-w-full tw-flex tw-justify-center tw-relative tw-overflow-hidden tw-h-[37.5rem] md:tw-h-auto">
       <div
-        class="tw-flex tw-flex-col tw-w-[75vw] md:tw-w-[31.25rem] tw-top-[-13vw] tw-absolute  tw-items-center tw-justify-center md:tw-top-0 md:tw-left-0  tw-left-[-20vw] md:tw-relative">
-        <img :src="requireImg('/openBox/leftVideo.png')" class=" tw-w-full">
+        class="tw-flex tw-flex-col tw-w-[75vw] md:tw-w-[31.25rem] tw-top-[-13vw] tw-absolute  tw-items-center tw-justify-center md:tw-top-[-8vh] md:tw-left-0  tw-left-[-20vw] md:tw-relative">
+        <img :src="logoBg1" class="tw-w-[240px]">
         <div
-          class="tw-absolute tw-top-1/2 tw-left-1/2 tw-text-center  -tw-translate-x-1/2 -tw-translate-y-1/2 tw-cursor-pointer"
+          class="tw-absolute tw-top-1/2 tw-left-1/2 tw-text-center  -tw-translate-x-1/2 -tw-translate-y-1/3 tw-cursor-pointer"
           @click="openBag">
           <img :src="selectedItemsData.imageUrl || question" class="tw-w-[20vw] md:tw-w-[5.625rem] animate-bounce">
-          <div class="tw-mt-[15vw] md:tw-mt-[6.25rem]">注入饰品</div>
+          <div class="tw-mt-[15vw] md:tw-mt-[4.5rem]">注入饰品</div>
         </div>
       </div>
       <div
-        class="  md:tw-relative tw-absolute tw-bottom-0 tw-w-[20rem] tw-flex-col tw-flex tw-items-center  tw-justify-center  ">
+        class="  md:tw-relative tw-absolute tw-bottom-0 tw-w-[20rem] tw-flex-col tw-flex tw-items-center  tw-justify-center tw-mt-10 ">
         <div class="tw-w-full tw-h-[20rem] tw-relative tw-flex tw-items-center tw-justify-center">
-          <img :src="silderBg" class="tw-w-full tw-absolute tw-top-0 tw-left-0">
+          <img :src="logoBg4" class="tw-w-[260px] tw-absolute tw-top-0 tw-left-0 logo-bg4">
+          <img :src="logoBg2" class="tw-w-[180px] tw-absolute tw-top-[0.3rem] tw-left-0 logo-bg2">
           <div class=" tw-text-center tw-mb-2">
             <!-- 圆形进度条 -->
-            <div class=" tw-relative tw-w-[13.625rem] tw-h-[13.625rem] tw-translate-y-1">
+            <div class=" tw-relative tw-w-[19.625rem] tw-h-[19.625rem] tw-translate-y-1">
               <div
                 class="tw-absolute tw-top-1/2 tw-h-[calc(100%-42px)] tw-left-1/2 tw-text-center -tw-translate-x-1/2 -tw-translate-y-1/2">
                 <div class="tw-w-[1.5rem] tw-h-full tw-flex tw-items-start tw-justify-center"
@@ -376,7 +379,7 @@ const getSegmentOffset = (index) => {
               </div>
               <svg class="tw-w-full tw-h-full" viewBox="0 0 233 233">
                 <!-- 底色圆环 -->
-                <circle cx="116.5" cy="116.5" r="100" fill="none" stroke="#210F0B" stroke-width="23" />
+                <circle cx="116.5" cy="116.5" r="100" fill="none" stroke="#210F0B" stroke-width="20" />
 
                 <!-- 进度圆环 - 使用12段小弧，每段间隔明显 -->
                 <g>
@@ -391,20 +394,22 @@ const getSegmentOffset = (index) => {
             </div>
           </div>
         </div>
-        <div class="  tw-flex tw-flex-col tw-items-center tw-gap-2 tw-mt-6">
-          <div style="text-shadow: 0px 0px 4.3px rgba(255, 202, 69, 0.65);"
-            class="tw-font-bold tw-text-[#FFF646] tw-text-xl md:tw-text-4xl"> {{ sliderValue
+        <div class="tw-flex tw-flex-col tw-items-center tw-gap-2 tw-mt-6">
+          <div
+            class="tw-font-bold tw-text-[#FFFFFF] tw-text-xl md:tw-text-[21px]"> {{ sliderValue
             }}%</div>
-          <span class=" tw-text-sm md:tw-text-lg">目标饰品：<span class="tw-text-[#FFF646]">{{ boxData.shortName }}</span>
-          </span>
-          <span class="tw-text-white/70 tw-text-xs md:tw-text-sm">滑动可调整您的幸运值
+          <div class="tw-text-sm md:tw-text-lg md:tw-text-[16px]">
+            目标饰品：
+            <div class="tw-text-[#FFF646] tw-inline-block short-name">{{ boxData.shortName }}</div>
+          </div>
+          <span class="tw-text-white/70 tw-text-xs md:tw-text-sm md:tw-text-[14px] tw-text-[#FFFFFF] tw-mb-[10px] tw-mt-[14px]">滑动可调整您的幸运值
           </span>
         </div>
       </div>
       <div
-        class="tw-flex tw-flex-col tw-w-[75vw]  md:tw-w-[31.25rem] tw-top-[-13vw]  tw-items-center tw-justify-center md:tw-top-0 md:tw-right-0 tw-right-[-20vw] tw-absolute md:tw-relative">
-        <img :src="requireImg('/openBox/rightVideo.png')" class="tw-w-full">
-        <div class="tw-absolute tw-top-1/4 tw-left-1/2 tw-text-center  -tw-translate-x-1/2">
+        class="tw-flex tw-flex-col tw-w-[75vw]  md:tw-w-[31.25rem] tw-top-[-13vw]  tw-items-center tw-justify-center md:tw-top-[-8vh] md:tw-right-0 tw-right-[-20vw] tw-absolute md:tw-relative">
+        <img :src="logoBg3" class="tw-w-[240px]">
+        <div class="tw-absolute tw-top-1/3 tw-left-1/2 tw-text-center  -tw-translate-x-1/2">
           <img :src="boxData.imageUrl" class="tw-w-[20vw] md:tw-w-[10rem] animate-bounce">
         </div>
       </div>
@@ -412,41 +417,35 @@ const getSegmentOffset = (index) => {
     <div class="tw-px-5 tw-py-10 md:tw-pt-0 tw-flex tw-justify-center tw-flex-col tw-items-center tw-gap-5 tw-relative tw-z-10">
       <UpgradeSider v-model="sliderValue" :min="0" :max="100" :fixedValue="itemsPercentage" />
       <div @click="handleOpen"
-        class="boxshadowBtn md:tw-w-[24.75rem] tw-w-[13.75rem]  tw-duration-300 tw-transform tw-py-1.5 md:tw-py-3  tw-flex tw-text-xl tw-items-center tw-cursor-pointer tw-bg-[#2E110B] tw-rounded-full   tw-justify-center">
-        <span class="tw-flex tw-items-center tw-gap-2 md:tw-text-base tw-text-sm"><img :src="Money"
-            class="tw-h-[1rem] md:tw-h-[1.75rem]" /> {{
+        class="boxshadowBtn tw-mt-[10px] md:tw-w-[14.75rem] tw-w-[13.75rem]  tw-duration-300 tw-transform tw-py-1.5 md:tw-py-3  tw-flex tw-text-xl tw-items-center tw-cursor-pointer tw-bg-[#2E110B] tw-justify-center">
+        <span class="tw-flex tw-items-center tw-gap-2 md:tw-text-base tw-text-2xl"><img :src="Money"
+            class="tw-h-[2rem] md:tw-h-[2.3rem] tw-mr-[4px]"/> {{
               endPrice }}
-          <span class="md:tw-text-2xl tw-text-xl tw-font-bold">升级</span></span>
+          <span class="md:tw-text-1.8xl tw-text-xl tw-font-bold tw-ml-[8px]">升级</span></span>
       </div>
     </div>
-    <div
+    <!-- <div
       class="tw-w-full tw-flex tw-justify-center tw-items-center tw-fixed tw-bottom-0 tw-translate-y-1/2 tw-left-1/2 tw-translate-x-[-50%]">
       <img :src="endCenter" class="tw-tw-absolute" />
-    </div>
+    </div> -->
     <div class="tw-w-full tw-flex tw-flex-col lg:tw-pb-[10rem] tw-relative">
 
-      <div class="tw-flex tw-gap-2 tw-mt-8 tw-px-10 tw-mb-5 tw-text-xl md:tw-text-3xl tw-font-bold tw-text-[#FFF646]"
-        style="text-shadow: 0px 0px 4.3px rgba(255, 202, 69, 0.65);">
-        升级记录
-      </div>
+      
       <!-- 修改记录列表容器 -->
 
       <div class="tw-flex tw-w-full tw-justify-center tw-items-start tw-flex-col lg:tw-px- tw-relative tw-py-4">
+        <div class="record-title">升级记录</div>
         <div class="tw-flex tw-flex-col tw-gap-2 tw-w-full tw-min-h-[400px]" @scroll="handleScroll"
           ref="scrollContainer">
 
           <!-- 记录列表 -->
           <div v-for="(item, index) in RecordData" :key="item.id"
-            class="tw-relative tw-w-full tw-max-w-[90%] lg:tw-max-w-[85%] tw-min-h-[5rem] md:tw-min-h-[6rem] tw-bg-gradient-to-r tw-from-[#211a0e]/70 tw-to-[#2d2211]/90 tw-rounded-xl tw-overflow-hidden tw-group tw-transition-all tw-duration-300 hover:tw-scale-[1.02] hover:tw-shadow-[0_0_15px_rgba(255,202,69,0.3)] tw-backdrop-blur-sm tw-border tw-border-[#3a3120] hover:tw-border-[#FFC43C]/50 tw-mx-auto"
+            class="tw-relative tw-w-full tw-max-w-[90%] lg:tw-max-w-[85%] tw-min-h-[4rem] md:tw-min-h-[4rem] tw-bg-[#44616D]/25 tw-overflow-hidden tw-group tw-transition-all tw-duration-300 hover:tw-scale-[1.02] hover:tw-shadow-[0_0_15px_rgba(130,130,130,0.6)] tw-backdrop-blur-sm tw-border tw-border-[#808080] tw-border-dashed hover:tw-border-[#808080]/50 tw-mx-auto"
             :style="{
               animationDelay: `${index * 0.1}s`,
               opacity: loading.value ? '0.5' : '1',
               pointerEvents: loading.value ? 'none' : 'auto'
             }">
-            <!-- 左侧发光边框效果 -->
-            <div
-              class="tw-absolute tw-left-0 tw-top-0 tw-w-1 tw-h-full tw-bg-gradient-to-b tw-from-[#FFC43C] tw-to-[#E36C0A] tw-opacity-70 group-hover:tw-opacity-100 tw-transition-all">
-            </div>
 
             <!-- 内容区域 -->
             <div
@@ -455,12 +454,8 @@ const getSegmentOffset = (index) => {
               <div class="tw-flex tw-items-center tw-gap-4">
                 <!-- 武器图片容器 -->
                 <div
-                  class="tw-relative tw-w-[4rem] md:tw-w-[5rem] tw-h-[3.5rem] md:tw-h-[4.5rem] tw-bg-gradient-to-br tw-from-[#2d2211] tw-to-[#1c1509] tw-rounded-lg tw-border tw-border-[#3a3120] tw-flex tw-items-center tw-justify-center tw-overflow-hidden group-hover:tw-shadow-[0_0_10px_rgba(255,202,69,0.3)] tw-transition-all">
-                  <!-- 发光背景效果 -->
-                  <div
-                    class="tw-absolute tw-inset-0 tw-bg-gradient-to-br tw-from-[#FFC43C]/10 tw-to-transparent tw-opacity-0 group-hover:tw-opacity-100 tw-transition-all">
-                  </div>
-
+                  class="tw-relative tw-w-[4rem] md:tw-w-[5rem] tw-h-[3.5rem] md:tw-h-[4.5rem] tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-overflow-hidden tw-transition-all">
+                  
                   <!-- 武器图片 -->
                   <img :src="item.gainOrnamentList[0].ornamentImgUrl"
                     class="tw-w-[90%] tw-h-auto tw-object-contain tw-transition-all tw-duration-300 group-hover:tw-scale-110"
@@ -470,7 +465,7 @@ const getSegmentOffset = (index) => {
                 <!-- 武器名称 -->
                 <div class="tw-font-bold tw-text-white tw-flex tw-flex-col tw-h-full tw-justify-center">
                   <span
-                    class="tw-text-base md:tw-text-lg tw-drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] group-hover:tw-text-[#FFF646] tw-transition-colors">
+                    class="tw-text-base md:tw-text-[14px] tw-drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] group-hover:tw-text-[#FCBE46] tw-transition-colors">
                     {{ item.gainOrnamentList[0].ornamentName }}
                   </span>
 
@@ -488,16 +483,16 @@ const getSegmentOffset = (index) => {
               <div class="tw-hidden md:tw-flex tw-justify-between tw-gap-10 tw-items-center">
                 <!-- 概率 -->
                 <div
-                  class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-bg-[#2d2211]/70 tw-px-4 tw-py-1 tw-rounded-full tw-shadow-inner">
-                  <span class="tw-text-xs tw-text-white/70">选择概率</span>
-                  <span class="tw-text-[#FFF646] tw-font-bold tw-text-xl group-hover:tw-scale-110 tw-transition-all">
+                  class="tw-flex tw-flex-row tw-items-center tw-justify-center tw-px-4 tw-py-1 tw-shadow-inner">
+                  <span class="tw-text-[14px] tw-text-white tw-mr-[6px]">选择概率</span>
+                  <span class="tw-text-[#FCBE46] tw-font-bold tw-text-[14px] group-hover:tw-scale-110 tw-transition-all">
                     {{ item.probability }}%
                   </span>
                 </div>
 
                 <!-- 时间 -->
                 <span
-                  class="tw-px-4 tw-py-1 tw-text-white/70 tw-rounded-md tw-bg-[#2d2211]/40 tw-border tw-border-[#3a3120]/50">
+                  class="tw-px-4 tw-py-1 tw-text-[14px] tw-text-white tw-rounded-md">
                   {{ item.openTime }}
                 </span>
               </div>
@@ -543,8 +538,7 @@ const getSegmentOffset = (index) => {
 </template>
 <style scoped lang="scss">
 .boxshadowBtn {
-  background: linear-gradient(93deg, #FFC43C 7.24%, #E36C0A 98.65%);
-  box-shadow: 0px 4px 13.4px 0px rgba(225, 128, 36, 0.49);
+  background: url('@/assets/images/login/yellow_btn.png') no-repeat;
 }
 
 .animate-bounce {
@@ -567,11 +561,30 @@ const getSegmentOffset = (index) => {
 
 }
 
+.logo-bg2 {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.logo-bg4 {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
 
 /* 进度圆环 */
 .progress-circle {
   transition: stroke-dashoffset 0.5s ease;
   filter: drop-shadow(0 0 3px rgba(88, 94, 249, 0.7));
+}
+.short-name {
+  background-color: #343A3E;
+  padding: 0 32px;
+  height: 30px;
+  border-radius: 15px;
+  font-size: 14px;
+  color: #fff;
 }
 
 
@@ -844,5 +857,17 @@ const getSegmentOffset = (index) => {
   .el-icon {
     color: currentColor;
   }
+}
+.record-title {
+  background: url('@/assets/images/upgrade/upgrade_record.png') no-repeat;
+  background-size: 86% 100%;
+  background-position: 50% 50%;
+  height: 54px;
+  overflow: hidden;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
 }
 </style>
