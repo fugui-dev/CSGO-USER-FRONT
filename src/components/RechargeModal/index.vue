@@ -565,6 +565,7 @@ defineExpose({
 
 <style scoped lang="scss">
 .recharge-wrapper {
+  transform: scale(0.9);
   height: 730px;
   background: url("@/assets/images/recharge/bg.webp") no-repeat;
   background-size: 100% 100%;
@@ -671,6 +672,7 @@ defineExpose({
       .pay-channel-select {
         margin-top: 12px;
         .pay-channel-item {
+          text-align: center;
           width: 503px;
           height: 40px;
           line-height: 40px;
@@ -776,6 +778,7 @@ defineExpose({
         color: #f14848;
       }
       .create-qrcode {
+        text-align: center;
         margin-top: 16px;
         width: 302px;
         height: 81px;
