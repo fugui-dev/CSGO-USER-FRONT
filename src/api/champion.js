@@ -12,7 +12,7 @@ export const getMatchInfoApi = (data) => {
 // 获取助威配置列表
 export const getStageCheerConfigListApi = () => {
     return request({
-        url: "/admin/match/stage/cheer/list",
+        url: "/api/match/cheer/config/list",
         method: "get"
     })
 }
