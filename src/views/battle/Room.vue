@@ -87,10 +87,11 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
         
         const currentRound = data.data.currentRound
         fightResult.value = data.data.fightResult
+        
         // 有对战结果说明2种情况：（1）游戏开始（2）对战进行中，有人进入观战，此时currentRound有值
         if (Array.isArray(fightResult.value) && fightResult.value.length > 0) {
           reCalcBoxList()
-          if (!currentRound) {
+          if (currentRound === null || currentRound === undefined) {
             // 非房主，游戏现在开始
             const userId = store.userInfo.userId;
             if (userId !== data.data.fight.userId) {
@@ -99,16 +100,26 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
           }
         }
         
-        if (!currentRound) return
+        // 如果currentRound为null或undefined，说明房间还在等待中，回合数应该为1
+        if (currentRound === null || currentRound === undefined) {
+          store.setCurrRound(1)
+          return
+        }
+        
+        // 如果currentRound < 0，表示对战已结束
         if (currentRound < 0) {
           store.setCurrRound(data.data.fight.roundNumber)
           // 对战已结束
           disconnect()
           return
-        } else {
-          // 对战进行中（有人进入观战）
-          store.setCurrRound(1)
-          store.setCurrRound(currentRound)
+        }
+        
+        // 如果currentRound有值且 >= 0，使用服务器返回的回合数（这是正确的房间回合数）
+        // 这样可以确保从其他房间返回时，显示的是当前房间的实际回合数
+        store.setCurrRound(currentRound)
+        
+        // 如果房间正在进行中，启动游戏逻辑
+        if (data.data.fight.status === 1 && currentRound > 0) {
           nextTick(() => {
             handleStartGame()
           })
@@ -224,10 +235,31 @@ const startAnimation = () => {
 // 开始游戏
 const handleStartGame = () => {
   console.log('开始游戏: ' + store.currRound)
+  
+  // 如果是游戏刚开始（第1回合），也需要保存回合数到后端
+  // 确保用户重新进入时能获取到正确的回合数
+  // 后端有保护机制，相同或更小的回合数不会覆盖，所以可以安全调用
+  // 注意：这个逻辑主要用于处理游戏刚开始时的情况（通过WebSocket消息或倒计时结束触发）
+  // 如果是通过 ownerCall 进入的回合，已经在 ownerCall 中保存了，这里不会重复保存（因为第1回合只在刚开始时调用）
+  if (roomData.value.status === 1 && roomData.value.id && store.currRound === 1) {
+    const fightId = roomData.value.id
+    saveFightBoutApi({
+      fightId: fightId,
+      boutNum: 1
+    }).catch(err => {
+      console.error('保存第1回合数失败:', err)
+      // 即使失败也不影响游戏进行
+    })
+  }
+  
   startAnimation()
 }
 
 onBeforeMount(() => {
+  // 进入房间时，先重置回合数为1，避免显示上一个房间的回合数
+  store.setCurrRound(1)
+  store.clearCurrRoundFlag()
+  
   const model = Number(route.query.model)
   // 模式1：创建房间后进入 模式2：进入等待中或进行中的房间 模式3：进入已结束的房间
   if (model === 1 || model === 2) {
@@ -247,6 +279,11 @@ onMounted(() => {
 onUnmounted(() => {
   musica.pause()
   musica.currentTime = 0
+  // 离开房间时，重置回合数和回合标志，避免影响下一个房间
+  store.setCurrRound(1)
+  store.clearCurrRoundFlag()
+  // 断开WebSocket连接
+  disconnect()
 })
 
 const handleRoundEnd = () => {
@@ -273,38 +310,54 @@ const handleRoundEnd = () => {
 const ownerCall = () => {
   const fightId = route.params.id;
   let currRound = store.currRound
-  // 存储当前回合数据
-  saveFightBoutApi({
-    fightId: fightId,
-    boutNum: currRound
-  }).then(res => {
-    if (res.code === 200) {
-      if (currRound < roomData.value.roundNumber) {
-        store.clearCurrRoundFlag()
-        store.setCurrRound(++currRound)
+  
+  // 判断是否是最后一回合
+  const isLastRound = currRound >= roomData.value.roundNumber
+  
+  if (!isLastRound) {
+    // 不是最后一回合，进入下一回合
+    // 清除回合标志
+    store.clearCurrRoundFlag()
+    // 更新到下一回合
+    const nextRound = ++currRound
+    store.setCurrRound(nextRound)
+    
+    // 在回合开始时，立即调用接口保存新回合数到后端
+    // 这样即使有用户离开后重新进入，也能获取到最新的回合数
+    // 注意：最后一回合开始时也会在这里保存
+    saveFightBoutApi({
+      fightId: fightId,
+      boutNum: nextRound
+    }).then(res => {
+      if (res.code === 200) {
         handleStartGame()
-      } else {
-        // 结束游戏
-        endFightApi({ fightId }).then(res => {
-          if (res.code === 200) {
-            roomData.value = res.data.fight
-            fightBoxVOList.value = res.data.fightBoxVOList
-            winnerIds.value = res.data.winnerIds
-            fightResult.value = res.data.fightResult
-            store.setCurrRound(1)
-            // 更新为结束状态
-            roomData.value.status = 2
-            if (Array.isArray(fightResult.value) && fightResult.value.length > 0) {
-              reCalcBoxList()
-            }
-            // 更新用户信息（因为对战结束可能会有奖励或结算）
-            fetchUserInfo()
-            disconnect()
-          }
-        })
       }
-    }
-  })
+    }).catch(err => {
+      console.error('保存回合数失败:', err)
+      // 即使接口调用失败，也继续游戏
+      handleStartGame()
+    })
+  } else {
+    // 最后一回合结束，结束游戏
+    // 注意：最后一回合开始时已经在上面保存了回合数，所以这里直接结束即可
+    endFightApi({ fightId }).then(res => {
+      if (res.code === 200) {
+        roomData.value = res.data.fight
+        fightBoxVOList.value = res.data.fightBoxVOList
+        winnerIds.value = res.data.winnerIds
+        fightResult.value = res.data.fightResult
+        store.setCurrRound(1)
+        // 更新为结束状态
+        roomData.value.status = 2
+        if (Array.isArray(fightResult.value) && fightResult.value.length > 0) {
+          reCalcBoxList()
+        }
+        // 更新用户信息（因为对战结束可能会有奖励或结算）
+        fetchUserInfo()
+        disconnect()
+      }
+    })
+  }
 }
 
 // 普通调用
