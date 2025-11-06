@@ -142,9 +142,44 @@ const handleBoxImg02Load = () => {
   checkImagesLoaded();
 };
 
-// 检查两张图片是否都已加载完成
+// 初始化时检查图片状态
+const initImageState = () => {
+  const hasImg01 = boxData.value?.boxImg01 && boxData.value.boxImg01.trim() !== '';
+  const hasImg02 = boxData.value?.boxImg02 && boxData.value.boxImg02.trim() !== '';
+  
+  // 如果图片不存在，直接标记为已加载，避免一直等待
+  if (!hasImg01) {
+    boxImg01Loaded.value = true;
+  }
+  if (!hasImg02) {
+    boxImg02Loaded.value = true;
+  }
+  
+  checkImagesLoaded();
+};
+
+// 检查图片是否已加载完成（支持一个或两个图片）
 const checkImagesLoaded = () => {
-  if (boxImg01Loaded.value && boxImg02Loaded.value) {
+  const hasImg01 = boxData.value?.boxImg01 && boxData.value.boxImg01.trim() !== '';
+  const hasImg02 = boxData.value?.boxImg02 && boxData.value.boxImg02.trim() !== '';
+  
+  let canShow = false;
+  
+  if (hasImg01 && hasImg02) {
+    // 两个图片都存在，等待两个都加载完成
+    canShow = boxImg01Loaded.value && boxImg02Loaded.value;
+  } else if (hasImg01) {
+    // 只有 boxImg01，等待它加载完成
+    canShow = boxImg01Loaded.value;
+  } else if (hasImg02) {
+    // 只有 boxImg02，等待它加载完成
+    canShow = boxImg02Loaded.value;
+  } else {
+    // 两个都不存在，直接显示（避免一直等待）
+    canShow = true;
+  }
+  
+  if (canShow && !imagesLoaded.value) {
     imagesLoaded.value = true;
 
     // 图片加载完成后，先执行掉落动画
@@ -278,6 +313,8 @@ onMounted(() => {
   window.addEventListener("resize", checkDevice);
   // 刷新页面时也重置动画状态
   resetAnimationState();
+  // 初始化图片状态
+  initImageState();
 });
 const moreData = ref({});
 const handleMore = (item) => {
@@ -327,7 +364,25 @@ const resetAnimationState = () => {
   showDropAnimation.value = false;
   showInitAnimation.value = false;
   showFloatAnimation.value = false;
+  // 重新初始化图片状态
+  initImageState();
 };
+
+// 监听 boxData 变化，重新初始化图片状态
+watch(
+  () => boxData.value,
+  () => {
+    if (boxData.value) {
+      // 重置加载状态
+      boxImg01Loaded.value = false;
+      boxImg02Loaded.value = false;
+      imagesLoaded.value = false;
+      // 重新初始化
+      initImageState();
+    }
+  },
+  { immediate: true, deep: true }
+);
 </script>
 <template>
   <Layout>
@@ -373,7 +428,24 @@ const resetAnimationState = () => {
         </div>
       </div>
       <div class="content">
-        <img :src="boxData.boxImg02" class="box-img" />
+        <div class="box-img-wrapper">
+          <!-- 显示 boxImg01 作为背景 -->
+          <img 
+            v-if="boxData.boxImg01 && boxData.boxImg01.trim() !== ''" 
+            :src="boxData.boxImg01" 
+            class="box-img box-img-01" 
+            @load="handleBoxImg01Load"
+            @error="$event.target.style.display = 'none'"
+          />
+          <!-- 显示 boxImg02 叠加在上面 -->
+          <img 
+            v-if="boxData.boxImg02 && boxData.boxImg02.trim() !== ''" 
+            :src="boxData.boxImg02" 
+            :class="['box-img', boxData.boxImg01 && boxData.boxImg01.trim() !== '' ? 'box-img-02' : 'box-img-single']" 
+            @load="handleBoxImg02Load"
+            @error="$event.target.style.display = 'none'"
+          />
+        </div>
         <div class="box-name">
           {{ boxData.boxName ? boxData.boxName : "箱子名称" }}
         </div>
@@ -554,10 +626,37 @@ const resetAnimationState = () => {
     display: flex;
     flex-direction: column;
     align-items: center;
+    .box-img-wrapper {
+      position: relative;
+      width: 354px;
+      height: 219px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     .box-img {
       display: block;
       width: 354px;
       height: 219px;
+      object-fit: contain;
+    }
+    .box-img-01 {
+      position: relative;
+      z-index: 1;
+    }
+    .box-img-02 {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      height: auto;
+      max-width: 80%;
+      z-index: 2;
+    }
+    .box-img-single {
+      position: relative;
+      z-index: 1;
     }
     .box-name {
       margin-top: -17px;

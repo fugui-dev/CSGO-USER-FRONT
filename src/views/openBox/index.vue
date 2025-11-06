@@ -125,13 +125,38 @@ const isLoading = ref(false)
 const imagesLoaded = ref(false)
 const boxImg01Loaded = ref(false)
 const boxImg02Loaded = ref(false)
+const boxImg01Error = ref(false) // 标记 boxImg01 是否加载失败
+const boxImg01Exists = ref(true) // 标记 boxImg01 是否存在
 const showDropAnimation = ref(false)
 const showInitAnimation = ref(false)
 const showFloatAnimation = ref(false)
 const music = new Audio(init)
+
+// 检查 boxImg01 是否存在
+const checkBoxImg01Exists = () => {
+  if (!boxData.value?.boxImg01 || boxData.value.boxImg01.trim() === '') {
+    boxImg01Exists.value = false
+    boxImg01Loaded.value = true // 标记为已处理，不阻塞动画
+    // 如果 boxImg01 不存在，立即检查 boxImg02 是否需要加载
+    if (!boxData.value?.boxImg02 || boxData.value.boxImg02.trim() === '') {
+      // boxImg02 也不存在，直接显示
+      boxImg02Loaded.value = true
+    }
+    checkImagesLoaded()
+  }
+}
+
 // 图片加载处理函数
 const handleBoxImg01Load = () => {
   boxImg01Loaded.value = true
+  boxImg01Error.value = false
+  checkImagesLoaded()
+}
+
+// 图片加载失败处理函数
+const handleBoxImg01Error = () => {
+  boxImg01Error.value = true
+  boxImg01Loaded.value = true // 标记为已处理，不阻塞动画
   checkImagesLoaded()
 }
 
@@ -140,9 +165,31 @@ const handleBoxImg02Load = () => {
   checkImagesLoaded()
 }
 
-// 检查两张图片是否都已加载完成
+// 检查图片是否已加载完成（优先显示 boxImg01，如果不存在则显示 boxImg02）
 const checkImagesLoaded = () => {
-  if (boxImg01Loaded.value && boxImg02Loaded.value) {
+  // 如果 boxImg01 存在，等待 boxImg01 加载完成
+  // 如果 boxImg01 不存在或加载失败，等待 boxImg02 加载完成
+  const shouldWaitForImg01 = boxImg01Exists.value && !boxImg01Error.value
+  const shouldWaitForImg02 = boxData.value?.boxImg02 && boxData.value.boxImg02.trim() !== ''
+  
+  let canShow = false
+  
+  if (shouldWaitForImg01) {
+    // 需要等待 boxImg01 加载
+    canShow = boxImg01Loaded.value
+    // 如果 boxImg02 也存在，也等待它加载（用于叠加效果）
+    if (shouldWaitForImg02) {
+      canShow = canShow && boxImg02Loaded.value
+    }
+  } else if (shouldWaitForImg02) {
+    // boxImg01 不存在或失败，只等待 boxImg02
+    canShow = boxImg02Loaded.value
+  } else {
+    // 两个都不存在，直接显示（避免一直等待）
+    canShow = true
+  }
+  
+  if (canShow && !imagesLoaded.value) {
     imagesLoaded.value = true
 
     // 图片加载完成后，先执行掉落动画
@@ -272,7 +319,8 @@ onMounted(() => {
   window.addEventListener('resize', checkDevice)
   // 刷新页面时也重置动画状态
   resetAnimationState()
-
+  // 检查 boxImg01 是否存在
+  checkBoxImg01Exists()
 })
 const moreData = ref({})
 const handleMore = (item) => {
@@ -313,14 +361,35 @@ watch(() => boxId, () => {
   resetAnimationState()
 })
 
+// 监听 boxData 变化，检查 boxImg01 是否存在
+watch(() => boxData.value?.boxImg01, (newVal) => {
+  if (!newVal || newVal.trim() === '') {
+    boxImg01Exists.value = false
+    boxImg01Loaded.value = true // 标记为已处理，不阻塞动画
+    // 如果 boxImg01 不存在，检查是否需要等待 boxImg02
+    if (!boxData.value?.boxImg02 || boxData.value.boxImg02.trim() === '') {
+      boxImg02Loaded.value = true // boxImg02 也不存在，直接标记为已加载
+    }
+    checkImagesLoaded()
+  } else {
+    boxImg01Exists.value = true
+    boxImg01Error.value = false
+    boxImg01Loaded.value = false // 重置加载状态
+  }
+}, { immediate: true })
+
 // 重置动画状态的函数
 const resetAnimationState = () => {
   imagesLoaded.value = false
   boxImg01Loaded.value = false
   boxImg02Loaded.value = false
+  boxImg01Error.value = false
+  boxImg01Exists.value = true
   showDropAnimation.value = false
   showInitAnimation.value = false
   showFloatAnimation.value = false
+  // 检查 boxImg01 是否存在
+  checkBoxImg01Exists()
 }
 
 </script>
@@ -430,11 +499,21 @@ const resetAnimationState = () => {
                   'initAnimation': showInitAnimation,
                   'dropAnimation': showDropAnimation
                 }">
-                <img :src="boxData.boxImg01" alt="" @load="handleBoxImg01Load"
+                <!-- 优先显示 boxImg01，如果存在且没有错误 -->
+                <img v-if="boxImg01Exists && !boxImg01Error && boxData.boxImg01" 
+                  :src="boxData.boxImg01" 
+                  alt="" 
+                  @load="handleBoxImg01Load" 
+                  @error="handleBoxImg01Error"
                   :class="['tw-w-full tw-h-auto tw-min-h-[9.75rem] md:tw-min-h-[23.75rem] tw-object-contain tw-drop-shadow-[0_0_8px_rgba(255,122,33,0.4)]', { 'shake': isShake }]"
                   :style="{ visibility: boxImg01Loaded ? 'visible' : 'hidden' }" />
-                <img :src="boxData.boxImg02" alt="" @load="handleBoxImg02Load"
-                  class="tw-absolute tw-inset-0 tw-m-auto tw-max-w-[80%] tw-drop-shadow-[0_0_8px_rgba(255,122,33,0.4)]"
+                <!-- boxImg02：如果 boxImg01 存在，则叠加显示；如果 boxImg01 不存在，则单独显示 -->
+                <img v-if="boxData.boxImg02 && boxData.boxImg02.trim() !== ''" 
+                  :src="boxData.boxImg02" 
+                  alt="" 
+                  @load="handleBoxImg02Load" 
+                  @error="$event.target.style.display = 'none'"
+                  :class="['tw-drop-shadow-[0_0_8px_rgba(255,122,33,0.4)]', boxImg01Exists && !boxImg01Error && boxData.boxImg01 ? 'tw-absolute tw-inset-0 tw-m-auto tw-max-w-[80%]' : 'tw-w-full tw-h-auto tw-min-h-[9.75rem] md:tw-min-h-[23.75rem] tw-object-contain']"
                   :style="{ visibility: boxImg02Loaded ? 'visible' : 'hidden' }" />
               </div>
               <span class="tw-text-[#FFF5F5] tw-text-xl tw-font-bold">{{ boxData.boxName ? boxData.boxName : '箱子名称'

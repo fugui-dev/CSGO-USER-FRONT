@@ -29,7 +29,11 @@ export default defineConfig({
         entryFileNames: "assets/[name]-[hash].js",
       },
     },
-    manifest: true
+    manifest: true,
+    // 使用 esbuild 压缩（默认，更快，无需额外依赖）
+    minify: 'esbuild',
+    // 启用 chunk 大小警告限制
+    chunkSizeWarningLimit: 1000,
   },
   server: {
     host: "0.0.0.0", // 允许外部访问

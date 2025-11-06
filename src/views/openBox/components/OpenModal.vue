@@ -576,9 +576,9 @@ defineExpose({
                                     <div class="tw-w-[12.5rem] tw-flex tw-justify-center  box-animation  tw-relative "
                                         v-for="(item, index) in box" :key="index"
                                         :style="{ animationDelay: `${(index * 0.3) + 0.3}s` }">
-                                        <img :src="props.boxData.boxImg01" class=" tw-w-[75%] tw-h-auto" alt="" />
+                                        <img v-if="props.boxData.boxImg01" :src="props.boxData.boxImg01" class=" tw-w-[75%] tw-h-auto" alt="" @error="$event.target.style.display = 'none'" />
                                         <img :src="props.boxData.boxImg02"
-                                            class="tw-w-1/2 tw-absolute tw-top-1/2 tw-translate-y-[-50%]" alt="" />
+                                            :class="props.boxData.boxImg01 ? 'tw-w-1/2 tw-absolute tw-top-1/2 tw-translate-y-[-50%]' : 'tw-w-[75%] tw-h-auto'" alt="" />
                                     </div>
                                 </div>
                                 <div

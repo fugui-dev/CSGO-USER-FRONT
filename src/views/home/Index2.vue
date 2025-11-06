@@ -84,8 +84,8 @@ const handleClick = (id) => {
             <div class="box">
               <div class="box-item" v-for="(j, jindex) in i.boxList" :key="jindex" @click="handleClick(j.boxId)">
                 <div class="bx">
-                  <img :src="j.boxImg01" class="bj" alt="">
-                  <img :src="j.boxImg02" class="wq" alt="">
+                  <img v-if="j.boxImg01" :src="j.boxImg01" class="bj" alt="" @error="$event.target.style.display = 'none'" />
+                  <img v-if="j.boxImg02" :src="j.boxImg02" class="wq" alt="" @error="$event.target.style.display = 'none'" />
                 </div>
                 <div class="mz">
                   <div class="name">{{ j.boxName }}</div>

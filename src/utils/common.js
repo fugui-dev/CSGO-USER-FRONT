@@ -58,3 +58,23 @@ export const timestampToHMS = (timestamp) => {
 export const isNotEmptyObj = (obj) => {
   return obj && Object.prototype.toString.call(obj) === '[object Object]' && Object.keys(obj).length > 0
 }
+
+// 图片预加载工具
+export const preloadImage = (url) => {
+  return new Promise((resolve, reject) => {
+    if (!url) {
+      reject(new Error('图片URL为空'))
+      return
+    }
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = reject
+    img.src = url
+  })
+}
+
+// 批量预加载图片
+export const preloadImages = async (urls) => {
+  const promises = urls.filter(url => url).map(url => preloadImage(url))
+  return Promise.allSettled(promises)
+}

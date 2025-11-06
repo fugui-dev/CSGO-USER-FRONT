@@ -23,7 +23,7 @@
         :key="'box' + item.boxId"
         @click="handleClickBoxItem(item)"
       >
-        <img :src="item.boxImg02" class="box-img" alt="" />
+        <img v-if="item.boxImg02 || item.boxImg01" :src="item.boxImg02 || item.boxImg01" class="box-img" alt="" @error="$event.target.style.display = 'none'" />
         <div class="box-desc">
           <div class="box-name" :title="item.boxName">{{ item.boxName }}</div>
           <img class="coin" src="@/assets/images/battle/coin.png" alt="" />
