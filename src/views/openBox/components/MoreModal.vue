@@ -62,9 +62,8 @@ const levelImg = computed(() => {
     return props.moreData?.ornamentLevelImg
 })
 const price = computed(() => {
-    if (props.moreData?.usePrice)
-        return props.moreData?.usePrice
-    return props.moreData?.ornamentsPrice
+    // 优先使用boxPrice，如果没有则使用usePrice，最后使用ornamentsPrice
+    return props.moreData?.boxPrice || props.moreData?.usePrice || props.moreData?.ornamentsPrice || 0
 })
 const shortName = computed(() => {
     if (props.moreData?.shortName)

@@ -89,18 +89,24 @@ const oddsResult = computed(() => {
     return ''
 })
 
+const displayPrice = computed(() => {
+    // 优先使用boxPrice，如果没有则使用usePrice，最后使用ornamentsPrice
+    return props.boxData.boxPrice || props.boxData.usePrice || props.boxData.ornamentsPrice || null
+})
+
 const levelId = computed(() => {
-    if (props.isSmelt && props.boxData.usePrice) {
-        if (props.boxData.usePrice <= 100) {
+    const price = displayPrice.value
+    if (props.isSmelt && price) {
+        if (price <= 100) {
             return 3
         }
-        if (props.boxData.usePrice <= 500) {
+        if (price <= 500) {
             return 4
         }
-        if (props.boxData.usePrice <= 1000) {
+        if (price <= 1000) {
             return 2
         }
-        if (props.boxData.usePrice > 1000) {
+        if (price > 1000) {
             return 1
         }
     }
@@ -108,8 +114,8 @@ const levelId = computed(() => {
 
 })
 const price = computed(() => {
-    if (!props.isLuck &&props.boxData.ornamentsPrice) {
-        return props.boxData.ornamentsPrice
+    if (!props.isLuck && displayPrice.value) {
+        return displayPrice.value
     }
     return null
 })

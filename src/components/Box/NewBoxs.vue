@@ -111,18 +111,24 @@ const oddsResult = computed(() => {
     if (props.boxData.oddsResult) return props.boxData.oddsResult + '%'
     return ''
 })
+const displayPrice = computed(() => {
+    // 优先使用boxPrice，如果没有则使用usePrice，最后使用ornamentsPrice
+    return props.boxData.boxPrice || props.boxData.usePrice || props.boxData.ornamentsPrice || null
+})
+
 const displayLevelImg = computed(() => {
-    if (props.isSmelt && props.boxData.usePrice){
-      if (props.boxData.usePrice<=100){
+    const price = displayPrice.value
+    if (props.isSmelt && price){
+      if (price<=100){
         return level[4].background
       }
-      if (props.boxData.usePrice<=500){
+      if (price<=500){
         return level[3].background
       }
-      if (props.boxData.usePrice<=1000){
+      if (price<=1000){
         return level[2].background
       }
-      if (props.boxData.usePrice>1000){
+      if (price>1000){
         return level[1].background
       }
     }
@@ -163,9 +169,9 @@ const boxUser = computed(() => {
                     <span class="tw-line-clamp-1">{{ displayShortName }}</span>
                 </div>
             </div>
-          <div v-if="showPrice" class="tw-text-sm" style="position: absolute;right: .6rem;top: .2rem;display: flex;align-items: center;font-size: .8rem">
+          <div v-if="showPrice && displayPrice" class="tw-text-sm" style="position: absolute;right: .6rem;top: .2rem;display: flex;align-items: center;font-size: .8rem">
             <img :src="Money" class="tw-h-[12px] md:tw-h-[1.2rem]" />
-            <div>{{props.boxData.ornamentsPrice}}</div>
+            <div>{{displayPrice}}</div>
           </div>
         </div>
         <div v-if="boxUser.id" :class="{ 'tw-opacity-100': hover, 'tw-rounded': props.isRound }"
