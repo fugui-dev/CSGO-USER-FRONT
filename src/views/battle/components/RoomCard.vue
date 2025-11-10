@@ -8,6 +8,9 @@ import {joinRoomApi, prepareFightApi, beginFightApi, ownerEndFightApi} from "@/a
 import FightBox from "./FightBox.vue"
 import FightResult from "./FightResult.vue"
 import { useUserInfo } from "@/composables/useUesrInfo.js"
+import coin from '@/assets/images/upgrade/coin.png'
+import win from '@/assets/images/battle/win.png'
+import lose from '@/assets/images/battle/lose.png'
 
 const props = defineProps({
   cardData: {
@@ -186,20 +189,22 @@ defineExpose({
       }">
       <!-- 头部 -->
       <div class="card-header">
-        <div class="tw-flex tw-justify-between tw-items-center tw-mb-6 tw-relative tw-z-10">
+        <div class="tw-flex tw-justify-between tw-items-center tw-mb-0 tw-relative tw-z-10">
           <div v-if="cardData.status === 0" class="waiting-player">等待玩家加入</div>
           <div class="user-info" v-else>
             <div class="user">
-              <img class="avatar" :src="cardData.avatar" alt="">
+              <div class="avatar-wrap">
+                <img class="avatar" :src="cardData.avatar" alt="">
+              </div>
               <span class="nick-name">{{ cardData.nickName }}</span>
             </div>
             <div class="price">
-              <img :src="requireImg('/coin1.png',false)" alt="">
+              <img :src="coin" alt="">
               <div v-if="roomStatus === 2">{{ cardData.awardTotalPrices }}</div>
               <div v-else>{{ totalPrice }}</div>
             </div>
           </div>
-          <div class="tw-absolute tw-h-[2px] tw-bg-gradient-to-r tw-from-transparent tw-via-[#FF7A21] tw-to-transparent tw-w-full tw-bottom-[-12px]"></div>
+          <!-- <div class="tw-absolute tw-h-[2px] tw-bg-gradient-to-r tw-from-transparent tw-via-[#FF7A21] tw-to-transparent tw-w-full tw-bottom-[-12px]"></div> -->
         </div>
       </div>
       <!-- 中间 -->
@@ -227,8 +232,12 @@ defineExpose({
       </div>
       <div class="card-main" v-if="roomStatus === 2">
         <div class="player-status">
-          <p v-if="winnerIds && winnerIds.includes(cardData.playerId)" class="winner">胜利</p>
-          <p v-else class="loser">失败</p>
+          <div v-if="winnerIds && winnerIds.includes(cardData.playerId)" class="winner">
+            <img :src="win" alt="" class="tw-w-[60%]">
+          </div>
+          <div v-else class="loser">
+            <img :src="lose" alt="" class="tw-w-[60%]">
+          </div>
         </div>
       </div>
     </div>
@@ -247,11 +256,12 @@ defineExpose({
 
 <style scoped lang="scss">
 .fight-card-container {
-  background-image: var(--bg-card);
-  background-color: rgba(50, 50, 50, 0.66);
-  background-position: bottom;
+  background-image: url('@/assets/images/battle/card-bg.png');
+  background-color: #1E2C30;
+  background-position: 50% 50%;
   background-repeat: repeat-x;
-  border-radius: 12px;
+  background-size: cover;
+  border-radius: 6px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -263,23 +273,32 @@ defineExpose({
   .user-info {
     width: 100%;
     display: flex;
-    justify-content: center;
     align-items: center;
+    border-bottom: 1px solid #2a3538;
+    margin: 0 12px;
+    padding-bottom: 4px;
     .user {
       display: flex;
       justify-content: center;
       align-items: center;
+      .avatar-wrap {
+        width: 44px;
+        height: 44px;
+        background: url('@/assets/images/battle/avatar-bg2.png') no-repeat;
+        background-size: 100% 100%;
+        background-position: 50% 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 6px;
+      }
       img.avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 6px;
-        border: 1px solid #f2a814;
-        margin-right: 8px;
+        width: 32px;
+        height: 32px;
+        border-radius: 16px;
       }
       .nick-name {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        font-size: 24px;
-        margin-top: 12px;
+        font-size: 14px;
         white-space: nowrap; /* 防止文本换行 */
         overflow: hidden; /* 隐藏溢出的内容 */
         text-overflow: ellipsis; /* 显示省略符号来代表被修剪的文本 */
@@ -291,21 +310,27 @@ defineExpose({
   .price {
     display: flex;
     align-items: center;
-    font-size: 13px;
-    color: #271201;
-    background-color: rgba($color: #ec851e, $alpha: 0.4);
-    padding: 0 6px;
-    border-radius: 4px;
-    margin-left: 8px;
-    margin-top: 16px;
+    font-size: 12px;
+    color: #ffffff;
+    background-color: #1A272B;
+    height: 16px;
+    line-height: 16px;
+    border-radius: 8px;
+    margin-left: 28px;
+    padding: 0 10px 0 22px;
+    position: relative;
     img {
-      width: 8px;
-      margin-right: 4px;
+      position: absolute;
+      width: 16px;
+      left: 0;
     }
   }
   .waiting-player {
+    font-size: 14px;
     width: 100%;
     height: 48px;
+    border-bottom: 1px solid #2a3538;
+    margin: 0 12px;
     line-height: 48px;
     text-align: center;
   }
@@ -317,16 +342,17 @@ defineExpose({
     justify-content: center;
     align-items: center;
     p {
-      color: #f83904;
+      color: #C99227;
+      font-size: 14px;
     }
     .join-btn {
-      width: 70px;
+      width: 80px;
       height: 32px;
       line-height: 32px;
-      border-radius: 6px;
       font-size: 14px;
       text-align: center;
-      background: linear-gradient(90.15deg, #b43304 -4.19%, #FF952A 99.85%);
+      background: url('@/assets/images/login/yellow_btn.png') no-repeat;
+      background-size: cover;
     }
     .end-btn {
       width: 70px;
@@ -347,11 +373,17 @@ defineExpose({
     .winner {
       font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
       font-size: 28px;
+      display: flex;
+      justify-content: center;
+      margin-top: -10%;
     }
     .loser {
       font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
       color: #eee;
       font-size: 28px;
+      display: flex;
+      justify-content: center;
+      margin-top: -10%;
     }
   }
 }

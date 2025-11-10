@@ -239,7 +239,7 @@ getDetails()
       <div class="roll_room">
         <div class="roll-room-top">
           <div class="back tw-text-[#B1C5C7] tw-text-[14px]" @click="goto('/roll')">
-          <img :src="back" alt="" class="tw-w-[2rem] tw-h-[1.8rem]">
+            <img :src="back" alt="" class="tw-w-[2rem] tw-h-[1.8rem]">
             返回
           </div>
           <div class="nav">

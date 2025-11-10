@@ -12,6 +12,8 @@ import CountdownModal from './components/CountdownModal.vue'
 import useWebSocketHeartbeat from '../../composables/useWebSocketHeartbeat'
 import bgm from "@/assets/music/main_battle.mp3";
 import { useUserInfo } from "@/composables/useUesrInfo.js";
+import back from '@/assets/images/upgrade/back.png'
+import coin from '@/assets/images/upgrade/coin.png'
 
 const modelMap = {
   '0': '欧皇模式',
@@ -40,9 +42,10 @@ const musica = new Audio(bgm)
 const playerIds = computed(() => roomData.value.seatList.map(item => item.playerId))
 const statusColor = computed(() => {
   switch (roomData.value.status) {
-    case 0: return '#FF952A';
-    case 1: return '#FF3C2A';
-    case 2: return '#602bCF';
+    case 0: return '#C99227';
+    // case 1: return '#FF3C2A';
+    case 1: return '#602bCF';
+    case 2: return '#994141';
     default: return '#AAAAAA';
   }
 })
@@ -386,48 +389,48 @@ const ownerCall = () => {
       <div class="bg bg-room"></div>
       <div class="room-container">
         <CountdownModal ref="CountdownModalRef" :localSet="localSet" @close="handleStartGame" />
+        <!-- 顶部 -->
+        <div class="room-banner-top">
+          <div class="back tw-text-[#B1C5C7] tw-text-[14px]" @click="handleClickBack">
+            <img :src="back" alt="" class="tw-w-[2rem] tw-h-[1.8rem]">
+            返回
+          </div>
+          <span class="tw-flex tw-items-center tw-gap-1.5 tw-cursor-pointer" @click="changeSet('music')">
+            <span
+              class="tw-relative tw-inline-flex tw-h-[0.875rem] md:tw-h-5 tw-w-[1.5rem] md:tw-w-11 tw-items-center tw-rounded-full tw-bg-[#202020] tw-transition-colors tw-overflow-hidden">
+              <div class="tw-absolute tw-inset-0 tw-rounded-full tw-pointer-events-none" style=" 
+              mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+              -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+              -webkit-mask-composite: xor; mask-composite: exclude;">
+              </div>
+
+              <span
+                class="tw-relative tw-inline-block tw-h-[0.625rem] md:tw-h-4 tw-w-[0.625rem] md:tw-w-4 tw-transform tw-rounded-full tw-transition-transform"
+                :class="{
+                  'tw-translate-x-[1.125rem] md:tw-translate-x-[1.625rem]': !localSet.music,
+                  'tw-translate-x-[0.25rem] md:tw-translate-x-[0.375rem]': localSet.music,
+                  'tw-bg-[#187178]': localSet.music
+                }" :style="!localSet.music ? 'background: #EFEFEF;' : ''">
+              </span>
+            </span>
+            <span class="tw-text-xs md:tw-text-sm">关闭音效</span>
+          </span>
+        </div>
         <!-- banner -->
         <div class="room-banner">
-          <!-- 顶部 -->
-          <div class="room-banner-top">
-            <div class="back" @click="handleClickBack">
-              <img :src="requireImg('/v2/roll/room/back.png')" alt="">
-              返回
-            </div>
-            <div class="room-status" :style="{ backgroundColor: statusColor }">{{ statusMap[roomData.status] }}</div>
-            <span class="tw-flex tw-items-center tw-gap-1.5 tw-cursor-pointer" @click="changeSet('music')">
-              <span
-                class="tw-relative tw-inline-flex tw-h-[0.875rem] md:tw-h-6 tw-w-[1.75rem] md:tw-w-11 tw-items-center tw-rounded-full tw-bg-[#300000] tw-transition-colors tw-overflow-hidden">
-                <div class="tw-absolute tw-inset-0 tw-rounded-full tw-pointer-events-none" style="border: 2px solid transparent; background: #FFB8B8 ; 
-                mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-                -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-                -webkit-mask-composite: xor; mask-composite: exclude;">
-                </div>
-
-                <span
-                  class="tw-relative tw-inline-block tw-h-[0.625rem] md:tw-h-4 tw-w-[0.625rem] md:tw-w-4 tw-transform tw-rounded-full tw-transition-transform"
-                  :class="{
-                    'tw-translate-x-[1.125rem] md:tw-translate-x-[1.625rem]': !localSet.music,
-                    'tw-translate-x-[0.25rem] md:tw-translate-x-[0.375rem]': localSet.music,
-                    'tw-bg-white tw-border-2 tw-border-[#FFB8B8]': localSet.music
-                  }" :style="!localSet.music ? 'background: #FFB8B8;' : ''">
-                </span>
-              </span>
-              <span class="tw-text-xs md:tw-text-sm">关闭音效</span>
-            </span>
-          </div>
           <div class="room-banner-center">
+            <div class="room-status" :style="{ backgroundColor: statusColor }">{{ statusMap[roomData.status] }}</div>
             <div class="round-num">
-              <div class="round-num-bg rotate1"></div>
+              <!-- <div class="round-num-bg rotate1"></div>
               <div class="round-num-bg rotate2"></div>
-              <div class="round-num-bg rotate3"></div>
-              <h3 v-if="roomData.status === 2">{{ roomData.roundNumber }} / {{ roomData.roundNumber }}</h3>
-              <h3 v-else>{{ currRound }} / {{ roomData.roundNumber }}</h3>
+              <div class="round-num-bg rotate3"></div> -->
+              <h3 v-if="roomData.status === 2"><span class="tw-text-[#C99227]">{{ roomData.roundNumber }}</span>/{{ roomData.roundNumber }}</h3>
+              <h3 v-else><span class="tw-text-[#C99227]">{{ currRound }}</span>/{{ roomData.roundNumber }}</h3>
             </div>
             <div class="room-model">{{ modelMap[roomData.model] }}</div>
             <!-- 总金额 -->
             <div class="total-price">
-              <img :src="requireImg('/coin1.png',false)" alt="">
+              <img :src="coin" alt="">
               <div>{{ roomData.boxPriceTotal }}</div>
             </div>
           </div>
@@ -438,8 +441,8 @@ const ownerCall = () => {
                 <img v-if="item.boxImg02" :src="item.boxImg02" class="wq" alt="" @error="$event.target.style.display = 'none'" />
               </div>
               <div class="btn">
+                <img :src="coin" alt="">
                 <div>{{item.boxPrice}}</div>
-                <img :src="requireImg('/coin1.png',false)" alt="">
               </div>
             </div>
           </div>
@@ -474,7 +477,8 @@ const ownerCall = () => {
 @use "@/style" as *;
 
 .bg-room {
-  background-image: var(--bg-room);
+  background: url('@/assets/images/roll/bg.png') no-repeat;
+  background-size: 100% 100%;
 }
 .room-container {
   width: 96%;
@@ -484,14 +488,10 @@ const ownerCall = () => {
   margin: 6px auto;
   box-sizing: border-box;
   position: relative;
-  .room-banner {
-    background-color: rgba($color: #111, $alpha: 0.86);
-    border-radius: 12px;
-    padding: 0 12px 12px 12px;
-  }
   .room-banner-top {
     display: flex;
     justify-content: space-between;
+    padding: 10px 0;
     .back {
       display: flex;
       height: fit-content;
@@ -511,23 +511,31 @@ const ownerCall = () => {
 
       }
     }
-    .room-status {
-      height: 32px;
-      line-height: 32px;
-      font-size: 14px;
-      padding: 0 28px;
-      border-bottom-left-radius: 12px;
-      border-bottom-right-radius: 12px;
-      margin: 0 auto;
-    }
+  }
+  .room-banner {
+    background-color: rgba($color: #111, $alpha: 0.86);
+    border-radius: 12px;
   }
   .room-banner-center {
     display: flex;
     justify-content: center;
     align-items: center;
+    background: url('@/assets/images/battle/card-header.png') no-repeat;
+    background-size: 100% 100%;
+    padding: 0 12px;
+    height: 60px;
+    position: relative;
+
+    .room-status {
+      position: absolute;
+      left: 0;
+      height: 26px;
+      line-height: 26px;
+      font-size: 13px;
+      padding: 0 14px;
+    }
     .round-num {
       width: 80px;
-      height: 92px;
       margin-right: 16px;
       position: relative;
       h3 {
@@ -538,9 +546,12 @@ const ownerCall = () => {
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        font-size: 30px;
+        font-family: "Jijiati";
+        font-size: 20px;
         color: #fff;
+      }
+      span {
+        font-family: "Jijiati";
       }
       .round-num-bg {
         width: 80px;
@@ -562,22 +573,20 @@ const ownerCall = () => {
       }
     }
     .room-model {
-      font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-      font-size: 36px;
+      font-family: "Jijiati";
+      font-size: 20px;
       color: #eee;
     }
     .total-price {
       display: flex;
       align-items: center;
-      font-size: 14px;
-      color: #271201;
-      background-color: rgba($color: #ec851e, $alpha: 0.4);
-      padding: 2px 8px;
-      border-radius: 6px;
+      font-size: 12px;
+      color: #ffffff;
+      padding: 2px 12px;
       margin-left: 8px;
-      margin-top: 16px;
+      margin-top: 4px;
       img {
-        width: 10px;
+        width: 16px;
         margin-right: 5px;
       }
     }
@@ -587,6 +596,11 @@ const ownerCall = () => {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+    padding: 12px;
+    background: url('@/assets/images/battle/card-main.png') no-repeat;
+    background-size: cover;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
     .box-item {
       display: flex;
       flex-direction: column;
@@ -594,8 +608,9 @@ const ownerCall = () => {
       justify-content: center;
       cursor: pointer;
       transition: .5s;
-      width: 92px;
+      width: 68px;
       box-sizing: border-box;
+      margin: 6px;
 
       &:hover {
         .bx {
@@ -635,17 +650,20 @@ const ownerCall = () => {
       }
 
       .btn {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-        width: 80%;
-        line-height: 1.5em;
-        font-size: 13px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: row-reverse;
+        margin-top: 2px;
+        width: 100%;
+        font-size: 12px;
+        color: #ffffff;
+        background-color: #1A272B;
+        height: 16px;
+        line-height: 16px;
+        border-radius: 8px;
+        padding: 0 10px 0 20px;
+        position: relative;
         img{
-          width: 10px;
-          margin-right: 3px;
+          position: absolute;
+          width: 14px;
+          left: 0;
         }
       }
     }

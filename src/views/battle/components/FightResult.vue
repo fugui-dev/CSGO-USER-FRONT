@@ -2,11 +2,12 @@
 import {onUnmounted, nextTick, ref, watch, onMounted} from "vue";
 import {requireImg} from "@/utils/common";
 import {useStore} from "@/store";
-import end1 from '@/assets/boxroom/end1.svg'
-import end2 from '@/assets/boxroom/end2.svg'
-import end3 from '@/assets/boxroom/end3.svg'
-import end4 from '@/assets/boxroom/end4.svg'
-import end5 from '@/assets/boxroom/end5.svg'
+import end1 from '@/assets/images/open/golden-bg.png'
+import end2 from '@/assets/images/open/red-bg.png'
+import end3 from '@/assets/images/open/purple-bg.png'
+import end4 from '@/assets/images/open/blue-bg.png'
+import end5 from '@/assets/images/open/green-bg.png'
+import coin from '@/assets/images/upgrade/coin.png'
 
 const props = defineProps({
   result: {
@@ -123,9 +124,9 @@ defineExpose({
       <img :src="leavel[item.ornamentsLevelId].img" alt="" class="img-bg">
       <div class="btn">
         <div>{{item.ornamentsPrice}}</div>
-        <img :src="requireImg('/coin1.png',false)" alt="">
+        <img :src="coin" alt="">
       </div>
-      <img :src="item.imageUrl" alt="">
+      <img :src="item.imageUrl" alt="" class="knife">
       <h5>{{ item.ornamentName }}</h5>
     </div>
   </div>
@@ -139,6 +140,7 @@ defineExpose({
   padding: 10px 0;
   .fight-result-item {
     width: 32%;
+    height: 17vh;
     position: relative;
     margin-bottom: 3px;
     display: flex;
@@ -146,12 +148,12 @@ defineExpose({
     align-items: center;
     border-radius: 8px;
     img {
-      width: 86%;
+      width: 100%;
     }
     .img-bg {
       position: absolute;
-      width: 100%;
-      height: 100%;
+      width: 108%;
+      height: 108%;
       z-index: -1;
     }
     h5 {
@@ -171,9 +173,12 @@ defineExpose({
       margin-right: 8px;
       margin-top: 4px;
       img{
-        width: 10px;
+        width: 13px;
         margin-right: 3px;
       }
+    }
+    .knife {
+      height: 60%;
     }
   }
 }
