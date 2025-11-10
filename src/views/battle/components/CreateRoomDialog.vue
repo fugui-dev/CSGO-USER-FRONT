@@ -7,6 +7,7 @@ import {ElMessage} from "element-plus"
 import {useStore} from "@/store"
 import { useRouter } from 'vue-router'
 import { useUserInfo } from "@/composables/useUesrInfo.js"
+import coin from '@/assets/images/upgrade/coin.png'
 
 const props = defineProps({
     boxData: {
@@ -115,31 +116,32 @@ defineExpose({
 <template>
     <div>
         <van-popup class="dialog no-scrollbar" v-model:show="visible" :close-on-click-overlay="false" teleport="body">
-            <div class="tw-w-[90vw] md:tw-w-[72.5rem] tw-rounded-xl tw-border tw-border-[#FF7A21]/40 tw-bg-[#1A1A1A]/90 tw-backdrop-blur-md tw-shadow-[0_0_25px_rgba(255,122,33,0.3)] tw-mt-5 tw-py-4 tw-px-2 md:tw-p-5 tw-pb-3 tw-relative tw-z-10 tw-animate-modalAppear">
+            <div class="tw-w-[92vw] md:tw-w-[72.5rem] tw-mt-1 tw-py-4 tw-px-2 md:tw-p-5 tw-pb-3 tw-relative tw-z-10 tw-animate-modalAppear">
                 <!-- 背景光效 - 移到卡片内部 -->
-                <div class="tw-absolute tw-w-full tw-h-full tw-top-0 tw-left-0 tw-overflow-hidden tw-opacity-30 tw-rounded-xl tw-z-0">
+                <!-- <div class="tw-absolute tw-w-full tw-h-full tw-top-0 tw-left-0 tw-overflow-hidden tw-opacity-30 tw-rounded-xl tw-z-0">
                     <div class="tw-absolute tw-w-[40%] tw-h-[30%] tw-bg-[#FF7A21] tw-blur-[6.25rem] tw-rounded-full tw-top-[-10%] tw-left-[-10%] tw-animate-pulse"></div>
                     <div class="tw-absolute tw-w-[30%] tw-h-[20%] tw-bg-[#FF7A21] tw-blur-[5rem] tw-rounded-full tw-bottom-[-5%] tw-right-[10%] tw-animate-pulse" style="animation-delay: 1s;"></div>
-                </div>
+                </div> -->
                 
                 <!-- 边框光效 -->
-                <div class="tw-absolute tw-inset-0 tw-rounded-xl tw-border tw-border-[#FF7A21]/20 tw-z-[1] tw-animate-borderPulse"></div>
+                <!-- <div class="tw-absolute tw-inset-0 tw-rounded-xl tw-border tw-border-[#FF7A21]/20 tw-z-[1] tw-animate-borderPulse"></div> -->
                 
                 <!-- 标题栏 -->
-                <div class="tw-flex tw-justify-between  tw-pb-4 tw-items-center tw-mb-6 tw-relative tw-z-10">
-                    <div class="tw-absolute tw-h-[2px] tw-bg-gradient-to-r tw-from-transparent tw-via-[#FF7A21] tw-to-transparent tw-w-full tw-bottom-[-12px]"></div>
-                    <h3 class="tw-text-xl tw-font-bold tw-text-transparent tw-bg-clip-text tw-bg-gradient-to-r tw-from-[#FF7A21] tw-to-[#FFB74D] tw-animate-titleSlide">创建房间</h3>
+                <div class="tw-flex tw-justify-between tw-pb-4 tw-items-center tw-mb-2 tw-relative tw-z-10">
+                    <div></div>
+                    <!-- <h3 class="tw-text-xl tw-font-bold tw-text-transparent tw-bg-clip-text tw-bg-gradient-to-r tw-from-[#FF7A21] tw-to-[#FFB74D] tw-animate-titleSlide">创建房间</h3> -->
+                    <h3 class="tw-text-[16px] tw-font-bold tw-text-transparent tw-text-white">创建房间</h3>
                     
                     <!-- 关闭按钮 -->
                     <button 
-                        class="tw-w-8 tw-h-8 tw-rounded-full tw-bg-[#2A2A2A] tw-flex tw-items-center tw-justify-center hover:tw-bg-[#FF7A21] tw-transition-all tw-duration-300 tw-border tw-border-[#FF7A21]/40 tw-shadow-[0_0_15px_rgba(255,122,33,0.2)] group"
+                        class="tw-w-8 tw-h-8 tw-mr-[10px] tw-flex tw-items-center tw-justify-center tw-transition-all tw-duration-300 group"
                         @click="closeModal"
                     >
                         <svg 
                             xmlns="http://www.w3.org/2000/svg" 
                             viewBox="0 0 24 24" 
                             fill="none"
-                            :style="{ stroke: 'var(--icon-color, #FF7A21)' }"
+                            :style="{ stroke: '#FFFFFF' }"
                             stroke-width="2.5" 
                             stroke-linecap="round" 
                             stroke-linejoin="round" 
@@ -152,7 +154,7 @@ defineExpose({
                 </div>
                 
                 <!-- 内容区域 -->
-                <div class="tw-overflow-hidden tw-overflow-y-auto tw-max-h-[50vh] no-scrollbar tw-transition-all tw-duration-500 tw-ease-in-out tw-my-4 tw-relative tw-z-10">
+                <div class="tw-overflow-hidden tw-transition-all tw-duration-500 tw-ease-in-out tw-my-4 tw-relative tw-z-10">
                     <div>
                         <div class="room-line">
                           <h3>房间模式</h3>
@@ -169,11 +171,11 @@ defineExpose({
                             </div>
                           </div>
                         </div>
-                        <div class="tw-flex tw-justify-between  tw-pb-4 tw-items-center tw-mb-6 tw-relative tw-z-10">
+                        <div class="tw-flex tw-justify-between  tw-pb-4 tw-items-center tw-mb-0 tw-relative tw-z-10">
                           <h3 class="box-choose-title">选择宝箱</h3>
-                          <div class="tw-absolute tw-h-[2px] tw-bg-gradient-to-r tw-from-transparent tw-via-[#FF7A21] tw-to-transparent tw-w-full tw-bottom-[-12px]"></div>
+                          <!-- <div class="tw-absolute tw-h-[2px] tw-bg-gradient-to-r tw-from-transparent tw-via-[#FF7A21] tw-to-transparent tw-w-full tw-bottom-[-12px]"></div> -->
                         </div>
-                        <div class="box-choose-list tw-flex tw-flex-wrap tw-justify-center  tw-gap-y-2 tw-gap-x-2 md:tw-gap-6 tw-animate-gridAppear">
+                        <div class="box-choose-list unchoosed tw-overflow-y-auto tw-max-h-[40vh] no-scrollbar tw-flex tw-flex-wrap tw-justify-center  tw-gap-y-2 tw-gap-x-2 md:tw-gap-3 tw-animate-gridAppear">
                           <div class="box-item" @click="handleClickBoxItem(item)" v-for="item in boxData" :key="item.boxId">
                             <div class="bx">
                               <img :src="item.boxImg01" class="bj" alt="">
@@ -183,8 +185,8 @@ defineExpose({
                               <div class="name">{{ item.boxName }}</div>
                             </div>
                             <div class="btn">
+                              <img :src="coin" alt="">
                               <div>{{item.price}}</div>
-                              <img :src="requireImg('/coin1.png',false)" alt="">
                             </div>
                           </div>
                         </div>
@@ -194,12 +196,12 @@ defineExpose({
                 <div class="footer">
                   <div class="choosed-tips">已选中：{{ choosedBoxData.length }} / 15，总价值：
                     <span class="total-price">
-                      <img :src="requireImg('/coin1.png',false)" alt="">
+                      <img :src="coin" alt="">
                       <span>{{ totalPrice }}</span>
                     </span>
                   </div>
                   <!-- 选中宝箱列表 -->
-                  <div class="box-choose-list tw-flex tw-flex-wrap tw-justify-center  tw-gap-y-2 tw-gap-x-2 md:tw-gap-6 tw-animate-gridAppear">
+                  <div class="box-choose-list tw-flex no-scrollbar tw-flex-wrap tw-justify-center  tw-gap-y-2 tw-gap-x-2 md:tw-gap-6 tw-animate-gridAppear">
                     <div class="box-item" @click.capture="handleClickChoosedBoxItem(item, index)" v-for="(item, index) in choosedBoxData" :key="item.boxId">
                       <div class="bx">
                         <img :src="item.boxImg01" class="bj" alt="">
@@ -209,8 +211,8 @@ defineExpose({
                         <div class="name">{{ item.boxName }}</div>
                       </div>
                       <div class="btn">
+                        <img :src="coin" alt="">
                         <div>{{item.price}}</div>
-                        <img :src="requireImg('/coin1.png',false)" alt="">
                       </div>
                     </div>
                   </div>
@@ -224,7 +226,9 @@ defineExpose({
 
 <style scoped lang="scss">
 .dialog {
-    background: none;
+    background: url('@/assets/images/battle/create-room-bg.png') no-repeat;
+    background-size: 100% 100%;
+    padding: 0 20px;
 }
 .room-line {
   display: flex;
@@ -233,28 +237,36 @@ defineExpose({
   padding: 8px 0;
   h3 {
     margin-right: 12px;
+    font-size: 13px;
   }
   .room-line-options {
     display: flex;
     div {
       margin-right: 12px;
-      background-color: #444;
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-size: 14px;
+      background-color: transparent;
+      border: 1px solid #4B96B0;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      padding: 0 13px;
+      border-radius: 12px;
+      font-size: 12px;
       cursor: pointer;
     }
   }
 }
 .active-btn {
-  background-color: #fb8c1e !important;
+  background: linear-gradient(to right, #175e64, #508594);
+  border: none !important;
 }
 .box-choose-title {
   color: #ffffff;
   margin: 8px 0 0 0;
+  font-size: 13px;
 }
 .box-choose-list {
   color: #ffffff;
+  padding-bottom: 16px;
   .box-item {
     display: flex;
     flex-direction: column;
@@ -300,17 +312,14 @@ defineExpose({
     .mz {
       display: flex;
       align-items: center;
-      padding: 0;
-      background: linear-gradient(90.47deg, rgba(202, 62, 39, 0) 0.31%, rgba(234, 87, 42, 0.44) 51.13%, rgba(201, 61, 38, 0) 100.98%);
-      width: 100%;
-      font-size: 13px;
-      height: 21px;
-      line-height: 21px;
+      padding: 0 10px;
+      background-color: #1A272B;
+      font-size: 12px;
+      height: 22px;
+      border-radius: 11px;
+      line-height: 22px;
       margin: 0 0 4px 0;
       justify-content: center;
-      .name {
-        font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
-      }
     }
 
 
@@ -322,13 +331,16 @@ defineExpose({
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-direction: row-reverse;
       img{
-        width: 10px;
+        width: 16px;
         margin-right: 3px;
       }
     }
   }
+}
+.unchoosed {
+  background-color: rgba($color: #192b2f, $alpha: 0.55);
+  border-radius: 12px;
 }
 .footer {
   position: sticky;
@@ -339,28 +351,28 @@ defineExpose({
   .box-choose-list {
     max-height: 160px;
     overflow: auto;
+    padding-bottom: 4px;
   }
   .choosed-tips {
     display: flex;
     justify-content: center;
     color: #ffffff;
-    padding: 12px 0 24px 0;
+    padding: 4px 0 12px 0;
   }
   .total-price {
     display: flex;
     align-items: center;
     img {
-      width: 10px;
-      height: 14px;
+      width: 18px;
       margin-right: 3px;
     }
   }
   .create-room-btn {
-    background-color: #fb8c1e;
-    border-radius: 6px;
-    width: 100px;
+    background: url('@/assets/images/login/yellow_btn.png') no-repeat;
+    width: 170px;
     text-align: center;
-    color: #ffffff;
+    color: #072523;
+    font-size: 14px;
     padding: 6px 0;
     margin-top: 12px;
     cursor: pointer;

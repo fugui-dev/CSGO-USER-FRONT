@@ -2,11 +2,12 @@
 import {onMounted, nextTick, ref, computed, inject, watch} from "vue";
 import {requireImg} from "@/utils/common";
 import { useStore } from "@/store";
-import end1 from '@/assets/boxroom/end1.svg'
-import end2 from '@/assets/boxroom/end2.svg'
-import end3 from '@/assets/boxroom/end3.svg'
-import end4 from '@/assets/boxroom/end4.svg'
-import end5 from '@/assets/boxroom/end5.svg'
+import end1 from '@/assets/images/open/golden-bg.png'
+import end2 from '@/assets/images/open/red-bg.png'
+import end3 from '@/assets/images/open/purple-bg.png'
+import end4 from '@/assets/images/open/blue-bg.png'
+import end5 from '@/assets/images/open/green-bg.png'
+import coin from '@/assets/images/upgrade/coin.png'
 import lightLeft from '@/assets/boxroom/dengLeft.png'
 import lightRight from '@/assets/boxroom/dengRight.png'
 import m1 from "@/assets/music/m1.wav";
@@ -204,7 +205,7 @@ defineExpose({
           <img :src="leavel[item.ornamentsLevelId].img" alt="" class="img-bg">
           <div class="btn">
             <div>{{item.usePrice}}</div>
-            <img :src="requireImg('/coin1.png',false)" alt="">
+            <img :src="coin" alt="">
           </div>
           <img :src="item.imageUrl" alt="">
           <h5>{{ item.name }}</h5>
@@ -286,7 +287,7 @@ defineExpose({
       margin-right: 6px;
       margin-top: 2px;
       img{
-        width: 10px;
+        width: 13px;
         margin-right: 3px;
       }
     }
