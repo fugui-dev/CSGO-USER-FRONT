@@ -10,6 +10,7 @@
       <span class="price-text">{{ boxData.creditsPrice }}</span>
     </div>
     <div v-else-if="!isHave" class="rate">{{ boxData.oddsResult }}%</div>
+    <div v-else-if="isHave && boxData.oddsResult" class="rate">{{ boxData.oddsResult }}%</div>
     <div v-else class="empty"></div>
     <img class="image" :src="boxData.imageUrl" alt="" />
     <div class="name">

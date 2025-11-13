@@ -3,11 +3,13 @@ import { ref } from "vue";
 import {requireImg} from "@/utils/common";
 import Decimal from 'decimal.js'
 import {createRoomApi} from "@/api/battle"
+import {getBoxInfo} from "@/views/openBox/server/api"
 import {ElMessage} from "element-plus"
 import {useStore} from "@/store"
 import { useRouter } from 'vue-router'
 import { useUserInfo } from "@/composables/useUesrInfo.js"
 import coin from '@/assets/images/upgrade/coin.png'
+import boxItem from '@/views/openBox/components/boxItem.vue'
 
 const props = defineProps({
     boxData: {
@@ -15,6 +17,7 @@ const props = defineProps({
         required: true
     }
 });
+const emit = defineEmits(['close'])
 const store = useStore()
 const router = useRouter()
 const { fetchUserInfo } = useUserInfo()
@@ -28,6 +31,11 @@ const form = ref({
   playerNumber: 0,
   boxIdAndNumber: {}
 })
+// 饰品列表弹窗相关
+const ornamentListVisible = ref(false)
+const ornamentListData = ref([])
+const currentBoxName = ref('')
+const loadingOrnaments = ref(false)
 
 const initData = () => {
   activeModel.value = 0
@@ -107,6 +115,47 @@ const handleClickCreateRoom = () => {
   })
 }
 
+// 点击查看饰品列表
+const handleViewOrnaments = async (item, event) => {
+  // 阻止事件冒泡，避免触发选择宝箱
+  event.stopPropagation()
+  event.preventDefault()
+  
+  loadingOrnaments.value = true
+  currentBoxName.value = item.boxName
+  ornamentListVisible.value = true
+  
+  try {
+    const res = await getBoxInfo({boxId: item.boxId})
+    if (res.code === 200 && res.data && res.data.boxOrnamentsList && res.data.boxOrnamentsList.length) {
+      // 数据格式映射：将API返回的数据格式转换为boxItem组件需要的格式
+      ornamentListData.value = res.data.boxOrnamentsList.map(ornament => ({
+        ...ornament,
+        ornamentName: ornament.name || '',
+        ornamentLevelImg: ornament.levelImg || '',
+        exteriorName: ornament.exteriorName || '',
+        // oddsResult 已经是百分比格式（如 0.01 表示 0.01%），需要格式化为字符串
+        oddsResult: ornament.oddsResult ? parseFloat(ornament.oddsResult).toFixed(2) : null
+      }))
+    } else {
+      ElMessage.warning('暂无饰品数据')
+      ornamentListVisible.value = false
+    }
+  } catch (error) {
+    ElMessage.error('获取饰品列表失败')
+    ornamentListVisible.value = false
+  } finally {
+    loadingOrnaments.value = false
+  }
+}
+
+// 关闭饰品列表弹窗
+const closeOrnamentList = () => {
+  ornamentListVisible.value = false
+  ornamentListData.value = []
+  currentBoxName.value = ''
+}
+
 defineExpose({
     open,
     close
@@ -177,6 +226,13 @@ defineExpose({
                         </div>
                         <div class="box-choose-list unchoosed tw-overflow-y-auto tw-max-h-[40vh] no-scrollbar tw-flex tw-flex-wrap tw-justify-center  tw-gap-y-2 tw-gap-x-2 md:tw-gap-3 tw-animate-gridAppear">
                           <div class="box-item" @click="handleClickBoxItem(item)" v-for="item in boxData" :key="item.boxId">
+                            <!-- 查看饰品图标 -->
+                            <div class="ornament-icon" @click="handleViewOrnaments(item, $event)" title="查看饰品列表">
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-eye">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                              </svg>
+                            </div>
                             <div class="bx">
                               <img :src="item.boxImg01" class="bj" alt="">
                               <img :src="item.boxImg02" class="wq" alt="">
@@ -218,6 +274,53 @@ defineExpose({
                   </div>
                   <!-- 按钮 -->
                   <div class="create-room-btn" @click="handleClickCreateRoom">创建房间</div>
+                </div>
+            </div>
+        </van-popup>
+        
+        <!-- 饰品列表弹窗 -->
+        <van-popup class="ornament-dialog no-scrollbar" v-model:show="ornamentListVisible" :close-on-click-overlay="false" teleport="body">
+            <div class="lucky-modal-wrapper tw-w-[90vw] md:tw-w-[72.5rem] tw-rounded-xl tw-bg-[#1A1A1A]/90 tw-backdrop-blur-md tw-mt-5 tw-py-4 tw-px-2 md:tw-p-5 tw-pb-3 tw-relative tw-z-10 tw-animate-modalAppear">
+                <!-- 开箱背景 -->
+                <div class="lucky-modal-bg"></div>
+                
+                <!-- 标题栏 -->
+                <div class="tw-flex tw-justify-between tw-pb-4 tw-items-center tw-mb-6 tw-relative tw-z-10">
+                    <h3 class="tw-text-xl tw-font-bold tw-text-white tw-animate-titleSlide">{{ currentBoxName }} - 饰品列表</h3>
+                    
+                    <!-- 关闭按钮 -->
+                    <button 
+                        class="tw-w-8 tw-h-8 tw-rounded-full tw-bg-[#2A2A2A] tw-flex tw-items-center tw-justify-center hover:tw-bg-[#3A3A3A] tw-transition-all tw-duration-300 group"
+                        @click="closeOrnamentList"
+                    >
+                        <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            viewBox="0 0 24 24" 
+                            fill="none"
+                            :style="{ stroke: 'var(--icon-color, #ffffff)' }"
+                            stroke-width="2.5" 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            class="tw-w-4 tw-h-4 tw-transition-colors tw-duration-300 tw-animate-spin-once"
+                        >
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- 内容区域 -->
+                <div class="tw-overflow-hidden tw-overflow-y-auto tw-max-h-[50vh] no-scrollbar tw-transition-all tw-duration-500 tw-ease-in-out tw-my-4 tw-relative tw-z-10" v-loading="loadingOrnaments">
+                    <div class="box-item tw-flex tw-flex-wrap tw-justify-center tw-gap-y-2 tw-gap-x-2 md:tw-gap-6 tw-animate-gridAppear">
+                        <boxItem 
+                            v-for="(item, index) in ornamentListData" 
+                            :key="index"
+                            :box-data="item"
+                            :isHave="true"
+                            :style="{ animationDelay: index * 0.1 + 's' }"
+                            class="tw-animate-itemAppear"
+                        />
+                    </div>
                 </div>
             </div>
         </van-popup>
@@ -267,7 +370,7 @@ defineExpose({
 .box-choose-list {
   color: #ffffff;
   padding-bottom: 16px;
-  .box-item {
+    .box-item {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -276,6 +379,7 @@ defineExpose({
     transition: .5s;
     width: 100px;
     box-sizing: border-box;
+    position: relative;
 
     &:hover {
       .bx {
@@ -284,6 +388,41 @@ defineExpose({
           //使用动画 循环播放 up_and_down
           animation: up_and_down 2s infinite;
         }
+      }
+      .ornament-icon {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+    }
+    
+    // 查看饰品图标
+    .ornament-icon {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 24px;
+      height: 24px;
+      background: rgba(255, 122, 33, 0.8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      opacity: 0.7;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(4px);
+      
+      &:hover {
+        background: rgba(255, 122, 33, 1);
+        transform: scale(1.15);
+      }
+      
+      .icon-eye {
+        width: 14px;
+        height: 14px;
+        color: #ffffff;
+        stroke: #ffffff;
       }
     }
 
@@ -522,6 +661,18 @@ defineExpose({
     .box-item {
       width: 20%;
       font-size: 12px;
+      
+      .ornament-icon {
+        width: 20px;
+        height: 20px;
+        top: 1px;
+        right: 1px;
+        
+        .icon-eye {
+          width: 12px;
+          height: 12px;
+        }
+      }
     }
   }
   .box-choose-title {
@@ -534,5 +685,40 @@ defineExpose({
 }
 .group:hover {
     --icon-color: white;
+}
+
+// 饰品列表弹窗样式（完全复制欧皇记录的样式）
+.ornament-dialog {
+    background: none;
+}
+
+.lucky-modal-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.lucky-modal-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("@/assets/images/open/bg.webp") no-repeat center;
+    background-size: cover;
+    opacity: 0.3;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.lucky-modal-wrapper .box-item {
+    position: relative;
+    z-index: 10;
+}
+
+.lucky-modal-wrapper .group {
+    --icon-color: #ffffff;
+}
+.lucky-modal-wrapper .group:hover {
+    --icon-color: #cccccc;
 }
 </style>
