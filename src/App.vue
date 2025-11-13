@@ -2,9 +2,39 @@
 import { onMounted } from "vue";
 import { useStore } from "@/store/index.js";
 import { useUserInfo } from "@/composables/useUesrInfo.js";
+import { preloadImages, requireImg } from "@/utils/common.js";
+import shopBg from '@/assets/images/shop/bg.webp';
+import openBoxBg from '@/assets/images/open/bg.webp';
+import upgradeBg from '@/assets/images/upgrade/bg.png';
+import userBg from '@/assets/images/roll/bg.png';
+import userStorageBg from '@/assets/images/user/storage_bg.png';
+import smeltBg from '@/assets/images/smelt/bg.png';
 
 const store = useStore();
 const { fetchUserInfo } = useUserInfo();
+
+// 预加载常用背景图片
+const preloadBackgroundImages = () => {
+  const backgroundUrls = [
+    shopBg,
+    openBoxBg,
+    upgradeBg,
+    userBg,
+    userStorageBg,
+    smeltBg,
+    requireImg("/v2/bg/openBg.png", false),
+    requireImg("/v2/bg/up-bg.png", false),
+  ].filter(url => url); // 过滤空值
+  
+  // 异步预加载，不阻塞页面渲染
+  if (backgroundUrls.length > 0) {
+    preloadImages(backgroundUrls).then(() => {
+      console.log('背景图片预加载完成');
+    }).catch(err => {
+      console.warn('部分背景图片预加载失败:', err);
+    });
+  }
+};
 
 onMounted(async () => {
   try {
@@ -18,6 +48,9 @@ onMounted(async () => {
   } catch (e) {
     console.log(e)
   }
+  
+  // 预加载背景图片
+  preloadBackgroundImages();
   
   useStore().setIsPc(document.body.clientWidth > 1024)
   window.addEventListener('resize', () => {

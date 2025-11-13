@@ -17,6 +17,10 @@ const loading = ref(false)
 const total = ref({
   totalOrnamentNumber: 0,
   totalOrnamentPrice: 0,
+  boxOrnamentNumber: 0,
+  boxOrnamentPrice: 0,
+  shopOrnamentNumber: 0,
+  shopOrnamentPrice: 0,
 })
 const form = ref({
   page: 1,
@@ -26,13 +30,13 @@ const form = ref({
 })
 const tabs = ref([
   {
-    label: '我的库存',
+    label: '宝箱饰品库存',
     value: 0
   },
-  // {
-  //   label: '领取中',
-  //   value: 1
-  // },
+  {
+    label: '商城饰品库存',
+    value: 1
+  },
   {
     label: '领取记录',
     value: 2
@@ -40,7 +44,7 @@ const tabs = ref([
 ])
 
 const onChoose = (item) => {
-  if (active.value === 0) {
+  if (active.value === 0 || active.value === 1) {
     item.choosed = !item.choosed;
   }
 }
@@ -53,15 +57,23 @@ const getTotal = () => {
 const getList = () => {
   loading.value = true
   let api
+  let requestForm = { ...form.value }
+  
   if (active.value === 0) {
+    // 宝箱饰品库存：source = 1,2,3,4,5,7,8,9,21 (非商城来源)
     api = getPackSackApi
+    requestForm.sourceList = [1, 2, 3, 4, 5, 7, 8, 9, 21]
+  } else if (active.value === 1) {
+    // 商城饰品库存：source = 6 (商城兑换)
+    api = getPackSackApi
+    requestForm.sourceList = [6]
   } else if (active.value === 2) {
     api = getExtractPackSackApi
   } else {
     loading.value = false
     return
   }
-  api(form.value).then(res => {
+  api(requestForm).then(res => {
     console.log('API响应原始数据：', res)
     console.log('API响应data字段：', res.data)
     if (res.data && res.data.length) {
@@ -177,6 +189,8 @@ const handleDecompose = useThrottleFn(handleDecomposeOriginal, 3000);
 
 watch(() => active.value, () => {
   form.value.page = 1
+  list.value = []
+  isComplete.value = false
   getTotal()
   getList()
 })
@@ -216,7 +230,26 @@ const totalDecomposePrice = computed(() => {
             <span v-if="form.orderByFie == 1">价格升序<img :src="arrow" alt="" style="transform: rotateZ(180deg);width: 8px;display: inline-block;margin-left: 4px;"/></span>
             <span v-else>价格降序<img :src="arrow" alt="" style="width: 8px;display: inline-block;margin-left: 4px;"/></span>
           </div>
-          <div>库存饰品总数：{{ total.totalOrnamentNumber }}</div>
+          <div>宝箱饰品总数：{{ total.boxOrnamentNumber || 0 }}</div>
+        </div>
+        <div style="display: flex;align-items: center;flex-wrap: wrap;justify-content: flex-end">
+          <el-checkbox style="--el-checkbox-text-color:#fff;--el-color-primary:rgb(138, 15, 198)"
+            @change="checkBoxChange" v-model="checkAll">
+            全选
+          </el-checkbox>
+          <div class="button" @click="handleDecompose">分解饰品 <img :src="Money" class="tw-h-[10px] md:tw-h-[1rem] tw-ml-[4px] tw-mr-[2px]" /> {{
+            totalDecomposePrice }}</div>
+        </div>
+      </div>
+    </div>
+    <div v-show="active === 1" style="display:flex;flex-direction: column" class="tabs-container">
+      <div style="display:flex;font-size: .8em;justify-content: space-between">
+        <div style="display: flex;flex-wrap: wrap">
+          <div @click="changeSort" style="color: #fff;line-height: 1.5em;cursor: pointer;margin-right: 15px;display: flex;">
+            <span v-if="form.orderByFie == 1">价格升序<img :src="arrow" alt="" style="transform: rotateZ(180deg);width: 8px;display: inline-block;margin-left: 4px;"/></span>
+            <span v-else>价格降序<img :src="arrow" alt="" style="width: 8px;display: inline-block;margin-left: 4px;"/></span>
+          </div>
+          <div>商城饰品总数：{{ total.shopOrnamentNumber || 0 }}</div>
         </div>
         <div style="display: flex;align-items: center;flex-wrap: wrap;justify-content: flex-end">
           <el-checkbox style="--el-checkbox-text-color:#fff;--el-color-primary:rgb(138, 15, 198)"
@@ -226,23 +259,19 @@ const totalDecomposePrice = computed(() => {
           <div class="button" @click="handleDelivery">
             提取
           </div>
-          <div class="button" @click="goto('/smelt')" style="display: none;">熔炼饰品</div>
-          <div class="button" @click="handleDecompose">分解饰品 <img :src="Money" class="tw-h-[10px] md:tw-h-[1rem] tw-ml-[4px] tw-mr-[2px]" /> {{
-            totalDecomposePrice }}</div>
         </div>
       </div>
     </div>
-    <el-scrollbar height="600px" @scroll="onScroll" ref="scrollRef" v-loading="loading">
+    <el-scrollbar v-if="active === 0 || active === 1" height="600px" @scroll="onScroll" ref="scrollRef" v-loading="loading">
       <div class="inventory_list" ref="listRef">
-        <!--          <div class="weapon" v-for="(i,index) in list" :class="{'choose':i.choosed}"-->
-        <!--               :title="i.ornamentName"-->
-        <!--               :style="{backgroundImage:'url('+i.levelImg+')'}" :key="index" @click="onChoose(i)">-->
-        <!--            <img :src="i.imageUrl" alt="">-->
-        <!--            <div class="weapon-name ellipsis">{{ i.ornamentName|| '' }}</div>-->
-        <!--            <div class="price">{{ i.exteriorName }}</div>-->
-        <!--          </div>-->
         <NewBoxs class="wq" v-for="(i, index) in list" :class="{ 'choose': i.choosed }" :title="i.ornamentName"
           :key="index" @click="onChoose(i)" :box-data="i" show-price></NewBoxs>
+      </div>
+    </el-scrollbar>
+    <el-scrollbar v-if="active === 2" height="600px" @scroll="onScroll" ref="scrollRef" v-loading="loading">
+      <div class="inventory_list" ref="listRef">
+        <NewBoxs class="wq" v-for="(i, index) in list" :title="i.ornamentName"
+          :key="index" :box-data="i" show-price></NewBoxs>
       </div>
     </el-scrollbar>
   </div>

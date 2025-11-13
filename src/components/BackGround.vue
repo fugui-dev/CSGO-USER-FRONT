@@ -46,11 +46,15 @@ const BackgroundImg = computed(() => {
     :src="BackgroundImg"
     class="tw-absolute tw-h-[100vh] md:tw-block tw-hidden tw-w-[100vw] tw-z-[-1]"
     v-if="BackgroundImg"
+    loading="eager"
+    decoding="async"
   />
   <img
     :src="BackgroundImg"
     class="tw-absolute md:tw-block tw-hidden tw-w-[100vw] tw-z-[-1]"
     v-if="path.startsWith('/upgrade/open') || path.startsWith('/user') || path.startsWith('/smelt')"
+    loading="eager"
+    decoding="async"
   />
   <div
     class="tw-absolute tw-h-[100vh] tw-w-[100vw] tw-overflow-hidden tw-z-[-1] md:tw-hidden"
@@ -66,6 +70,8 @@ const BackgroundImg = computed(() => {
         :src="BackgroundImg"
         class="tw-w-full tw-h-full"
         v-if="BackgroundImg"
+        loading="eager"
+        decoding="async"
       />
     </div>
   </div>
