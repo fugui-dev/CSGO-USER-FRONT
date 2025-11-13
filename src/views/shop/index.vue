@@ -76,14 +76,8 @@
             </div>
           </div>
         </div>
-        <div class="right-wrapper">
-          <div class="count" v-if="store.isLogin">
-            弹药余额：{{ store.userInfo?.accountCredits }}
-          </div>
-          <div class="button tw-flex" @click="handleAmmunitionConversion">
-            <img class="icon" src="@/assets/images/shop/ammunition.png" alt="">
-            弹药转换
-          </div>
+        <div class="right-wrapper" style="display: none;">
+          <!-- 弹药余额和转换按钮已移至导航栏 -->
         </div>
       </div>
       <el-scrollbar
@@ -91,6 +85,8 @@
         @scroll="onScroll"
         ref="scrollRef"
         v-loading="loading"
+        element-loading-background="transparent"
+        style="width: 100%;"
       >
         <div class="list-wrapper" ref="listRef">
           <boxItem
@@ -298,15 +294,25 @@ const handleCommodityExchange = (item) => {
   }
   .list-wrapper {
     width: 1260px;
+    max-width: 100%;
+    margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
-    padding: 26px 152px;
-    gap: 3px 6px;
+    padding: 26px;
+    gap: 0;
     background-color: rgb(51, 56, 57, 0.28);
     border-radius: 22px;
+    box-sizing: border-box;
+    justify-content: flex-start;
+    align-items: flex-start;
   }
 }
 .confirm-tip {
   text-align: center;
+}
+
+// 隐藏 loading 背景遮罩，只显示加载图标
+:deep(.el-loading-mask) {
+  background-color: transparent !important;
 }
 </style>

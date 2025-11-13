@@ -128,10 +128,10 @@ const price = computed(() => {
                 :style="{ background: level[isOpenBox2Gift&&!isLuck ? 5 :isGold ? 1 : levelId].background }">
             </div>
             <div
-                class="tw-absolute tw-inset-0 tw-flex-col tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center">
+                class="tw-absolute tw-inset-0 tw-flex-col tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center tw-overflow-hidden">
                 <div
-                    class="tw-w-[8.4375rem] md:tw-w-[12.5rem] tw-relative tw-flex tw-flex-col tw-items-center tw-justify-center">
-                    <img :src="displayImageUrl" class="tw-w-full " />
+                    class="tw-w-[8.4375rem] md:tw-w-[12.5rem] tw-relative tw-flex tw-flex-col tw-items-center tw-justify-center tw-overflow-hidden">
+                    <img :src="displayImageUrl" class="tw-max-w-full tw-max-h-full tw-object-contain" />
                 </div>
 
             </div>

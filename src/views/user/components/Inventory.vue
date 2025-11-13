@@ -226,7 +226,7 @@ const totalDecomposePrice = computed(() => {
           <div class="button" @click="handleDelivery">
             提取
           </div>
-          <div class="button" @click="goto('/smelt')">熔炼饰品</div>
+          <div class="button" @click="goto('/smelt')" style="display: none;">熔炼饰品</div>
           <div class="button" @click="handleDecompose">分解饰品 <img :src="Money" class="tw-h-[10px] md:tw-h-[1rem] tw-ml-[4px] tw-mr-[2px]" /> {{
             totalDecomposePrice }}</div>
         </div>

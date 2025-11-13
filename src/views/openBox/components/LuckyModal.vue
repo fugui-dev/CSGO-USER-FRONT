@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from "vue";
-import LuckyBox from '@/components/Box/BagBox.vue'
+import boxItem from './boxItem.vue'
 
 const props = defineProps({
     luckyboxData: {
@@ -16,7 +16,6 @@ const open = () => {
 
 const close = () => {
     visible.value = false
-    emit('close')
 }
 
 const closeModal = () => {
@@ -31,31 +30,24 @@ defineExpose({
 <template>
     <div>
         <van-popup class="dialog no-scrollbar" v-model:show="visible" :close-on-click-overlay="false" teleport="body">
-            <div class="tw-w-[90vw] md:tw-w-[72.5rem] tw-rounded-xl tw-border tw-border-[#FF7A21]/40 tw-bg-[#1A1A1A]/90 tw-backdrop-blur-md tw-shadow-[0_0_25px_rgba(255,122,33,0.3)] tw-mt-5 tw-py-4 tw-px-2 md:tw-p-5 tw-pb-3 tw-relative tw-z-10 tw-animate-modalAppear">
-                <!-- 背景光效 - 移到卡片内部 -->
-                <div class="tw-absolute tw-w-full tw-h-full tw-top-0 tw-left-0 tw-overflow-hidden tw-opacity-30 tw-rounded-xl tw-z-0">
-                    <div class="tw-absolute tw-w-[40%] tw-h-[30%] tw-bg-[#FF7A21] tw-blur-[6.25rem] tw-rounded-full tw-top-[-10%] tw-left-[-10%] tw-animate-pulse"></div>
-                    <div class="tw-absolute tw-w-[30%] tw-h-[20%] tw-bg-[#FF7A21] tw-blur-[5rem] tw-rounded-full tw-bottom-[-5%] tw-right-[10%] tw-animate-pulse" style="animation-delay: 1s;"></div>
-                </div>
-                
-                <!-- 边框光效 -->
-                <div class="tw-absolute tw-inset-0 tw-rounded-xl tw-border tw-border-[#FF7A21]/20 tw-z-[1] tw-animate-borderPulse"></div>
+            <div class="lucky-modal-wrapper tw-w-[90vw] md:tw-w-[72.5rem] tw-rounded-xl tw-bg-[#1A1A1A]/90 tw-backdrop-blur-md tw-mt-5 tw-py-4 tw-px-2 md:tw-p-5 tw-pb-3 tw-relative tw-z-10 tw-animate-modalAppear">
+                <!-- 开箱背景 -->
+                <div class="lucky-modal-bg"></div>
                 
                 <!-- 标题栏 -->
                 <div class="tw-flex tw-justify-between  tw-pb-4 tw-items-center tw-mb-6 tw-relative tw-z-10">
-                    <div class="tw-absolute tw-h-[2px] tw-bg-gradient-to-r tw-from-transparent tw-via-[#FF7A21] tw-to-transparent tw-w-full tw-bottom-[-12px]"></div>
-                    <h3 class="tw-text-xl tw-font-bold tw-text-transparent tw-bg-clip-text tw-bg-gradient-to-r tw-from-[#FF7A21] tw-to-[#FFB74D] tw-animate-titleSlide">欧皇记录</h3>
+                    <h3 class="tw-text-xl tw-font-bold tw-text-white tw-animate-titleSlide">欧皇记录</h3>
                     
                     <!-- 关闭按钮 -->
                     <button 
-                        class="tw-w-8 tw-h-8 tw-rounded-full tw-bg-[#2A2A2A] tw-flex tw-items-center tw-justify-center hover:tw-bg-[#FF7A21] tw-transition-all tw-duration-300 tw-border tw-border-[#FF7A21]/40 tw-shadow-[0_0_15px_rgba(255,122,33,0.2)] group"
+                        class="tw-w-8 tw-h-8 tw-rounded-full tw-bg-[#2A2A2A] tw-flex tw-items-center tw-justify-center hover:tw-bg-[#3A3A3A] tw-transition-all tw-duration-300 group"
                         @click="closeModal"
                     >
                         <svg 
                             xmlns="http://www.w3.org/2000/svg" 
                             viewBox="0 0 24 24" 
                             fill="none"
-                            :style="{ stroke: 'var(--icon-color, #FF7A21)' }"
+                            :style="{ stroke: 'var(--icon-color, #ffffff)' }"
                             stroke-width="2.5" 
                             stroke-linecap="round" 
                             stroke-linejoin="round" 
@@ -69,12 +61,12 @@ defineExpose({
                 
                 <!-- 内容区域 -->
                 <div class="tw-overflow-hidden tw-overflow-y-auto tw-max-h-[50vh] no-scrollbar tw-transition-all tw-duration-500 tw-ease-in-out tw-my-4 tw-relative tw-z-10">
-                    <div class="tw-flex tw-flex-wrap tw-justify-center  tw-gap-y-2 tw-gap-x-2 md:tw-gap-6 tw-animate-gridAppear">
-                        <LuckyBox 
+                    <div class="box-item tw-flex tw-flex-wrap tw-justify-center  tw-gap-y-2 tw-gap-x-2 md:tw-gap-6 tw-animate-gridAppear">
+                        <boxItem 
                             v-for="(item, index) in luckyboxData" 
                             :key="index"
-                            :boxData="item"
-                            :isLuck="true"
+                            :box-data="item"
+                            :isHave="true"
                             :style="{ animationDelay: index * 0.1 + 's' }"
                             class="tw-animate-itemAppear"
                         />
@@ -90,6 +82,29 @@ defineExpose({
     background: none;
 }
 
+.lucky-modal-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.lucky-modal-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("@/assets/images/open/bg.webp") no-repeat center;
+    background-size: cover;
+    opacity: 0.3;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.box-item {
+    position: relative;
+    z-index: 10;
+}
+
 /* 动画 */
 @keyframes modalAppear {
     0% {
@@ -102,14 +117,6 @@ defineExpose({
     }
 }
 
-@keyframes borderPulse {
-    0%, 100% {
-        box-shadow: 0 0 15px 2px rgba(255, 122, 33, 0.2);
-    }
-    50% {
-        box-shadow: 0 0 25px 5px rgba(255, 122, 33, 0.4);
-    }
-}
 
 @keyframes titleSlide {
     0% {
@@ -155,9 +162,6 @@ defineExpose({
     animation: modalAppear 0.5s ease-out forwards;
 }
 
-.tw-animate-borderPulse {
-    animation: borderPulse 3s infinite ease-in-out;
-}
 
 .tw-animate-titleSlide {
     animation: titleSlide 0.6s ease-out forwards;
@@ -189,9 +193,9 @@ defineExpose({
 }
 
 .group {
-    --icon-color: #FF7A21;
+    --icon-color: #ffffff;
 }
 .group:hover {
-    --icon-color: white;
+    --icon-color: #cccccc;
 }
 </style>

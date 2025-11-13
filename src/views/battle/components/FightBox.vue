@@ -261,8 +261,11 @@ defineExpose({
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow: hidden;
     img {
-      width: 70%;
+      max-width: 70%;
+      max-height: 100%;
+      object-fit: contain;
     }
     .img-bg {
       position: absolute;

@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import Money from "@/assets/icons/money.svg";
+import Ammunition from "@/assets/images/shop/ammunition.png";
 const level = {
   1: {
     color: "#f2a105",
@@ -123,24 +124,33 @@ const boxUser = computed(() => {
     @mouseleave="hover = false"
     :class="{ 'tw-rounded': props.isRound }"
     style="cursor: pointer"
-    class="tw-relative tw-text-white tw-text-sm tw-font-bold tw-w-[10.625rem] tw-bg-[#383131] md:tw-w-[11.625rem] tw-overflow-hidden"
+    class="tw-relative tw-text-white tw-text-sm tw-font-bold tw-w-[16rem] tw-bg-[#383131] md:tw-w-[17rem] tw-overflow-hidden"
   >
-    <div class="tw-relative tw-w-full tw-h-[7.9375rem] tw-overflow-hidden">
+    <div class="tw-relative tw-w-full tw-h-[12.5rem] tw-overflow-hidden">
       <img
         :src="displayLevelImg"
         class="tw-w-full tw-h-full tw-absolute tw-top-0 tw-left-0"
       />
       <div
-        class="tw-absolute tw-inset-0 tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center"
+        class="tw-absolute tw-inset-0 tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center tw-overflow-hidden tw-p-2"
       >
-        <img :src="displayImageUrl" class="tw-w-[80%]" />
+        <img :src="displayImageUrl" class="tw-max-w-full tw-max-h-full tw-object-contain" />
       </div>
       <div
-        class="tw-h-full tw-w-full tw-flex tw-flex-col tw-justify-end tw-p-2"
+        class="tw-h-full tw-w-full tw-flex tw-flex-col tw-justify-end tw-p-2 tw-relative tw-z-10"
       >
-        <div class="tw-flex tw-flex-col tw-gap-px tw-text-sm">
-          <span class="tw-line-clamp-1">{{ displayExteriorName }}</span>
-          <span class="tw-line-clamp-1">{{ displayShortName }}</span>
+        <div class="tw-flex tw-flex-col tw-gap-px tw-text-sm tw-bg-black/30 tw-px-1 tw-py-0.5 tw-rounded">
+          <span 
+            class="tw-line-clamp-2 tw-text-white" 
+            v-if="props.boxData?.ornamentName" 
+            :title="props.boxData.ornamentName"
+          >
+            {{ props.boxData.ornamentName }}
+          </span>
+          <template v-else>
+            <span class="tw-line-clamp-1 tw-text-white">{{ displayExteriorName }}</span>
+            <span class="tw-line-clamp-1 tw-text-white">{{ displayShortName }}</span>
+          </template>
         </div>
       </div>
       <div
@@ -154,7 +164,7 @@ const boxUser = computed(() => {
           font-size: 0.8rem;
         "
       >
-        <img :src="Money" class="tw-h-[16px] md:tw-h-[1.5rem]" />
+        <img :src="Ammunition" class="tw-h-[16px] md:tw-h-[1.5rem]" />
         <div>{{ props.boxData.creditsPrice }}</div>
       </div>
     </div>

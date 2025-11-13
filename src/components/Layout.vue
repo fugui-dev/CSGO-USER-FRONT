@@ -114,7 +114,7 @@ const hideOld = computed(() => {
       "
     >
       <RollingShow
-        v-if="showBox"
+        v-if="false"
         :style="{ marginTop: '90px', height: `${itemHeight}px` }"
       />
       <div id="container" class="tw-flex-1">
@@ -133,7 +133,7 @@ const hideOld = computed(() => {
     <slot />
     <div v-if="!hideOld" id="container" style="flex: 1; overflow-y: auto">
       <RollingShow
-        v-if="showBox"
+        v-if="false"
         :style="{ top: isHome ? '90px' : 'inherit' }"
       />
       <slot name="item"></slot>

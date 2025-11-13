@@ -6,8 +6,8 @@
     }"
   >
     <div v-if="isShop" class="price">
-      <img src="@/assets/images/champion/game/coin.png" alt="">
-      {{ boxData.creditsPrice }}
+      <img src="@/assets/images/shop/ammunition.png" alt="">
+      <span class="price-text">{{ boxData.creditsPrice }}</span>
     </div>
     <div v-else-if="!isHave" class="rate">{{ boxData.oddsResult }}%</div>
     <div v-else class="empty"></div>
@@ -37,12 +37,24 @@ const props = defineProps({
 });
 const displayName = computed(() => {
   if (props.isShop) {
-    return props.boxData.exteriorName + '\n' + props.boxData.shortName;
+    // 优先显示 ornamentName
+    if (props.boxData?.ornamentName) {
+      return props.boxData.ornamentName;
+    }
+    // 如果没有 ornamentName，则显示 exteriorName 和 shortName
+    return (props.boxData.exteriorName || '') + (props.boxData.shortName ? '\n' + props.boxData.shortName : '');
   }
   if (props.isHave) {
-    const name = props.boxData.ornamentName;
-    const match = name.match(/(.*?)\s*\((.*?)\)$/);
-    return match?.[2] || name;
+    // 最近掉落页面：显示完整名称
+    if (props.boxData?.ornamentName) {
+      return props.boxData.ornamentName;
+    }
+    return props.boxData.exteriorName || '';
+  }
+  // 军需饰品页面：优先显示 name（完整名称），如果没有则显示 exteriorName
+  // 后端返回的是 name 字段，不是 ornamentName
+  if (props.boxData?.name) {
+    return props.boxData.name;
   }
   return props.boxData.exteriorName;
 });
@@ -60,37 +72,68 @@ const bgImage = computed(() => {
   width: 149px;
   height: 106px;
   padding: 9px 14px 15px 10px;
-  margin-right: 5px;
+  margin-right: 6px;
+  margin-bottom: 6px;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 11px;
   color: #ffffff;
   position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
   .price {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    font-size: 11px;
+    font-weight: 500;
+    position: absolute;
+    top: 9px;
+    right: 10px;
+    z-index: 10;
     img {
-      width: 16px;
-      height: 16px;
-      margin-right: 5px;
+      width: 14px;
+      height: 14px;
+      margin-right: 3px;
+      flex-shrink: 0;
+    }
+    .price-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 80px;
+      display: inline-block;
     }
   }
   .rate {
     text-align: right;
+    font-size: 11px;
   }
   .empty {
-    height: 18px;
+    height: 14px;
   }
   .image {
     width: 100%;
-    height: 44px;
-    object-fit: cover;
+    height: 60px;
+    object-fit: contain;
+    object-position: center;
+    display: block;
   }
   .name {
     position: absolute;
-    bottom: 10px;
+    bottom: 9px;
     left: 10px;
-    white-space: break-spaces;
+    right: 10px;
+    line-height: 1.3;
+    max-height: 28px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    font-size: 11px;
+    box-sizing: border-box;
+    word-break: break-word;
+    word-wrap: break-word;
   }
 }
 </style>

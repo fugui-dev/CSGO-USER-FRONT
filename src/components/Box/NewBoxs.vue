@@ -155,8 +155,8 @@ const boxUser = computed(() => {
 
         <div class=" tw-relative tw-w-full tw-h-[8rem] tw-overflow-hidden">
             <img :src="displayLevelImg" class="tw-w-full tw-h-full tw-absolute tw-top-0 tw-left-0" />
-            <div class="tw-absolute tw-inset-0 tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center">
-                <img :src="displayImageUrl" class="tw-w-[80%]" />
+            <div class="tw-absolute tw-inset-0 tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center tw-overflow-hidden">
+                <img :src="displayImageUrl" class="tw-max-w-[80%] tw-max-h-full tw-object-contain" />
             </div>
             <div class="tw-h-full tw-w-full tw-flex tw-flex-col tw-justify-between tw-p-3">
                 <div class="tw-flex tw-items-center tw-w-full tw-justify-between tw-flex-row-reverse">

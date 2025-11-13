@@ -142,11 +142,10 @@ const kefuRef = ref();
           <img src="@/assets/images/champion/game/coin.png" alt="" />
           {{ store.userInfo?.accountAmount || 0.0 }}
         </div>
-        <!-- <div class="item">
-          <img :src="requireImg('/coin2.png',false,false)"
-               alt="">
-          弹药：{{ store.userInfo?.accountCredits || 0.00 }}
-        </div> -->
+        <div class="item">
+          <img src="@/assets/images/shop/ammunition.png" alt="" />
+          {{ store.userInfo?.accountCredits || 0.00 }}
+        </div>
       </div>
 
       <!--      <div v-else>-->
