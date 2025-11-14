@@ -24,6 +24,10 @@ const props = defineProps({
   fightResult: {
     type: Array
   },
+  fightBoxVOList: {
+    type: Array,
+    default: () => []
+  },
   roomStatus: {
     type: Number,
     required: true
@@ -68,7 +72,18 @@ const startAnimation = () => {
   const currRound = store.currRound
   if (result && currPlayerId && currRound && result[currPlayerId]) {
     // 每回的结果列表
-    perResultList.value = result[currPlayerId][currRound]
+    const roundResult = result[currPlayerId][currRound]
+    // 为每个 item 补充名称
+    perResultList.value = (roundResult || []).map(item => {
+      // 如果 ornamentName 为空，尝试从 fightBoxVOList 中查找
+      if (!item.ornamentName && item.ornamentId && item.boxId) {
+        const name = findOrnamentName(item.ornamentId, item.boxId)
+        if (name) {
+          return { ...item, ornamentName: name }
+        }
+      }
+      return item
+    })
   }
   // 放大动画
   magnifyAnimation.value = true
@@ -80,11 +95,40 @@ const handleMagnifyAnimationEnd = () => {
   emit('magnifyEnd')
 }
 
+// 根据 ornamentId 和 boxId 从 fightBoxVOList 中查找名称
+const findOrnamentName = (ornamentId, boxId) => {
+  if (!ornamentId || !boxId || !props.fightBoxVOList || props.fightBoxVOList.length === 0) {
+    return null
+  }
+  
+  // 找到对应的 box
+  const box = props.fightBoxVOList.find(b => b.boxId === boxId)
+  if (!box || !box.ornaments || box.ornaments.length === 0) {
+    return null
+  }
+  
+  // 找到对应的饰品
+  const ornament = box.ornaments.find(o => String(o.ornamentId) === String(ornamentId))
+  return ornament ? ornament.name : null
+}
+
 // 设置最终结果
 const setFinalReult = () => {
   const currPlayerId = props.currPlayerId
   const fightResult = props.fightResult
-  perResultList.value = fightResult.filter(item => item.holderUserId === currPlayerId && item.boxId)
+  const filtered = fightResult.filter(item => item.holderUserId === currPlayerId && item.boxId)
+  
+  // 为每个 item 补充名称
+  perResultList.value = filtered.map(item => {
+    // 如果 ornamentName 为空，尝试从 fightBoxVOList 中查找
+    if (!item.ornamentName && item.ornamentId && item.boxId) {
+      const name = findOrnamentName(item.ornamentId, item.boxId)
+      if (name) {
+        return { ...item, ornamentName: name }
+      }
+    }
+    return item
+  })
 }
 
 const calcFinalResult = () => {
@@ -127,7 +171,7 @@ defineExpose({
         <img :src="coin" alt="">
       </div>
       <img :src="item.imageUrl" alt="" class="knife">
-      <h5>{{ item.ornamentName }}</h5>
+      <h5 v-if="item.ornamentName || item.name || item.itemName">{{ item.ornamentName || item.name || item.itemName }}</h5>
     </div>
   </div>
 </template>
@@ -146,22 +190,47 @@ defineExpose({
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     border-radius: 8px;
-    img {
-      width: 100%;
-    }
+    overflow: hidden;
     .img-bg {
       position: absolute;
-      width: 108%;
-      height: 108%;
+      width: 100%;
+      height: 100%;
       z-index: -1;
+      object-fit: cover;
+    }
+    .knife {
+      max-width: 90%;
+      max-height: 60%;
+      object-fit: contain;
+      object-position: center;
+      flex-shrink: 0;
     }
     h5 {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
       font-size: 12px;
-      color: #fff;
-      margin-bottom: 4px;
+      color: #fff !important;
+      margin: 0;
+      padding: 4px 8px;
+      text-align: center;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0) 100%);
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      z-index: 10;
+      pointer-events: none;
     }
     .btn {
+      position: absolute;
+      top: 4px;
+      right: 8px;
       font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
       line-height: 1.5em;
       font-size: 13px;
@@ -169,16 +238,11 @@ defineExpose({
       align-items: center;
       justify-content: center;
       flex-direction: row-reverse;
-      align-self: flex-end;
-      margin-right: 8px;
-      margin-top: 4px;
+      z-index: 2;
       img{
         width: 13px;
         margin-right: 3px;
       }
-    }
-    .knife {
-      height: 60%;
     }
   }
 }

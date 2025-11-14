@@ -135,7 +135,10 @@ const handleViewOrnaments = async (item, event) => {
         ornamentLevelImg: ornament.levelImg || '',
         exteriorName: ornament.exteriorName || '',
         // oddsResult 已经是百分比格式（如 0.01 表示 0.01%），需要格式化为字符串
-        oddsResult: ornament.oddsResult ? parseFloat(ornament.oddsResult).toFixed(2) : null
+        oddsResult: ornament.oddsResult ? parseFloat(ornament.oddsResult).toFixed(2) : null,
+        // 确保价格字段被传递（boxPrice 或 usePrice）
+        boxPrice: ornament.boxPrice || null,
+        usePrice: ornament.usePrice || null
       }))
     } else {
       ElMessage.warning('暂无饰品数据')
@@ -370,7 +373,7 @@ defineExpose({
 .box-choose-list {
   color: #ffffff;
   padding-bottom: 16px;
-    .box-item {
+  .box-item {
     display: flex;
     flex-direction: column;
     align-items: center;

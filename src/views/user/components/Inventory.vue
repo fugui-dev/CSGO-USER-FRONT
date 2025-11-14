@@ -256,6 +256,8 @@ const totalDecomposePrice = computed(() => {
             @change="checkBoxChange" v-model="checkAll">
             全选
           </el-checkbox>
+          <div class="button" @click="handleDecompose">分解饰品 <img :src="Money" class="tw-h-[10px] md:tw-h-[1rem] tw-ml-[4px] tw-mr-[2px]" /> {{
+            totalDecomposePrice }}</div>
           <div class="button" @click="handleDelivery">
             提取
           </div>

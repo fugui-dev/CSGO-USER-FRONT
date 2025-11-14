@@ -136,10 +136,20 @@ const calculateScrollPosition = () => {
 };
 
 const startAnimation = () => {
+  // 先重置动画状态和位置，确保所有卡片从同一起点开始
+  scrollAnimation.value = false
+  if (FightBoxRef.value) {
+    FightBoxRef.value.style.transform = 'translateY(0)'
+    FightBoxRef.value.style.setProperty('--scroll-end-position', '0')
+  }
+  
+  // 使用 nextTick 确保 DOM 更新后再计算和启动动画
+  nextTick(() => {
   const index = calcScrollEndIndex()
   if (index > 0) {
     calculateScrollPosition()
   }
+  })
 }
 
 const handleScrollAnimationEnd = () => {
@@ -186,7 +196,9 @@ defineExpose({
       max-height="360px"
       class="scroll-wrap"
       @mousewheel.prevent
-      @touchmove.prevent>
+      @touchmove.prevent
+      @wheel.prevent
+      @scroll.prevent>
       <div class="line">
         <img :src="lightLeft" alt="">
         <div class="yellow-line"></div>
@@ -217,6 +229,21 @@ defineExpose({
 <style scoped lang="scss">
 .scroll-wrap {
   position: relative;
+  overflow: hidden !important;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  
+  :deep(.el-scrollbar__wrap) {
+    overflow: hidden !important;
+    overscroll-behavior: none;
+  }
+  
+  :deep(.el-scrollbar__bar) {
+    display: none !important;
+  }
+  
   .line {
     width: 56%;
     position: absolute;
@@ -261,17 +288,21 @@ defineExpose({
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     overflow: hidden;
-    img {
-      max-width: 70%;
-      max-height: 100%;
+    img:not(.img-bg) {
+      max-width: 90%;
+      max-height: 70%;
       object-fit: contain;
+      object-position: center;
+      flex-shrink: 0;
     }
     .img-bg {
       position: absolute;
       width: 100%;
       height: 100%;
       z-index: -1;
+      object-fit: cover;
     }
     h5 {
       font-size: 14px;
@@ -279,6 +310,9 @@ defineExpose({
       margin-bottom: 4px;
     }
     .btn {
+      position: absolute;
+      top: 4px;
+      right: 8px;
       font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
       line-height: 1.5em;
       font-size: 13px;
@@ -286,9 +320,7 @@ defineExpose({
       align-items: center;
       justify-content: center;
       flex-direction: row-reverse;
-      align-self: flex-end;
-      margin-right: 6px;
-      margin-top: 2px;
+      z-index: 2;
       img{
         width: 13px;
         margin-right: 3px;
@@ -304,7 +336,7 @@ defineExpose({
   animation-fill-mode: forwards;
 }
 .scroll-start-point {
-  transform: translateY(0);
+  transform: translateY(0) !important;
 }
 
 @keyframes scroll-end {

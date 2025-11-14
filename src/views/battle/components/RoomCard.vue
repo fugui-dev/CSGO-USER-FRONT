@@ -45,6 +45,10 @@ const props = defineProps({
   fightResult: {
     type: Array
   },
+  fightBoxVOList: {
+    type: Array,
+    default: () => []
+  },
   localSet: {
     type: Object
   }
@@ -248,6 +252,7 @@ defineExpose({
         :currPlayerId="cardData.playerId"
         :roundNumber="roundNumber"
         :fightResult="fightResult"
+        :fightBoxVOList="fightBoxVOList"
         :roomStatus="roomStatus"
         @magnifyEnd="handleMagnifyEnd" />
     </div>

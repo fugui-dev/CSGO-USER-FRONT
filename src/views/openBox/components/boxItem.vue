@@ -9,8 +9,22 @@
       <img src="@/assets/images/shop/ammunition.png" alt="">
       <span class="price-text">{{ boxData.creditsPrice }}</span>
     </div>
-    <div v-else-if="!isHave" class="rate">{{ boxData.oddsResult }}%</div>
-    <div v-else-if="isHave && boxData.oddsResult" class="rate">{{ boxData.oddsResult }}%</div>
+    <div v-else-if="!isHave" class="top-bar">
+      <div v-if="displayPrice" class="price-left">
+        <img src="@/assets/images/home/coin.png" alt="">
+        <span class="price-text">{{ displayPrice }}</span>
+      </div>
+      <div class="rate-right">{{ boxData.oddsResult }}%</div>
+    </div>
+    <div v-else-if="isHave" class="top-bar">
+      <!-- 价格在左上角 -->
+      <div v-if="displayPriceHave" class="price-left">
+        <img src="@/assets/images/home/coin.png" alt="">
+        <span class="price-text">{{ displayPriceHave }}</span>
+      </div>
+      <!-- 概率在右上角 -->
+      <div v-if="boxData.oddsResult" class="rate-right">{{ boxData.oddsResult }}%</div>
+    </div>
     <div v-else class="empty"></div>
     <img class="image" :src="boxData.imageUrl" alt="" />
     <div class="name">
@@ -66,6 +80,29 @@ const bgImage = computed(() => {
   }
   return props.isHave ? props.boxData.ornamentLevelImg : props.boxData.levelImg
 });
+
+// 计算显示的价格（优先使用boxPrice，如果没有则使用usePrice）
+const displayPrice = computed(() => {
+  if (props.isShop || props.isHave) {
+    return null;
+  }
+  // 军需饰品页面：显示价格
+  return props.boxData.boxPrice || props.boxData.usePrice || null;
+});
+
+// 计算最近掉落页面的价格
+const displayPriceHave = computed(() => {
+  if (props.isShop || !props.isHave) {
+    return null;
+  }
+  // 最近掉落页面：优先使用ornamentsPrice（这是从tt_box_records表返回的实际价格）
+  // 如果是箱子详情页面（没有ornamentsPrice但有boxPrice/usePrice），则使用boxPrice或usePrice
+  if (props.boxData.ornamentsPrice) {
+    return props.boxData.ornamentsPrice;
+  }
+  // 箱子详情页面：使用boxPrice或usePrice
+  return props.boxData.boxPrice || props.boxData.usePrice || null;
+});
 </script>
 
 <style scoped lang="scss">
@@ -91,6 +128,60 @@ const bgImage = computed(() => {
     top: 9px;
     right: 10px;
     z-index: 10;
+    img {
+      width: 14px;
+      height: 14px;
+      margin-right: 3px;
+      flex-shrink: 0;
+    }
+    .price-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 80px;
+      display: inline-block;
+    }
+  }
+  .top-bar {
+    position: absolute;
+    top: 9px;
+    left: 10px;
+    right: 10px;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .price-left {
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 500;
+    img {
+      width: 14px;
+      height: 14px;
+      margin-right: 3px;
+      flex-shrink: 0;
+    }
+    .price-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 80px;
+      display: inline-block;
+    }
+  }
+  .rate-right {
+    text-align: right;
+    font-size: 11px;
+  }
+  .price-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 11px;
+    font-weight: 500;
+    margin-left: auto;
     img {
       width: 14px;
       height: 14px;

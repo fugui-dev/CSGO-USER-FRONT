@@ -596,15 +596,20 @@ defineExpose({
                                     <div :class="['rooling_animation ', `animation${index}`]" v-for="(v, i) in item"
                                         :key="i">
                                         <div class="tw-w-full tw-h-full tw-relative tw-overflow-hidden tw-flex tw-justify-center tw-items-center">
-                                            <img :src="v.imageUrl" alt="">
+                                            <img :src="v.imageUrl" alt="" class="tw-max-w-full tw-max-h-full tw-object-contain">
+                                            <!-- 价格显示在右上角：如果是实际开出的饰品（openData中的），使用ornamentsPrice，否则使用boxPrice -->
+                                            <div v-if="v.ornamentsPrice || v.boxPrice" class="tw-absolute tw-top-2 tw-right-2 tw-flex tw-items-center tw-gap-1 tw-bg-black/70 tw-px-2 tw-py-1 tw-rounded">
+                                                <img :src="Money" class="tw-h-3 tw-w-3" alt="">
+                                                <span class="tw-text-white tw-text-xs tw-font-bold">{{ Number(v.ornamentsPrice || v.boxPrice).toFixed(2) }}</span>
+                                            </div>
                                             <div
-                                                class="tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-px-2 tw-py-1  tw-flex  tw-justify-between tw-items-center">
+                                                class="tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-px-2 tw-py-1 tw-bg-black/50 tw-flex tw-justify-between tw-items-center">
                                                 <div class="tw-text-white tw-text-xs tw-font-bold tw-line-clamp-1">{{
-                                                    v.shortName ? v.shortName : parseOrnamentName(v.ornamenName).main
+                                                    v.shortName ? v.shortName : (v.name ? parseOrnamentName(v.name).main : parseOrnamentName(v.ornamenName || '').main)
                                                     }}</div>
                                                 <div class="tw-text-white tw-text-xs tw-font-bold tw-line-clamp-1">{{
                                                     v.exteriorName ? v.exteriorName :
-                                                        parseOrnamentName(v.ornamenName).sub
+                                                        (v.name ? parseOrnamentName(v.name).sub : parseOrnamentName(v.ornamenName || '').sub)
                                                 }}</div>
                                             </div>
                                             <!-- <span class="tw-absolute ">{{ i }}</span> -->
@@ -667,15 +672,20 @@ defineExpose({
                                         :style="{ animationDelay: `${index * 0.5}s` }" v-for="(v, i) in item" :key="i">
                                         <div class="tw-w-full tw-h-full tw-relative tw-overflow-hidden tw-flex tw-justify-center tw-items-center"
                                             >
-                                            <img :src="v.imageUrl" alt="" style="width: 60%;">
+                                            <img :src="v.imageUrl" alt="" class="tw-max-w-full tw-max-h-full tw-object-contain">
+                                            <!-- 价格显示在右上角：如果是实际开出的饰品（openData中的），使用ornamentsPrice，否则使用boxPrice -->
+                                            <div v-if="v.ornamentsPrice || v.boxPrice" class="tw-absolute tw-top-2 tw-right-2 tw-flex tw-items-center tw-gap-1 tw-bg-black/70 tw-px-2 tw-py-1 tw-rounded">
+                                                <img :src="Money" class="tw-h-3 tw-w-3" alt="">
+                                                <span class="tw-text-white tw-text-xs tw-font-bold">{{ Number(v.ornamentsPrice || v.boxPrice).toFixed(2) }}</span>
+                                            </div>
                                             <div
-                                                class="tw-absolute tw-bottom-[10px] tw-left-0 tw-w-full tw-px-2 tw-py-1  tw-flex  tw-justify-between tw-items-center">
+                                                class="tw-absolute tw-bottom-[10px] tw-left-0 tw-w-full tw-px-2 tw-py-1 tw-bg-black/50 tw-flex tw-justify-between tw-items-center">
                                                 <div class="tw-text-white tw-text-xs tw-font-bold tw-line-clamp-1">{{
-                                                    v.shortName ? v.shortName : parseOrnamentName(v.ornamenName).main
+                                                    v.shortName ? v.shortName : (v.name ? parseOrnamentName(v.name).main : parseOrnamentName(v.ornamenName || '').main)
                                                     }}</div>
                                                 <div class="tw-text-white tw-text-xs tw-font-bold tw-line-clamp-1">{{
                                                     v.exteriorName ? v.exteriorName :
-                                                        parseOrnamentName(v.ornamenName).sub
+                                                        (v.name ? parseOrnamentName(v.name).sub : parseOrnamentName(v.ornamenName || '').sub)
                                                 }}</div>
                                             </div>
                                             <!-- <span class="tw-absolute ">{{ i }}</span> -->
@@ -904,9 +914,12 @@ defineExpose({
             align-items: center;
             box-sizing: border-box;
             animation-play-state: paused;
+            overflow: hidden;
 
             img {
-                width: 90%;
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
             }
 
         }

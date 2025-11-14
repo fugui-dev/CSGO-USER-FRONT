@@ -35,6 +35,8 @@ const roomData = ref({})
 const fightBoxVOList = ref([])
 const fightResult = ref([])
 const isAllReady = ref(false) // 是否所有座位都已准备就绪
+const previousAllReady = ref(false) // 之前是否所有座位都已准备就绪
+const autoStartTimer = ref(null) // 自动开始游戏的定时器
 const CountdownModalRef = ref(null)
 const winnerIds = ref([])
 const musica = new Audio(bgm)
@@ -82,23 +84,49 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
           return
         }
         
+        // 先保存之前的状态，再更新数据
+        const previousStatus = roomData.value?.status
+        const currentStatus = data.data.fight.status
+        
         roomData.value = data.data.fight
         fightBoxVOList.value = data.data.fightBoxVOList
         winnerIds.value = data.data.winnerIds
         // 检查是否所有座位都已准备就绪
-        isAllReady.value = data.data.fight.seatList.every(seat => seat.status === 2)
+        const newAllReady = data.data.fight.seatList.every(seat => seat.status === 2)
+        
+        // 如果从"未全部准备"变为"全部准备"，且房间状态还是等待中，显示3秒倒计时
+        if (!previousAllReady.value && newAllReady && currentStatus === 0) {
+          // 清除之前的定时器（如果有）
+          if (autoStartTimer.value) {
+            clearTimeout(autoStartTimer.value)
+            autoStartTimer.value = null
+          }
+          // 显示3秒倒计时
+          showBeginAnimation()
+        }
+        
+        previousAllReady.value = newAllReady
+        isAllReady.value = newAllReady
         
         const currentRound = data.data.currentRound
         fightResult.value = data.data.fightResult
+        
+        // 检查房间状态是否从等待中(0)变为进行中(1)，说明游戏刚开始
+        const isGameJustStarted = previousStatus === 0 && currentStatus === 1
         
         // 有对战结果说明2种情况：（1）游戏开始（2）对战进行中，有人进入观战，此时currentRound有值
         if (Array.isArray(fightResult.value) && fightResult.value.length > 0) {
           reCalcBoxList()
           if (currentRound === null || currentRound === undefined) {
-            // 非房主，游戏现在开始
+            // 游戏刚开始，所有用户（包括房主）都应该显示倒计时
+            if (isGameJustStarted) {
+              showBeginAnimation()
+            } else {
+              // 非房主，游戏现在开始（处理其他用户进入的情况）
             const userId = store.userInfo.userId;
             if (userId !== data.data.fight.userId) {
               showBeginAnimation()
+              }
             }
           }
         }
@@ -106,6 +134,11 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
         // 如果currentRound为null或undefined，说明房间还在等待中，回合数应该为1
         if (currentRound === null || currentRound === undefined) {
           store.setCurrRound(1)
+          // 如果游戏刚开始（状态从0变为1），需要触发游戏开始逻辑
+          if (isGameJustStarted) {
+            // 倒计时结束后会调用 handleStartGame，这里不需要重复调用
+            return
+          }
           return
         }
         
@@ -282,6 +315,11 @@ onMounted(() => {
 onUnmounted(() => {
   musica.pause()
   musica.currentTime = 0
+  // 清理定时器
+  if (autoStartTimer.value) {
+    clearTimeout(autoStartTimer.value)
+    autoStartTimer.value = null
+  }
   // 离开房间时，重置回合数和回合标志，避免影响下一个房间
   store.setCurrRound(1)
   store.clearCurrRoundFlag()
@@ -460,6 +498,7 @@ const ownerCall = () => {
             :winnerIds="winnerIds"
             :playerIds="playerIds"
             :fightResult="fightResult"
+            :fightBoxVOList="fightBoxVOList"
             :localSet="localSet"
             v-for="(i,index) in roomData.seatList" 
             :key="index" 

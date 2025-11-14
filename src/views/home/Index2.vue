@@ -6,6 +6,7 @@ import {ref} from "vue";
 import {getBoxListApi} from "@/api";
 import {useOpenPage} from "@/composables/useOpenBox";
 import Title from "@/components/Title.vue";
+import { ElMessage } from "element-plus";
 import bgShop from '@/assets/images/home/bg_shop.png';
 import nav1 from '@/assets/images/home/nav1.png';
 import nav2 from '@/assets/images/home/nav2.png';
@@ -31,7 +32,8 @@ const navs = ref([{
   img: nav3,
   title: '熔炼',
   content: '去熔炼',
-  color: '#B0D05F'
+  color: '#B0D05F',
+  enabled: false
 }, {
   path: "/roll",
   img: nav4,
@@ -56,6 +58,14 @@ const handleClick = (id) => {
   openPage(id);
 }
 
+const handleNavClick = (item) => {
+  if (item.enabled === false) {
+    ElMessage("敬请期待");
+    return;
+  }
+  goto(item.path);
+}
+
 
 </script>
 
@@ -66,7 +76,7 @@ const handleClick = (id) => {
       <div class="box_list">
 
         <div class="nav">
-          <div class="nav-item" v-for="(i, index) in navs" :key="index" @click="goto(i.path)">
+          <div class="nav-item" v-for="(i, index) in navs" :key="index" @click="handleNavClick(i)">
             <img :src="i.img" alt="">
             <div class="nav-item-content">
               <p :style="{ color: `${i.color}` }">{{ i.title }}</p>
