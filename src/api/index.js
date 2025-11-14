@@ -254,6 +254,42 @@ export const getStatisticsPromotionDataApi = (userId) => {
     })
 }
 
+// 推广用户相关接口（仅主播可见）
+export const getPromotionUsersApi = (page, size) => {
+    return request({
+        url: `/api/user/promotionUsers/${page}/${size}`,
+        method: 'get'
+    })
+}
+
+export const getPromotionRechargeRecordsApi = (page, size) => {
+    return request({
+        url: `/api/user/promotionRechargeRecords/${page}/${size}`,
+        method: 'get'
+    })
+}
+
+export const getAvailableBalanceApi = () => {
+    return request({
+        url: '/api/user/availableBalance',
+        method: 'get'
+    })
+}
+
+export const generateCardInfoApi = () => {
+    return request({
+        url: '/api/user/generateCardInfo',
+        method: 'post'
+    })
+}
+
+export const createGenerateCardApi = () => {
+    return request({
+        url: '/api/user/createGenerateCard',
+        method: 'post'
+    })
+}
+
 export const accessorySalvageApi = (data) => {
     return request({
         url: "/api/userPackSack/decompose",
