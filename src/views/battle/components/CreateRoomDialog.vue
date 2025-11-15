@@ -1,8 +1,8 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import {requireImg} from "@/utils/common";
 import Decimal from 'decimal.js'
-import {createRoomApi} from "@/api/battle"
+import {createRoomApi, getBattleBoxListApi} from "@/api/battle"
 import {getBoxInfo} from "@/views/openBox/server/api"
 import {ElMessage} from "element-plus"
 import {useStore} from "@/store"
@@ -10,11 +10,14 @@ import { useRouter } from 'vue-router'
 import { useUserInfo } from "@/composables/useUesrInfo.js"
 import coin from '@/assets/images/upgrade/coin.png'
 import boxItem from '@/views/openBox/components/boxItem.vue'
+import activeTypeBg from "@/assets/images/battle/box-active-bg.png";
+import typeBg from "@/assets/images/battle/box-bg.png";
 
 const props = defineProps({
     boxData: {
         type: Object,
-        required: true
+        required: false,
+        default: () => []
     }
 });
 const emit = defineEmits(['close'])
@@ -37,6 +40,36 @@ const ornamentListData = ref([])
 const currentBoxName = ref('')
 const loadingOrnaments = ref(false)
 
+// 宝箱分类相关
+const boxTypeList = ref([])
+const activeBoxType = ref(null)
+const loadingBoxTypes = ref(false)
+
+// 获取宝箱分类列表
+const getBoxTypeList = () => {
+  loadingBoxTypes.value = true
+  getBattleBoxListApi().then(res => {
+    if (res.data && res.data.length) {
+      boxTypeList.value = res.data
+      activeBoxType.value = res.data[0]?.boxTypeId
+    }
+  }).finally(() => {
+    loadingBoxTypes.value = false
+  })
+}
+
+// 根据选中的分类计算当前显示的宝箱列表
+const currentBoxList = computed(() => {
+  if (activeBoxType.value && boxTypeList.value.length) {
+    const currentType = boxTypeList.value.find(
+      (item) => item.boxTypeId === activeBoxType.value
+    )
+    return currentType ? currentType.boxList : []
+  }
+  // 如果没有分类数据，使用传入的 boxData（兼容旧逻辑）
+  return Array.isArray(props.boxData) ? props.boxData : []
+})
+
 const initData = () => {
   activeModel.value = 0
   activePersonNum.value = 2
@@ -51,6 +84,10 @@ const initData = () => {
 
 const open = () => {
     visible.value = true
+    // 打开时获取分类数据
+    if (boxTypeList.value.length === 0) {
+      getBoxTypeList()
+    }
 }
 
 const close = () => {
@@ -227,8 +264,25 @@ defineExpose({
                           <h3 class="box-choose-title">选择宝箱</h3>
                           <!-- <div class="tw-absolute tw-h-[2px] tw-bg-gradient-to-r tw-from-transparent tw-via-[#FF7A21] tw-to-transparent tw-w-full tw-bottom-[-12px]"></div> -->
                         </div>
-                        <div class="box-choose-list unchoosed tw-overflow-y-auto tw-max-h-[40vh] no-scrollbar tw-flex tw-flex-wrap tw-justify-center  tw-gap-y-2 tw-gap-x-2 md:tw-gap-3 tw-animate-gridAppear">
-                          <div class="box-item" @click="handleClickBoxItem(item)" v-for="item in boxData" :key="item.boxId">
+                        <!-- 分类切换 -->
+                        <div v-if="boxTypeList.length > 0" class="box-type-wrapper">
+                          <div
+                            class="box-type-item"
+                            v-for="item in boxTypeList"
+                            :key="item.boxTypeId"
+                            @click="activeBoxType = item.boxTypeId"
+                            :style="{
+                              backgroundImage:
+                                activeBoxType === item.boxTypeId
+                                  ? `url(${activeTypeBg})`
+                                  : `url(${typeBg})`,
+                            }"
+                          >
+                            {{ item.boxTypeName }}
+                          </div>
+                        </div>
+                        <div class="box-choose-list unchoosed tw-overflow-y-auto tw-max-h-[40vh] no-scrollbar tw-flex tw-flex-wrap tw-justify-center  tw-gap-y-2 tw-gap-x-2 md:tw-gap-3 tw-animate-gridAppear" v-loading="loadingBoxTypes">
+                          <div class="box-item" @click="handleClickBoxItem(item)" v-for="item in currentBoxList" :key="item.boxId">
                             <!-- 查看饰品图标 -->
                             <div class="ornament-icon" @click="handleViewOrnaments(item, $event)" title="查看饰品列表">
                               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-eye">
@@ -335,6 +389,34 @@ defineExpose({
     background: url('@/assets/images/battle/create-room-bg.png') no-repeat;
     background-size: 100% 100%;
     padding: 0 20px;
+}
+
+// 分类切换样式
+.box-type-wrapper {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 8px 0;
+  
+  .box-type-item {
+    width: 139px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    background-size: 100% 100%;
+    font-weight: 500;
+    font-size: 17px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+  }
 }
 .room-line {
   display: flex;

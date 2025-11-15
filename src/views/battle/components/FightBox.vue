@@ -214,7 +214,7 @@ defineExpose({
           style="background:linear-gradient(180deg, rgba(56, 49, 49, 0.50) 0%, #383131 100%); "
           v-for="(item, index) in tempMultiOrnamentsData"
           :key="index">
-          <img :src="leavel[item.ornamentsLevelId].img" alt="" class="img-bg">
+          <img :src="item.ornamentLevelImg || item.levelImg || leavel[item.ornamentsLevelId].img" alt="" class="img-bg">
           <div class="btn">
             <div>{{item.boxPrice}}</div>
             <img :src="coin" alt="">

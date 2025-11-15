@@ -172,7 +172,7 @@ defineExpose({
       v-for="(item, index) in perResultList"
       :key="index"
       @animationend="handleMagnifyAnimationEnd">
-      <img :src="leavel[item.ornamentsLevelId].img" alt="" class="img-bg">
+      <img :src="item.ornamentLevelImg || item.levelImg || leavel[item.ornamentsLevelId].img" alt="" class="img-bg">
       <div class="btn">
         <div>{{item.ornamentsPrice}}</div>
         <img :src="coin" alt="">

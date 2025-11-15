@@ -478,7 +478,7 @@ defineExpose({
                             <!-- <div class="tw-absolute tw-w-full tw-h-[4.5rem] md:tw-h-[7.125rem] tw-border-b-2"
                                 :style="{ borderColor: leavel[item.openBox2Gift ? 5 : item.ornamentsLevelId].color }">
                             </div> -->
-                            <img :src="leavel[item.openBox2Gift ? 5 : item.ornamentsLevelId].img"
+                            <img :src="item.ornamentLevelImg || item.levelImg || leavel[item.openBox2Gift ? 5 : item.ornamentsLevelId].img"
                                 class="tw-absolute tw-w-full tw-h-full tw-scale-[114%]" alt="">
                             <div class="tw-flex tw-justify-center tw-gap-1 tw-mb-1 tw-absolute tw-top-1 tw-right-1">
                                 <span
@@ -617,7 +617,7 @@ defineExpose({
                                                 :style="{ background: leavel[v.ornamentsLevelId].background }">
                                             </div> -->
                                             <div class="tw-absolute tw-top-0 tw-left-0 tw-right-0 tw-w-full tw-h-full tw-z-[-1]">
-                                              <img :src="leavel[v.ornamentsLevelId].img" alt="" style="width: 106%;height: 108%;"> 
+                                              <img :src="v.ornamentLevelImg || v.levelImg || leavel[v.ornamentsLevelId].img" alt="" style="width: 106%;height: 108%;"> 
                                             </div>
                                         </div>
                                     </div>
@@ -693,7 +693,7 @@ defineExpose({
                                                 :style="{ background: leavel[v.ornamentsLevelId].background }">
                                             </div> -->
                                             <div class="tw-absolute tw-top-0 tw-left-0 tw-right-0 tw-w-full tw-h-full tw-z-[-1]">
-                                              <img :src="leavel[v.ornamentsLevelId].img" alt="" style="width: 106%;height: 108%;"> 
+                                              <img :src="v.ornamentLevelImg || v.levelImg || leavel[v.ornamentsLevelId].img" alt="" style="width: 106%;height: 108%;"> 
                                             </div>
                                         </div>
                                     </div>
