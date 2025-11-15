@@ -14,7 +14,8 @@ import HeaderBg from "@/assets/openBox/headerBg.png";
 import HeaderLeft from "@/assets/openBox/headerLeft.png";
 import LuckyStar from "@/assets/openBox/luckyStar.png";
 import TitleYinhua from "@/assets/openBox/titleYinhua.png";
-import { requireImg } from "@/utils/common";
+import { requireImg, goto } from "@/utils/common";
+import { useRouter } from "vue-router";
 import { useThrottleFn } from "@vueuse/core";
 import boxLeft from "@/assets/openBox/boxLeft.png";
 import boxRight from "@/assets/openBox/boxRight.png";
@@ -25,7 +26,10 @@ import Money from "@/assets/icons/money.svg";
 import init from "@/assets/music/init.wav";
 import MoreModal from "./components/MoreModal.vue";
 import { level } from "@/lib/leavel";
+import back from '@/assets/images/upgrade/back.png';
 const arr = [1, 2, 3, 4, 5];
+
+const router = useRouter();
 
 const OpenModalRef = ref(null);
 const OpenBagModalRef = ref(null);
@@ -383,6 +387,11 @@ watch(
   },
   { immediate: true, deep: true }
 );
+
+// 返回上一页
+const handleClickBack = () => {
+  router.go(-1)
+}
 </script>
 <template>
   <Layout>
@@ -393,6 +402,10 @@ watch(
         alt=""
       />
       <img class="box-bg" src="@/assets/images/open/box-bg.png" alt="" />
+      <div class="back-button" @click="handleClickBack">
+        <img :src="back" alt="">
+        返回
+      </div>
       <div class="setting">
         <div class="record-wrapper" @click="LuckyModalRef.open()">
           <img
@@ -560,6 +573,29 @@ watch(
     width: 476px;
     height: 467px;
     z-index: -1;
+  }
+  .back-button {
+    position: absolute;
+    top: 117px;
+    left: 36px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #B1C5C7;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 100;
+    transition: opacity 0.3s;
+    user-select: none;
+    pointer-events: auto;
+    &:hover {
+      opacity: 0.8;
+    }
+    img {
+      width: 2rem;
+      height: 1.8rem;
+      pointer-events: none;
+    }
   }
   .setting {
     position: absolute;

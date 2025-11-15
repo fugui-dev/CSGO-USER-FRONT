@@ -73,17 +73,18 @@ const startAnimation = () => {
   if (result && currPlayerId && currRound && result[currPlayerId]) {
     // 每回的结果列表
     const roundResult = result[currPlayerId][currRound]
-    // 为每个 item 补充名称
-    perResultList.value = (roundResult || []).map(item => {
-      // 如果 ornamentName 为空，尝试从 fightBoxVOList 中查找
-      if (!item.ornamentName && item.ornamentId && item.boxId) {
-        const name = findOrnamentName(item.ornamentId, item.boxId)
-        if (name) {
-          return { ...item, ornamentName: name }
-        }
+  // 为每个 item 补充名称
+  perResultList.value = (roundResult || []).map(item => {
+    const newItem = { ...item }
+    // 如果 ornamentName 为空，尝试从 fightBoxVOList 中查找
+    if (!item.ornamentName && item.ornamentId && item.boxId) {
+      const name = findOrnamentName(item.ornamentId, item.boxId)
+      if (name) {
+        newItem.ornamentName = name
       }
-      return item
-    })
+    }
+    return newItem
+  })
   }
   // 放大动画
   magnifyAnimation.value = true
@@ -116,18 +117,24 @@ const findOrnamentName = (ornamentId, boxId) => {
 const setFinalReult = () => {
   const currPlayerId = props.currPlayerId
   const fightResult = props.fightResult
-  const filtered = fightResult.filter(item => item.holderUserId === currPlayerId && item.boxId)
+  // 过滤条件：holderUserId 匹配，并且有 ornamentId（即使没有 boxId 也要显示）
+  const filtered = fightResult.filter(item => item.holderUserId === currPlayerId && item.ornamentId)
   
   // 为每个 item 补充名称
   perResultList.value = filtered.map(item => {
-    // 如果 ornamentName 为空，尝试从 fightBoxVOList 中查找
+    const newItem = { ...item }
+    // 如果 ornamentName 为空，尝试从 fightBoxVOList 中查找（需要 boxId）
     if (!item.ornamentName && item.ornamentId && item.boxId) {
       const name = findOrnamentName(item.ornamentId, item.boxId)
       if (name) {
-        return { ...item, ornamentName: name }
+        newItem.ornamentName = name
       }
     }
-    return item
+    // 如果没有 boxId，尝试使用 marketHashName 作为名称
+    if (!item.ornamentName && item.marketHashName) {
+      newItem.ornamentName = item.marketHashName
+    }
+    return newItem
   })
 }
 

@@ -216,7 +216,7 @@ defineExpose({
           :key="index">
           <img :src="leavel[item.ornamentsLevelId].img" alt="" class="img-bg">
           <div class="btn">
-            <div>{{item.usePrice}}</div>
+            <div>{{item.boxPrice}}</div>
             <img :src="coin" alt="">
           </div>
           <img :src="item.imageUrl" alt="">

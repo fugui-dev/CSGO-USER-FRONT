@@ -103,6 +103,32 @@ const calcPerRoundTotalPrice = () => {
   }
 }
 
+// 计算最终获得的金额（所有 holderUserId === playerId 的记录）
+const computedAwardTotalPrices = computed(() => {
+  if (!props.fightResult || !Array.isArray(props.fightResult) || props.roomStatus !== 2) {
+    return props.cardData.awardTotalPrices || 0
+  }
+  
+  const playerId = props.cardData.playerId
+  if (!playerId) {
+    return props.cardData.awardTotalPrices || 0
+  }
+  
+  // 累加所有 holderUserId === playerId 的记录的 ornamentsPrice
+  const total = props.fightResult
+    .filter(item => item.holderUserId === playerId && item.ornamentsPrice)
+    .reduce((sum, item) => {
+      return new Decimal(item.ornamentsPrice || 0).plus(sum).toNumber()
+    }, 0)
+  
+  return total
+})
+
+// 原始金额直接使用后端返回的值，不重新计算
+const computedSelfOpenPrice = computed(() => {
+  return props.cardData.selfOpenPrice || null
+})
+
 const handleJoin = () => {
   if (props.roomOwnerId === currUserId.value) {
     ElMessage.warning('房主无法加入自己创建的对战！')
@@ -204,7 +230,10 @@ defineExpose({
             </div>
             <div class="price">
               <img :src="coin" alt="">
-              <div v-if="roomStatus === 2">{{ cardData.awardTotalPrices }}</div>
+              <div v-if="roomStatus === 2" class="price-display">
+                <span v-if="computedSelfOpenPrice" class="original-price">{{ computedSelfOpenPrice }}</span>
+                <span>{{ computedAwardTotalPrices }}</span>
+              </div>
               <div v-else>{{ totalPrice }}</div>
             </div>
           </div>
@@ -328,6 +357,17 @@ defineExpose({
       position: absolute;
       width: 16px;
       left: 0;
+    }
+    .price-display {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      .original-price {
+        text-decoration: line-through;
+        opacity: 0.6;
+        color: #999;
+      }
     }
   }
   .waiting-player {

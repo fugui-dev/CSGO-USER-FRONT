@@ -92,16 +92,17 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
         fightBoxVOList.value = data.data.fightBoxVOList
         winnerIds.value = data.data.winnerIds
         // 检查是否所有座位都已准备就绪
-        const newAllReady = data.data.fight.seatList.every(seat => seat.status === 2)
+        const newAllReady = data.data.fight.seatList && data.data.fight.seatList.every(seat => seat.status === 2)
         
         // 如果从"未全部准备"变为"全部准备"，且房间状态还是等待中，显示3秒倒计时
+        // 所有用户（包括观战者）都应该看到倒计时
         if (!previousAllReady.value && newAllReady && currentStatus === 0) {
           // 清除之前的定时器（如果有）
           if (autoStartTimer.value) {
             clearTimeout(autoStartTimer.value)
             autoStartTimer.value = null
           }
-          // 显示3秒倒计时
+          // 显示3秒倒计时（所有用户包括观战者都能看到）
           showBeginAnimation()
         }
         
@@ -118,14 +119,14 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
         if (Array.isArray(fightResult.value) && fightResult.value.length > 0) {
           reCalcBoxList()
           if (currentRound === null || currentRound === undefined) {
-            // 游戏刚开始，所有用户（包括房主）都应该显示倒计时
+            // 游戏刚开始，所有用户（包括房主和观战者）都应该显示倒计时
             if (isGameJustStarted) {
               showBeginAnimation()
             } else {
-              // 非房主，游戏现在开始（处理其他用户进入的情况）
-            const userId = store.userInfo.userId;
-            if (userId !== data.data.fight.userId) {
-              showBeginAnimation()
+              // 非房主（包括观战者），游戏现在开始（处理其他用户进入的情况）
+              const userId = store.userInfo.userId;
+              if (userId !== data.data.fight.userId) {
+                showBeginAnimation()
               }
             }
           }
