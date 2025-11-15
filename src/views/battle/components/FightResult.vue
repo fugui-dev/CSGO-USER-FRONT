@@ -48,12 +48,12 @@ const leavel = {
     3: {
         color: '#984EFF',
         background: 'linear-gradient(180deg, rgba(52, 49, 56, 0.00) 0%, rgba(105, 39, 181, 0.51) 100%)',
-        img: end4
+        img: end3
     },
     4: {
         color: '#35B2FF',
         background: 'linear-gradient(180deg, rgba(1, 43, 97, 0) 38.42%, rgba(32, 102, 222, 0.26) 100%)',
-        img: end3
+        img: end4
     },
     5: {
         color: '#1FEBC4',
@@ -167,12 +167,12 @@ defineExpose({
   <div class="fight-result">
     <div
       :class="['fight-result-item', magnifyAnimation && index === perResultList.length - 1 ? 'magnify-animation' : '']"
-      :style="{ borderColor: leavel[item.ornamentsLevelId].color }"
+      :style="{ borderColor: leavel[4].color }"
       style="background:linear-gradient(180deg, rgba(56, 49, 49, 0.50) 0%, #383131 100%); "
       v-for="(item, index) in perResultList"
       :key="index"
       @animationend="handleMagnifyAnimationEnd">
-      <img :src="item.ornamentLevelImg || item.levelImg || leavel[item.ornamentsLevelId].img" alt="" class="img-bg">
+      <img :src="item.ornamentLevelImg || item.levelImg || leavel[4].img" alt="" class="img-bg">
       <div class="btn">
         <div>{{item.ornamentsPrice}}</div>
         <img :src="coin" alt="">
