@@ -28,7 +28,20 @@ const getArrowImg = (index) => {
 }
 const getBoxList = () => {
   getBoxListApi().then(r => {
-    boxList.value = r.data
+    if (r.data && Array.isArray(r.data)) {
+      // 确保分类按 sort 排序（后端已排序，这里作为双重保障）
+      // 每个分类下的箱子列表按价格从低到高排序
+      boxList.value = r.data.map(type => ({
+        ...type,
+        boxList: (type.boxList || []).sort((a, b) => {
+          const priceA = Number(a.price) || 0;
+          const priceB = Number(b.price) || 0;
+          return priceA - priceB;
+        })
+      }));
+    } else {
+      boxList.value = r.data || [];
+    }
   })
 }
 getBoxList()

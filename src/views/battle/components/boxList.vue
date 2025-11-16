@@ -52,9 +52,19 @@ const getBoxTypeList = () => {
   getBattleBoxListApi()
     .then((res) => {
       if (res.data && res.data.length) {
-        boxTypeList.value = res.data;
-        activeBoxType.value = res.data[0]?.boxTypeId;
-        emits('allBox', flattenBoxData(res.data));
+        // 确保分类按 sort 排序（后端已排序，这里作为双重保障）
+        // 每个分类下的箱子列表按价格从低到高排序
+        const sortedData = res.data.map(type => ({
+          ...type,
+          boxList: (type.boxList || []).sort((a, b) => {
+            const priceA = Number(a.price) || 0;
+            const priceB = Number(b.price) || 0;
+            return priceA - priceB;
+          })
+        }));
+        boxTypeList.value = sortedData;
+        activeBoxType.value = sortedData[0]?.boxTypeId;
+        emits('allBox', flattenBoxData(sortedData));
       }
     })
     .finally(() => {
