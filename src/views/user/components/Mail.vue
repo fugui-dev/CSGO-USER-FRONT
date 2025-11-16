@@ -25,8 +25,8 @@ const tabs = ref([
     value: 1
   },
 ])
-const alertDialogRef = ref()
 const selectItem = ref()
+const visible = ref(false)
 
 const getList = () => {
   loading.value = true
@@ -76,7 +76,7 @@ const safeContent = (content) => {
 
 const showDialog=(item)=>{
   selectItem.value=item
-    alertDialogRef.value.open()
+  visible.value=true
 }
 </script>
 
@@ -110,15 +110,22 @@ const showDialog=(item)=>{
     </el-scrollbar>
 
   </div>
-  <AlertDialog ref="alertDialogRef">
-    <template #title>
-      {{ selectItem?.title }}
-    </template>
-
-    <template #default>
-      <div v-html="selectItem?.content"></div>
-    </template>
-  </AlertDialog>
+  <el-dialog
+    v-model="visible"
+    width="722"
+    :show-close="false"
+    align-center
+    style="--el-dialog-bg-color: transparent"
+    destroy-on-close
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+  >
+    <div class="alert-wrapper">
+      <div class="close-click" @click="visible = false" />
+      <div class="title">{{ selectItem?.title }}</div>
+      <div class="content" v-html="selectItem?.content"></div>
+    </div>
+  </el-dialog>
 </template>
 
 <style scoped lang="scss">
@@ -167,6 +174,55 @@ $primary-color-user: #B3B586;
       img {
         height: 90%;
       }
+    }
+  }
+}
+.alert-wrapper {
+  width: 722px;
+  height: 423px;
+  position: relative;
+  background: url('@/assets/images/user/alert_bg.png') no-repeat;
+  background-size: 100% 100%;
+  overflow: hidden;
+  color: #568793;
+  font-size: 18px;;
+  padding: 0 40px 20px;
+  display: flex;
+  flex-direction: column;
+  .close-click {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 18px;
+    right: 20px;
+    background-image: url('@/assets/images/user/close.png');
+    background-size: 100% 100%;
+    cursor: pointer;
+  }
+  .title {
+    margin: 37px auto 17px;
+    text-align: center;
+    height: 39px;
+    line-height: 39px;
+    min-width: 240px;
+    width: max-content;
+    padding: 0 12px;
+    font-weight: 500;
+    font-size: 19px;
+    color: #FFFFFF;
+    background-color: #0B191C;
+    border-radius: 10px;
+  }
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
     }
   }
 }

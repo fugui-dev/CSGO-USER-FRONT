@@ -130,63 +130,24 @@ const handleClick = (item) => {
         </div>
       </div>
     </div> -->
-    <div class="tw-flex tw-flex-col ">
-      <div class="tw-flex  tw-relative tw-overflow-auto tw-w-[90vw] md:tw-w-[100%] no-scrollbar">
-        <div
-          class="tw-flex tw-flex-col tw-items-center tw-flex-shrink-0 tw-w-[6.25rem] md:tw-w-[8.125rem] tw-pb-3 hover:tw-text-white tw-justify-center tw-cursor-pointer  tw-gap-2 tw-duration-300"
-          :class="activeCategory === index ? 'tw-text-white ' : 'tw-text-white/60 '"
-          @click="choseType(item.value, item.index)" v-for="(item, index) in mockData" :key="index">
-          <img :src="item.img" class="tw-w-[2.25rem] tw-duration-300 tw-transform"
-            :class="index === activeCategory ? ' tw-scale-150' : ' '" alt="">
-          <span>{{
-            item.name }}</span>
-        </div>
-      </div>
-      <div class="tw-h-0.5 tw-w-full tw-bg-white/20  tw-overflow-hidden tw-hidden md:tw-flex">
-        <div class="tw-h-full tw-w-[6.25rem] md:tw-w-[8.125rem] tw-bg-[#F54C36] tw-duration-300"
-          :style="{ transform: `translateX(${activeCategory * 100}%)` }">
-        </div>
+    <div class="top-wrapper">
+      <div class="type-item" :class="activeCategory === index ? 'active' : ''" @click="choseType(item.value, item.index)" v-for="(item, index) in mockData" :key="index">
+        <img :src="item.img" class="type-icon" alt="">
+        <div class="type-name">{{ item.name }}</div>
       </div>
     </div>
 
-    <div class="tw-relative tw-mb-4 md:tw-mb-[2.3125rem] tw-w-full  md:tw-px-6">
-      <div
-        class="search-bar-container tw-w-full tw-flex tw-flex-row tw-justify-end tw-items-end tw-py-2 md:tw-py-3 md:tw-px-6 tw-rounded-xl">
-        <div class="tw-gap-2 md:tw-gap-3 tw-flex tw-justify-end tw-items-center tw-w-full sm:tw-w-auto ">
-          <div
-            class="tw-h-full tw-w-[10rem] sm:tw-w-[14.3125rem] tw-rounded-[41px] tw-overflow-hidden tw-bg-[rgba(255,241,241,0.27)] tw-transition-all tw-duration-300">
-            <div class="tw-flex tw-items-center tw-px-3 md:tw-px-6 tw-py-1.5 md:tw-py-2">
-              <input type="text" v-model="updata.userInput" placeholder="输入物品名称"
-                class="tw-bg-transparent tw-w-full tw-border-none tw-outline-none tw-text-[rgba(255,255,255,0.7)] tw-placeholder-[rgba(255,255,255,0.7)] tw-text-xs md:tw-text-sm tw-font-light"
-                style="font-family: 'Source Han Sans CN', sans-serif;" @keyup.enter="handleSearch" />
-              <div
-                class="tw-flex tw-items-center tw-justify-center tw-w-[1.5rem] tw-h-[1.5rem] tw-cursor-pointer hover:tw-scale-110 tw-duration-200 tw-ml-2"
-                @click="handleSearch">
-                <img :src="search" class="tw-w-[1.125rem] tw-h-[1.125rem]" alt="搜索">
-              </div>
-            </div>
-          </div>
-<!-- 
-          <BaseButton :customStyle="{ width: isMobile ? '4.5rem' : '6.5rem', height: isMobile ? '1.75rem' : '2.5625rem' }"
-            :font-size="isMobile ? '0.75rem' : '0.875rem'" @click="changeOrder()">
-            <template #name>
-              品质{{ updata.order ? '升' : '降' }}序
-            </template>
-          </BaseButton> -->
-          <BaseButton @click="changePrice()"
-            :customStyle="{ width: isMobile ? '4.5rem' : '6.5rem', height: isMobile ? '1.75rem' : '2.5625rem' }"
-            :font-size="isMobile ? '0.75rem' : '0.875rem'">
-            <template #name>
-              价格{{ updata.price ? '降' : '升' }}序
-            </template>
-          </BaseButton>
-        </div>
+    <div class="search-wrapper">
+      <div class="search-input">
+        <el-input  type="text" v-model="updata.userInput" placeholder="输入物品名称" @keyup.enter="handleSearch" style="--el-input-placeholder-color: #959595"/>
+        <img @click="handleSearch" :src="search" class="search-icon" alt="搜索">
       </div>
+      <div class="order-search-btn" @click="changePrice">价格{{ updata.price ? '降' : '升' }}序</div>
     </div>
     <div class="tw-flex tw-flex-col tw-items-center tw-w-full">
-      <div class=" md:tw-px-2 tw-py-3 md:tw-mx-6"
+      <div class=" md:tw-px-2 md:tw-mx-6"
         :class="{ 'tw-w-full md:tw-px-2': !loading.list || loading.list }">
-        <div class=" tw-flex tw-flex-wrap tw-items-start tw-gap-3 md:tw-gap-6 tw-w-full tw-relative tw-justify-center tw-min-h-[15rem] ">
+        <div class=" tw-flex tw-flex-wrap tw-items-start tw-w-full tw-relative tw-justify-center tw-min-h-[15rem]" style="row-gap: 3px;">
           <div v-if="loading.list"
             class="tw-absolute tw-inset-0 tw-bg-black tw-bg-opacity-70 tw-flex tw-items-center tw-justify-center tw-z-10 tw-w-full tw-h-full tw-rounded-xl">
             <div class="loading-spinner"></div>
@@ -204,7 +165,7 @@ const handleClick = (item) => {
       <div
         class="upgrade-shopping tw-flex tw-flex-wrap tw-items-center tw-justify-center tw-gap-2 md:tw-gap-4 tw-mt-4 md:tw-mt-8 tw-mb-6 md:tw-mb-[4.8125rem]">
         <div
-          class="pagination-info tw-px-3 md:tw-px-5 tw-h-full tw-text-[10px] md:tw-text-[13px] tw-flex tw-items-center tw-py-1 md:tw-py-1.5 tw-rounded-[0.25rem] tw-text-white">
+          class="pagination-info tw-px-3 md:tw-px-5 tw-h-full tw-text-[10px] md:tw-text-[16px] tw-flex tw-items-center tw-py-1 md:tw-py-1.5 tw-rounded-[0.25rem] tw-text-white">
           共 <span class="tw-font-bold tw-mx-1 total-count">{{ page.pageTotal }}</span> 条
         </div>
         <el-pagination v-if="page.pageTotal > 0" background layout="prev, pager, next" :total="page.pageTotal"
@@ -651,6 +612,100 @@ const handleClick = (item) => {
 
   &:hover {
     box-shadow: 0px 5px 15px 0px rgba(38, 39, 92, 0.9);
+  }
+}
+
+.top-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  .type-item {
+    width: 137px;
+    height: 102px;
+    background: #dcd9bf14;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    &.active {
+      background: #13f6d838;
+    }
+    .type-icon {
+      width: 65px;
+      height: 65px;
+      margin-top: 8px;
+    }
+    .type-name {
+      margin-top: -5px;
+      font-family: Jijiati;
+      font-weight: 400;
+      font-size: 17px;
+      color: #FFFBD4;
+      line-height: normal;
+    }
+  }
+}
+
+.search-wrapper {
+  margin: 37px 0 45px;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  width: 100%;
+  .search-input {
+    width: 236px;
+    position: relative;
+    :deep() {
+      .el-input {
+        width: 236px;
+        height: 32px;
+        font-size: 19px;
+      }
+      .el-input__wrapper {
+        background: #191e1c3b;
+        box-shadow: none;
+        border-radius: 0;
+      }
+      .el-input__inner {
+        box-shadow: none;
+        color: #ffffff;
+      }
+    }
+    .search-icon {
+      z-index: 1;
+      position: absolute;
+      right: 15px;
+      top: 4px;
+      width: 25px;
+      height: 25px;
+      cursor: pointer;
+    }
+  }
+  .order-search-btn {
+    cursor: pointer;
+    width: 83px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    margin-left: 11px;
+    background: url("@/assets/upgrade/shopping/button_bg.png") no-repeat;
+    background-size: 100% 100%;
+    font-size: 15px;
+    color: #072523;
+  }
+}
+:deep() {
+  .el-pagination .btn-prev,
+  .el-pagination .btn-next {
+    border: 1px solid #FFFFFF;
+    .el-icon {
+      color: #FFFFFF !important;
+    }
+  }
+  .el-pager li {
+    border: none;
+    color: #FFFFFF !important;
   }
 }
 

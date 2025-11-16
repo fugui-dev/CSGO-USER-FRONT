@@ -108,127 +108,174 @@ defineExpose({
 </script>
 
 <template>
-    <div>
-        <BaseModel v-model="visible" :modelStyle="{
-            backgroundColor: '#111827',
-            borderColor: '#111827',
-            boxShadow: '0 4px 20px 0 rgba(0, 0, 0, 0.5)',
-            width: isPC ? '60rem' : '100%',
-            borderRadius: '12px'
-        }" :closeOnEsc="true" :closeOnClickOutside="true" :showFooter="false" @close="close">
-            <template #title>
-                <div class="tw-flex tw-items-center tw-gap-3">
-                    <div class="tw-text-lg md:tw-text-2xl tw-font-bold tw-text-white tw-relative">
-                        饰品详情
-                        <div
-                            class="tw-absolute tw-h-[3px] tw-w-1/2 tw-bg-gradient-to-r tw-from-blue-500 tw-to-purple-500 tw-bottom-[-8px] tw-left-0 tw-rounded-full">
-                        </div>
-                    </div>
-                </div>
-            </template>
-            <div
-                class="tw-flex tw-flex-col md:tw-items-center md:tw-flex-row md:tw-justify-center tw-gap-6 tw-p-4 tw-bg-gray-900 tw-rounded-lg tw-text-white">
-                <!-- 左侧图片区域 -->
-                <div
-                    class="tw-w-full md:tw-w-1/3 tw-flex tw-justify-center tw-items-center tw-bg-gradient-to-br tw-from-gray-800 tw-to-gray-900 tw-rounded-lg tw-overflow-hidden tw-shadow-lg">
-                    <div class="tw-relative tw-group">
-                        <img :src="levelImg" class="tw-z-[-1] tw-absolute tw-top-0 tw-right-0 tw-w-full tw-h-full" />
-                        <img :src="moreData.imageUrl"
-                            class="tw-w-full tw-p-2 tw-h-auto tw-object-contain tw-rounded tw-transition-all tw-duration-300 hover:tw-scale-105" />
-                    </div>
-                </div>
-                <!-- 右侧信息区域 -->
-                <div
-                    class="tw-w-full md:tw-w-2/3 tw-flexw-flex-col tw-justify-start tw-p-4 tw-space-y-6 tw-rounded-xl tw-bg-gray-800/50 tw-backdrop-blur-sm tw-border tw-border-gray-700">
-                    <!-- 顶部名称 -->
-                    <h2
-                        class="tw-text-2xl tw-font-bold tw-bg-clip-text tw-text-transparent tw-bg-gradient-to-r tw-from-blue-400 tw-to-purple-500">
-                        {{ name }}
-                    </h2>
-                    <div class="tw-space-y-6">
-                        <!-- 饰品信息卡片 -->
-                        <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4">
-                            <!-- 饰品品质 -->
-                            <div class="tw-flex tw-items-center tw-gap-4 tw-p-3 tw-rounded-lg "
-                                :style="{ background: `${levelStyle.background}` }">
-                                <div class="tw-w-1.5 tw-h-16 tw-rounded-full"
-                                    :style="{ backgroundColor: levelStyle.color }"></div>
-                                <div class="tw-flex tw-flex-col">
-                                    <span class="tw-text-gray-400 tw-text-xs tw-font-medium">饰品品质</span>
-                                    <span class="tw-font-bold tw-text-lg tw-mt-1" :style="{ color: levelStyle.color }">
-                                        {{ leavel[moreData.ornamentsLevelId].name }}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- 外观信息 -->
-                            <div class="tw-flex tw-items-center tw-gap-4 tw-p-3 tw-rounded-lg "
-                                :style="{ background: `${levelStyle.background}` }">
-                                <div class="tw-w-1.5 tw-h-16 tw-rounded-full"
-                                    :style="{ backgroundColor: levelStyle.color }"></div>
-                                <div class="tw-flex tw-flex-col">
-                                    <span class="tw-text-gray-400 tw-text-xs tw-font-medium">外观</span>
-                                    <span class="tw-font-bold tw-text-lg tw-mt-1" :style="{ color: levelStyle.color }">
-                                        {{ exteriorName || '无' }}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- 概率信息 -->
-                            <div v-if="moreData.oddsResult"
-                                class="tw-flex tw-items-center tw-gap-4 tw-p-3 tw-rounded-lg "
-                                :style="{ background: 'linear-gradient(180deg, rgba(97, 8, 1, 0) 0%, rgba(222, 67, 32, 0.26) 100%)' }">
-                                <div class="tw-w-1.5 tw-h-16 tw-rounded-full tw-bg-[#FF352E]"></div>
-                                <div class="tw-flex tw-flex-col">
-                                    <span class="tw-text-gray-400 tw-text-xs tw-font-medium">出现概率</span>
-                                    <span
-                                        class="tw-font-bold tw-text-lg tw-mt-1 tw-text-[#FF352E] tw-flex tw-items-center">
-                                        {{ moreData.oddsResult }}%
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- 价格信息 -->
-                            <div class="tw-flex tw-items-center tw-gap-4 tw-p-3 tw-rounded-lg "
-                                :style="{ background: 'linear-gradient(180deg, rgba(97, 58, 1, 0.00) 0%, rgba(255, 180, 57, 0.26) 100%)' }">
-                                <div class="tw-w-1.5 tw-h-16 tw-rounded-full tw-bg-[#FFBD4E]"></div>
-                                <div class="tw-flex tw-flex-col">
-                                    <span class="tw-text-gray-400 tw-text-xs tw-font-medium">饰品价格</span>
-                                    <span
-                                        class="tw-font-bold tw-text-lg tw-mt-1 tw-text-[#FFBD4E] tw-flex tw-items-center tw-gap-2">
-                                        <img :src="Money" class="tw-h-5" />
-                                        {{ price.toFixed(2) }}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- 简称信息 -->
-                            <div class="tw-flex tw-items-center tw-gap-4 tw-p-3 tw-rounded-lg "
-                                :style="{ background: 'linear-gradient(180deg, rgba(1, 43, 97, 0) 0%, rgba(32, 102, 222, 0.26) 100%)' }">
-                                <div class="tw-w-1.5 tw-h-16 tw-rounded-full tw-bg-[#35B2FF]"></div>
-                                <div class="tw-flex tw-flex-col">
-                                    <span class="tw-text-gray-400 tw-text-xs tw-font-medium">开启箱子</span>
-                                    <span class="tw-font-bold tw-text-lg tw-mt-1 tw-text-white">
-                                        {{ boxName }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="moreData.updateTime"
-                        class="tw-mt-6 tw-pt-3 tw-border-t tw-border-gray-700/50 tw-flex tw-flex-col md:tw-flex-row tw-justify-between tw-items-start md:tw-items-center tw-gap-2">
-                        <div class="tw-text-xs tw-text-gray-500 tw-bg-gray-800/50 tw-px-3 tw-py-1 tw-rounded-full">开启时间:
-                            {{
-                                moreData.updateTime }}</div>
-                        <div
-                            class="tw-flex tw-items-center tw-gap-2 tw-bg-gray-800/80 tw-px-3 tw-py-1.5 tw-rounded-full">
-                            <img :src="moreData.avatar"
-                                class="tw-w-6 tw-h-6 tw-rounded-full tw-border tw-border-gray-600" />
-                            <span class="tw-text-xs tw-text-gray-300">{{ moreData.holderUserNickName }}</span>
-                        </div>
-                    </div>
-                </div>
+  <el-dialog
+    v-model="visible"
+    width="957"
+    :show-close="false"
+    align-center
+    style="--el-dialog-bg-color: transparent"
+    destroy-on-close
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+  >
+    <div class="box-modal-wrapper">
+      <div class="close-click" @click="visible = false" />
+      <div class="line"></div>
+      <div class="title">饰品详情</div>
+      <div class="content">
+        <div class="left">
+          <img :src="levelImg" class="level-bg" />
+          <img :src="moreData.imageUrl" class="image" />
+        </div>
+        <div class="right">
+          <div class="name">{{ name }}</div>
+          <div class="desc">
+            <div class="desc-item green">
+              <div class="item-tile">饰品品质</div>
+              <div class="item-value">{{ leavel[moreData.ornamentsLevelId].name }}</div>
             </div>
-        </BaseModel>
+            <div class="desc-item green">
+              <div class="item-tile">外观</div>
+              <div class="item-value">{{ exteriorName || '无' }}</div>
+            </div>
+            <div class="desc-item purple">
+              <div class="item-tile">出现概率</div>
+              <div class="item-value">{{ moreData.oddsResult }}%</div>
+            </div>
+            <div class="desc-item red">
+              <div class="item-tile">饰品价格</div>
+              <div class="item-value">
+                <img class="icon" src="@/assets/images/champion/game/coin.png" alt="" />
+                {{ price.toFixed(2) }}
+              </div>
+            </div>
+            <div class="desc-item golden">
+              <div class="item-tile">开启箱子</div>
+              <div class="item-value">{{ boxName }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </el-dialog>
 </template>
+<style scoped lang="scss">
+.box-modal-wrapper {
+  width: 957px;
+  height: 417px;
+  position: relative;
+  background: url('@/assets/images/open/dialog_bg.png') no-repeat;
+  background-size: 100% 100%;
+  overflow: hidden;
+  padding: 0 28px;
+  line-height: normal;
+  color: #FFFFFF;
+  .close-click {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 16px;
+    right: 16px;
+    background-image: url('@/assets/images/user/close.png');
+    background-size: 100% 100%;
+    cursor: pointer;
+  }
+  .line {
+    position: absolute;
+    top: 36px;
+    right: 18px;
+    width: 708px;
+    height: 1px;
+    background: #3C555C;
+  }
+  .title {
+    margin-top: 16px;
+    font-weight: 500;
+    font-size: 19px;
+  }
+  .content {
+    display: flex;
+    margin-top: 10px;
+    .left {
+      position: relative;
+      margin-top: 65px;
+      width: 238px;
+      height: 169px;
+      .level-bg {
+        width: 100%;
+        height: 100%;
+      }
+      .image {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 207px;
+        height: 130px;
+        object-fit: contain;
+      }
+    }
+    .right {
+      margin-left: 24px;
+      width: 626px;
+      height: 344px;
+      background-color: #0f1f256b;
+      border-radius: 17px;
+      padding: 20px 24px;
+      .name {
+        font-size: 18px;
+      }
+      .desc {
+        margin-top: 22px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 22px 72px;
+        .desc-item {
+          width: 228px;
+          height: 70px;
+          padding-left: 22px;
+          padding-top: 10px;
+          .item-tile {
+            font-size: 15px;
+          }
+          .item-value {
+            margin-top: 5px;
+            font-size: 18px;
+            .icon {
+              width: 18px;
+              height: 18px;
+              display: inline;
+              margin-top: -3px;
+            }
+          }
+          &.green {
+            background: url('@/assets/images/open/detail_green_bg.png') no-repeat;
+            background-size: 100% 100%;
+            .item-value {
+              color: #58CC3A;
+            }
+          }
+          &.purple {
+            background: url('@/assets/images/open/detail_purple_bg.png') no-repeat;
+            background-size: 100% 100%;
+            .item-value {
+              color: #BF55D6;
+            }
+          }
+          &.red {
+            background: url('@/assets/images/open/detail_red_bg.png') no-repeat;
+            background-size: 100% 100%;
+            .item-value {
+              color: #DA5A5A;
+            }
+          }
+          &.golden {
+            background: url('@/assets/images/open/detail_golden_bg.png') no-repeat;
+            background-size: 100% 100%;
+          }
+        }
+      }
+    }
+  }
+}
+</style>

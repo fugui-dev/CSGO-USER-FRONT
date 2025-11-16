@@ -6,6 +6,7 @@ import upgradeBg from '@/assets/images/upgrade/bg.png';
 import userBg from '@/assets/images/roll/bg.png';
 import userStorageBg from '@/assets/images/user/storage_bg.png';
 import smeltBg from '@/assets/images/smelt/bg.png';
+import luckyBg from '@/assets/images/upgrade/lucky_bg.webp';
 
 const props = defineProps({
   path: {
@@ -26,7 +27,7 @@ const BackgroundImg = computed(() => {
     return upgradeBg;
   }
   if (props.path.startsWith("/upgrade")) {
-    return requireImg("/v2/bg/up-bg.png");
+    return luckyBg;
   }
   if (props.path.startsWith("/smelt")) {
     return smeltBg;
@@ -52,7 +53,7 @@ const BackgroundImg = computed(() => {
   <img
     :src="BackgroundImg"
     class="tw-absolute md:tw-block tw-hidden tw-w-[100vw] tw-z-[-1]"
-    v-if="path.startsWith('/upgrade/open') || path.startsWith('/user') || path.startsWith('/smelt')"
+    v-if="path.startsWith('/upgrade/open') || path === '/upgrade' || path.startsWith('/user') || path.startsWith('/smelt')"
     loading="eager"
     decoding="async"
   />
