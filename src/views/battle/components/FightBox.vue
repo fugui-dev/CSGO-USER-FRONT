@@ -8,6 +8,7 @@ import end3 from '@/assets/images/open/purple-bg.png'
 import end4 from '@/assets/images/open/blue-bg.png'
 import end5 from '@/assets/images/open/green-bg.png'
 import coin from '@/assets/images/upgrade/coin.png'
+import line from '@/assets/images/open/line.png'
 import lightLeft from '@/assets/boxroom/dengLeft.png'
 import lightRight from '@/assets/boxroom/dengRight.png'
 import m1 from "@/assets/music/m1.wav";
@@ -188,9 +189,9 @@ defineExpose({
       @mousewheel.prevent
       @touchmove.prevent>
       <div class="line">
-        <img :src="lightLeft" alt="">
-        <div class="yellow-line"></div>
-        <img :src="lightRight" alt="">
+        <!-- <img :src="lightLeft" alt=""> -->
+        <img :src="line" class="tw-w-[1.4rem]" alt="" style="transform: rotateZ(90deg);">
+        <!-- <img :src="lightRight" alt=""> -->
       </div>
       <div
         :class="['fight-box-container', scrollAnimation ? 'scroll-animation' : 'scroll-start-point']"
@@ -218,29 +219,11 @@ defineExpose({
 .scroll-wrap {
   position: relative;
   .line {
-    width: 56%;
+    width: 50%;
     position: absolute;
     z-index: 2;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    .yellow-line {
-      width: 100%;
-      height: 1px;
-      background-color: #f0be29;
-    }
-    img:nth-of-type(1) {
-      position: absolute;
-      left: 0;
-      z-index: 3; 
-      transform: translate(-70%, -50%);
-    }
-    img:nth-of-type(2) {
-      position: absolute;
-      right: 0;
-      z-index: 3; 
-      transform: translate(70%, -50%);
-    }
+    left: 49%;
+    // transform: translate(-50%, -50%);
   }
 }
 .fight-box-container {
@@ -248,8 +231,8 @@ defineExpose({
   flex-direction: column;
   align-items: center;
   width: 50%;
-  border-left: 1px solid #b21414;
-  border-right: 1px solid #b21414;
+  // border-left: 1px solid #b21414;
+  // border-right: 1px solid #b21414;
   padding-left: 8px;
   padding-right: 8px;
   margin: 0 auto;
