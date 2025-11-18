@@ -259,8 +259,8 @@ onMounted(() => {
     }">
     <template #item>
       <div class="bg bg-battle"></div>
-      <div class="battle-container" v-loading="loading">
-        <!-- 宝箱列表 -->
+      <!-- 宝箱列表 -->
+      <div class="box-list-wrapper">
         <div class="box-list">
           <el-tabs type="border-card">
             <el-tab-pane :label="tabItem.boxTypeName" v-for="tabItem in boxTypeList" :key="tabItem.boxTypeId">
@@ -284,6 +284,8 @@ onMounted(() => {
             </el-tab-pane>
           </el-tabs>
         </div>
+      </div>
+      <div class="battle-container" v-loading="loading">
         <div class="content-wrap">
           <!-- 排行榜 -->
           <Rank :rankData="rankData"/>
@@ -380,16 +382,20 @@ onMounted(() => {
 .bg-battle {
   background-image: var(--bg-battle);
 }
-.battle-container {
-  width: 96%;
+.box-list-wrapper {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
   display: flex;
-  flex-direction: column;
-  max-width: 1024px;
-  margin: 6px auto;
-  box-sizing: border-box;
+  justify-content: center;
   // 宝箱列表
   .box-list {
     width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
     ::v-deep .el-tabs__content {
       padding: 8px;
     }
@@ -402,6 +408,24 @@ onMounted(() => {
         border: none;
         outline: none;
         height: 28px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        .el-tabs__nav-wrap {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          .el-tabs__nav-scroll {
+            display: flex;
+            justify-content: center;
+            width: auto !important;
+          }
+        }
+        .el-tabs__nav {
+          display: flex;
+          justify-content: center;
+          float: none !important;
+        }
         .el-tabs__item {
           height: 30px;
         }
@@ -417,7 +441,16 @@ onMounted(() => {
         }
       }
     }
-    .box-list-container {
+  }
+}
+.battle-container {
+  width: 96%;
+  display: flex;
+  flex-direction: column;
+  max-width: 1024px;
+  margin: 6px auto;
+  box-sizing: border-box;
+  .box-list-container {
       display: flex;
       width: fit-content;
       .box-item {
@@ -559,6 +592,7 @@ onMounted(() => {
         .nav {
           display: flex;
           align-items: center;
+          justify-content: center;
           margin-top: 30px;
           @include mobile{
             justify-content: space-evenly;
@@ -579,6 +613,10 @@ onMounted(() => {
             border-radius: 30px;
             font-size: 16px;
             margin-right: 32px;
+
+            &:last-child {
+              margin-right: 0;
+            }
 
             @include mobile{
               width: 104px;

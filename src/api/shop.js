@@ -23,3 +23,17 @@ export const ammunitionConversion = (data) => {
     data: data,
   });
 };
+
+export const getExteriorList = () => {
+  return request({
+    url: "/api/shopping/exterior/list",
+    method: "get",
+  });
+};
+
+export const getTypeList = () => {
+  return request({
+    url: "/api/shopping/type/list",
+    method: "get",
+  });
+};

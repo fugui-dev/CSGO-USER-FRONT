@@ -107,13 +107,13 @@ const displayPriceHave = computed(() => {
 
 <style scoped lang="scss">
 .box-item-wrapper {
-  width: 149px;
-  height: 106px;
-  padding: 9px 14px 15px 10px;
-  margin-right: 6px;
-  margin-bottom: 6px;
+  width: 180px;
+  height: 140px;
+  padding: 11px 16px 18px 12px;
+  margin-right: 0;
+  margin-bottom: 0;
   font-weight: 500;
-  font-size: 11px;
+  font-size: 12px;
   color: #ffffff;
   position: relative;
   box-sizing: border-box;
@@ -122,31 +122,31 @@ const displayPriceHave = computed(() => {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
     position: absolute;
-    top: 9px;
-    right: 10px;
+    top: 11px;
+    right: 12px;
     z-index: 10;
     img {
-      width: 14px;
-      height: 14px;
-      margin-right: 3px;
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
       flex-shrink: 0;
     }
     .price-text {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      max-width: 80px;
+      max-width: 100px;
       display: inline-block;
     }
   }
   .top-bar {
     position: absolute;
-    top: 9px;
-    left: 10px;
-    right: 10px;
+    top: 11px;
+    left: 12px;
+    right: 12px;
     z-index: 10;
     display: flex;
     justify-content: space-between;
@@ -155,25 +155,25 @@ const displayPriceHave = computed(() => {
   .price-left {
     display: flex;
     align-items: center;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
     img {
-      width: 14px;
-      height: 14px;
-      margin-right: 3px;
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
       flex-shrink: 0;
     }
     .price-text {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      max-width: 80px;
+      max-width: 100px;
       display: inline-block;
     }
   }
   .rate-right {
     text-align: right;
-    font-size: 11px;
+    font-size: 12px;
   }
   .price-right {
     display: flex;
@@ -201,28 +201,29 @@ const displayPriceHave = computed(() => {
     font-size: 11px;
   }
   .empty {
-    height: 14px;
+    height: 16px;
   }
   .image {
     width: 100%;
-    height: 60px;
+    height: 85px;
     object-fit: contain;
     object-position: center;
     display: block;
+    margin: 0 auto;
   }
   .name {
     position: absolute;
-    bottom: 9px;
-    left: 10px;
-    right: 10px;
+    bottom: 11px;
+    left: 12px;
+    right: 12px;
     line-height: 1.3;
-    max-height: 28px;
+    max-height: 34px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    font-size: 11px;
+    font-size: 12px;
     box-sizing: border-box;
     word-break: break-word;
     word-wrap: break-word;

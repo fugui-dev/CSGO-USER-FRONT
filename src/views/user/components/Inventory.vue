@@ -2,7 +2,7 @@
 
 import {computed, ref, watch} from "vue";
 import {deliverPackSackApi, getExtractPackSackApi, getPackSackApi, getPackSackGlobalDataApi} from "@/api";
-import {useDebounceFn, useThrottleFn} from "@vueuse/core";
+import {useThrottleFn} from "@vueuse/core";
 import {ElMessage} from "element-plus";
 import {goto} from "@/utils/common";
 import NewBoxs from "@/components/Box/NewBoxs.vue";
@@ -24,10 +24,11 @@ const total = ref({
 })
 const form = ref({
   page: 1,
-  size: 20,
+  size: 28,
   orderByFie: 2,
   orderByType: 2
 })
+const pageTotal = ref(0)
 const tabs = ref([
   {
     label: '宝箱饰品库存',
@@ -74,21 +75,12 @@ const getList = () => {
     return
   }
   api(requestForm).then(res => {
-    console.log('API响应原始数据：', res)
-    console.log('API响应data字段：', res.data)
-    if (res.data && res.data.length) {
-      if (form.value.page === 1) {
-        list.value = []
-      }
-      console.log('准备添加到list的数据：', res.data)
-      list.value.push(...res.data)
-      console.log('添加后的list.value：', list.value)
-      if (listRef.value.clientHeight < scrollRef.value.$el.clientHeight) {
-        form.value.page += 1
-        getList()
-      }
+    if (res.data && Array.isArray(res.data)) {
+      list.value = res.data
+      pageTotal.value = res.total || 0
     } else {
-      isComplete.value = true
+      list.value = []
+      pageTotal.value = 0
     }
   }).finally(() => {
     loading.value = false
@@ -96,23 +88,22 @@ const getList = () => {
 }
 getTotal()
 getList()
-const scrollRef = ref()
 const listRef = ref()
-const isComplete = ref(false)
 
-const debouncedGetList = useDebounceFn(() => {
-  if (!isComplete.value) {
-    form.value.page += 1
-    getList()
-  }
-}, 1000)
+// 分页大小变化
+const handleSizeChange = (val) => {
+  form.value.size = val
+  form.value.page = 1
+  getList()
+}
 
-const onScroll = (e) => {
-  let scrollBarHeight = scrollRef.value.$el.querySelector(".el-scrollbar__bar:last-child .el-scrollbar__thumb").clientHeight || 200
-  if (listRef.value && e.scrollTop) {
-    if (e.scrollTop + scrollBarHeight + 500 >= listRef.value.clientHeight) {
-      debouncedGetList()
-    }
+// 页码变化
+const handlePageChange = (val) => {
+  form.value.page = val
+  getList()
+  // 滚动到顶部
+  if (listRef.value) {
+    listRef.value.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 }
 const checkAll = ref(false)
@@ -190,17 +181,16 @@ const handleDecompose = useThrottleFn(handleDecomposeOriginal, 3000);
 watch(() => active.value, () => {
   form.value.page = 1
   list.value = []
-  isComplete.value = false
+  pageTotal.value = 0
   getTotal()
   getList()
 })
 
 const changeSort = () => {
   form.value.orderByFie = form.value.orderByFie == 2 ? 1 : 2
-  form.value.page = 0
+  form.value.page = 1
   list.value = []
-  isComplete.value = false
-  debouncedGetList()
+  getList()
 }
 
 const totalDecomposePrice = computed(() => {
@@ -264,18 +254,44 @@ const totalDecomposePrice = computed(() => {
         </div>
       </div>
     </div>
-    <el-scrollbar v-if="active === 0 || active === 1" height="600px" @scroll="onScroll" ref="scrollRef" v-loading="loading">
+    <div v-if="active === 0 || active === 1" v-loading="loading" class="content-wrapper">
       <div class="inventory_list" ref="listRef">
         <NewBoxs class="wq" v-for="(i, index) in list" :class="{ 'choose': i.choosed }" :title="i.ornamentName"
           :key="index" @click="onChoose(i)" :box-data="i" show-price></NewBoxs>
       </div>
-    </el-scrollbar>
-    <el-scrollbar v-if="active === 2" height="600px" @scroll="onScroll" ref="scrollRef" v-loading="loading">
+      <!-- 分页组件 -->
+      <div class="pagination-wrapper" v-if="pageTotal > 0">
+        <el-pagination
+          v-model:current-page="form.page"
+          v-model:page-size="form.size"
+          :page-sizes="[14, 28, 56, 112]"
+          :total="pageTotal"
+          layout="total, sizes, prev, pager, next"
+          @size-change="handleSizeChange"
+          @current-change="handlePageChange"
+          background
+        />
+      </div>
+    </div>
+    <div v-if="active === 2" v-loading="loading" class="content-wrapper">
       <div class="inventory_list" ref="listRef">
         <NewBoxs class="wq" v-for="(i, index) in list" :title="i.ornamentName"
           :key="index" :box-data="i" show-price></NewBoxs>
       </div>
-    </el-scrollbar>
+      <!-- 分页组件 -->
+      <div class="pagination-wrapper" v-if="pageTotal > 0">
+        <el-pagination
+          v-model:current-page="form.page"
+          v-model:page-size="form.size"
+          :page-sizes="[14, 28, 56, 112]"
+          :total="pageTotal"
+          layout="total, sizes, prev, pager, next"
+          @size-change="handleSizeChange"
+          @current-change="handlePageChange"
+          background
+        />
+      </div>
+    </div>
   </div>
 
 </template>
@@ -414,17 +430,68 @@ $primary-color-user: rgb(138, 15, 198);
 
   }
 
+  .content-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   .inventory_list {
     display: flex;
     width: 100%;
     flex-wrap: wrap;
     margin: 10px;
+    min-height: 400px;
 
     @include maxWidth(521px) {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       place-items: center;
       margin: 0;
+    }
+  }
+
+  .pagination-wrapper {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    :deep(.el-pagination) {
+      --el-pagination-button-color: #fff;
+      --el-pagination-text-color: #fff;
+      --el-pagination-bg-color: rgba(29, 51, 55, 0.8);
+      --el-pagination-border-radius: 8px;
+      .el-pagination__total,
+      .el-pagination__jump {
+        color: #fff;
+      }
+      .btn-prev,
+      .btn-next {
+        background-color: rgba(29, 51, 55, 0.8);
+        color: #fff;
+        &:hover {
+          background-color: rgba(29, 51, 55, 1);
+        }
+      }
+      .el-pager li {
+        background-color: rgba(29, 51, 55, 0.8);
+        color: #fff;
+        &.is-active {
+          background-color: rgba(155, 81, 60, 0.8);
+          color: #fff;
+        }
+        &:hover {
+          background-color: rgba(29, 51, 55, 1);
+        }
+      }
+      .el-select .el-input__wrapper {
+        background-color: rgba(29, 51, 55, 0.8);
+        color: #fff;
+      }
+      .el-input__inner {
+        color: #fff;
+      }
     }
   }
 }

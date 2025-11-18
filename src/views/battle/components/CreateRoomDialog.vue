@@ -301,8 +301,8 @@ defineExpose({
                               </svg>
                             </div>
                             <div class="bx">
-                              <img :src="item.boxImg01" class="bj" alt="">
-                              <img :src="item.boxImg02" class="wq" alt="">
+                              <img v-if="item.boxImg01" :src="item.boxImg01" class="bj" alt="" @error="$event.target.style.display = 'none'">
+                              <img v-if="item.boxImg02" :src="item.boxImg02" class="wq" alt="" @error="$event.target.style.display = 'none'">
                             </div>
                             <div class="mz">
                               <div class="name">{{ item.boxName }}</div>
@@ -327,8 +327,8 @@ defineExpose({
                   <div class="box-choose-list tw-flex no-scrollbar tw-flex-wrap tw-justify-center  tw-gap-y-2 tw-gap-x-2 md:tw-gap-6 tw-animate-gridAppear">
                     <div class="box-item" @click.capture="handleClickChoosedBoxItem(item, index)" v-for="(item, index) in choosedBoxData" :key="item.boxId">
                       <div class="bx">
-                        <img :src="item.boxImg01" class="bj" alt="">
-                        <img :src="item.boxImg02" class="wq" alt="">
+                        <img v-if="item.boxImg01" :src="item.boxImg01" class="bj" alt="" @error="$event.target.style.display = 'none'">
+                        <img v-if="item.boxImg02" :src="item.boxImg02" class="wq" alt="" @error="$event.target.style.display = 'none'">
                       </div>
                       <div class="mz">
                         <div class="name">{{ item.boxName }}</div>

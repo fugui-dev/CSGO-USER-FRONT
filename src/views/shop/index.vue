@@ -19,7 +19,7 @@
               @change="handleSearch((e) => handleSearch('type', e))"
             >
               <el-option
-                v-for="item in category.type"
+                v-for="item in typeList"
                 :key="item.value"
                 :label="item.name"
                 :value="item.value"
@@ -35,7 +35,7 @@
               @change="handleSearch((e) => handleSearch('exterior', e))"
             >
               <el-option
-                v-for="item in category.exterior"
+                v-for="item in exteriorList"
                 :key="item.value"
                 :label="item.name"
                 :value="item.value"
@@ -80,14 +80,7 @@
           <!-- 弹药余额和转换按钮已移至导航栏 -->
         </div>
       </div>
-      <el-scrollbar
-        height="800px"
-        @scroll="onScroll"
-        ref="scrollRef"
-        v-loading="loading"
-        element-loading-background="transparent"
-        style="width: 100%;"
-      >
+      <div class="content-wrapper" v-loading="loading" element-loading-background="transparent">
         <div class="list-wrapper" ref="listRef">
           <boxItem
             v-for="(item, index) in list"
@@ -97,7 +90,21 @@
             @click="handleCommodityExchange(item)"
           />
         </div>
-      </el-scrollbar>
+        <!-- 分页组件 -->
+        <div class="pagination-wrapper" v-if="total > 0">
+          <el-pagination
+            v-model:current-page="search.pageNum"
+            v-model:page-size="search.pageSize"
+            :page-sizes="[12, 24, 48, 96]"
+            :total="total"
+            layout="total, sizes, prev, pager, next"
+            @size-change="handleSizeChange"
+            @current-change="handlePageChange"
+            background
+            :hide-on-single-page="false"
+          />
+        </div>
+      </div>
     </div>
     <convertDialog ref="dialogRef" />
     <confirmDialog
@@ -112,19 +119,23 @@ import Layout from "@/components/Layout.vue";
 import BaseDialog from "@/components/dialogs/BaseDialog.vue";
 import { useStore } from "@/store/index.js";
 import { category } from "@/views/options.js";
-import { nextTick, onMounted, ref } from "vue";
-import { useDebounceFn } from "@vueuse/core";
+import { onMounted, ref } from "vue";
 import boxItem from "@/views/openBox/components/boxItem.vue";
 import convertDialog from "./components/convertDialog.vue";
 import confirmDialog from "./components/confirmDialog.vue";
 import {
   getShopList,
+  getExteriorList,
+  getTypeList,
 } from "@/api/shop";
 const store = useStore();
 const list = ref([]);
+const typeList = ref([]);
+const exteriorList = ref([]);
+const total = ref(0);
 const search = ref({
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 24,
   name: "",
   type: "",
   exterior: "",
@@ -134,58 +145,96 @@ const search = ref({
 });
 const handleSearch = (type, val) => {
   search.value[type] = val;
-  resetList();
+  search.value.pageNum = 1; // 重置到第一页
+  getList();
 };
-const resetList = () => {
-  search.value.pageNum = 0;
-  isComplete.value = false;
-  debouncedGetList();
-};
-const debouncedGetList = useDebounceFn(() => {
-  if (!isComplete.value) {
-    search.value.pageNum += 1;
-    getList();
-  }
-}, 300);
 const loading = ref(false);
-const isComplete = ref(false);
 const listRef = ref();
-const scrollRef = ref();
-const onScroll = (e) => {
-  if (!isComplete.value) {
-    debouncedGetList();
-  }
-};
 const getList = () => {
   if (loading.value) return;
   loading.value = true;
   getShopList(search.value)
     .then((res) => {
-      loading.value = false;
-      if (search.value.pageNum === 1) {
+      if (res && res.rows) {
+        list.value = res.rows || [];
+        total.value = res.total || 0;
+      } else {
         list.value = [];
+        total.value = 0;
       }
-      if (res.rows && res.rows.length) {
-        list.value.push(...res.rows);
-        if (list.value.length >= res.total) {
-          isComplete.value = true;
-        }
-        nextTick(() => {
-          if (
-            !isComplete.value &&
-            listRef.value.clientHeight < scrollRef.value.$el.clientHeight
-          ) {
-            search.value.pageNum += 1;
-            getList();
-          }
-        });
-      }
+    })
+    .catch((error) => {
+      console.error('获取商城列表失败:', error);
+      list.value = [];
+      total.value = 0;
     })
     .finally(() => {
       loading.value = false;
     });
 };
-getList();
+// 分页大小变化
+const handleSizeChange = (val) => {
+  search.value.pageSize = val;
+  search.value.pageNum = 1; // 重置到第一页
+  getList();
+};
+// 页码变化
+const handlePageChange = (val) => {
+  // 确保页码有效
+  if (!val || val < 1) {
+    search.value.pageNum = 1;
+  } else {
+    // 计算最大页码
+    const maxPage = Math.ceil(total.value / search.value.pageSize);
+    if (val > maxPage) {
+      search.value.pageNum = maxPage || 1;
+    } else {
+      search.value.pageNum = val;
+    }
+  }
+  getList();
+  // 滚动到顶部
+  if (listRef.value) {
+    listRef.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+};
+// 获取种类和外观列表
+const loadCategoryData = async () => {
+  try {
+    const [typeRes, exteriorRes] = await Promise.all([
+      getTypeList(),
+      getExteriorList(),
+    ]);
+    
+    if (typeRes.code === 200 && typeRes.data) {
+      typeList.value = [
+        { name: "不限", value: "" },
+        ...typeRes.data.map(item => ({
+          name: item.name,
+          value: item.value,
+        })),
+      ];
+    }
+    
+    if (exteriorRes.code === 200 && exteriorRes.data) {
+      exteriorList.value = [
+        { name: "不限", value: "" },
+        ...exteriorRes.data.map(item => ({
+          name: item.name,
+          value: item.value,
+        })),
+      ];
+    }
+  } catch (error) {
+    console.error("获取种类和外观列表失败:", error);
+  }
+};
+
+onMounted(() => {
+  loadCategoryData();
+  getList();
+});
+
 const dialogRef = ref();
 import { ElMessage } from "element-plus";
 const handleAmmunitionConversion = () => {
@@ -292,19 +341,91 @@ const handleCommodityExchange = (item) => {
       }
     }
   }
+  .content-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
   .list-wrapper {
     width: 1260px;
     max-width: 100%;
     margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
     padding: 26px;
-    gap: 0;
     background-color: rgb(51, 56, 57, 0.28);
     border-radius: 22px;
     box-sizing: border-box;
-    justify-content: flex-start;
-    align-items: flex-start;
+    justify-items: center;
+    min-height: 400px;
+  }
+  
+  @media (max-width: 1400px) {
+    .list-wrapper {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+  
+  @media (max-width: 1200px) {
+    .list-wrapper {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  @media (max-width: 900px) {
+    .list-wrapper {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .list-wrapper {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .pagination-wrapper {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    :deep(.el-pagination) {
+      --el-pagination-button-color: #fff;
+      --el-pagination-text-color: #fff;
+      --el-pagination-bg-color: rgba(29, 51, 55, 0.8);
+      --el-pagination-border-radius: 8px;
+      .el-pagination__total,
+      .el-pagination__jump {
+        color: #fff;
+      }
+      .btn-prev,
+      .btn-next {
+        background-color: rgba(29, 51, 55, 0.8);
+        color: #fff;
+        &:hover {
+          background-color: rgba(29, 51, 55, 1);
+        }
+      }
+      .el-pager li {
+        background-color: rgba(29, 51, 55, 0.8);
+        color: #fff;
+        &.is-active {
+          background-color: rgba(155, 81, 60, 0.8);
+          color: #fff;
+        }
+        &:hover {
+          background-color: rgba(29, 51, 55, 1);
+        }
+      }
+      .el-select .el-input__wrapper {
+        background-color: rgba(29, 51, 55, 0.8);
+        color: #fff;
+      }
+      .el-input__inner {
+        color: #fff;
+      }
+    }
   }
 }
 .confirm-tip {

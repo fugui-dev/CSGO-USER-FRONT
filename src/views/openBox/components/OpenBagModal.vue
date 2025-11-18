@@ -5,8 +5,9 @@ import { useStore } from "@/store";
 import { ElMessage } from "element-plus";
 import { useUserInfo } from '@/composables/useUesrInfo'
 import { useScroll } from '@vueuse/core'
-import Box from '@/components/Box/BagBox.vue'
+import NewBoxs from '@/components/Box/NewBoxs.vue'
 import BaseModel from '@/components/BaseModel/index.vue'
+import luckyBg from '@/assets/images/upgrade/lucky_bg.webp'
 const props = defineProps({
   openData: {
     type: Array,
@@ -336,7 +337,8 @@ defineExpose({
 </script>
 <template>
   <div>
-    <BaseModel v-model="visible" :closeOnEsc="true" :closeOnClickOutside="true" @close="close">
+    <BaseModel v-model="visible" :closeOnEsc="true" :closeOnClickOutside="true" @close="close"
+      :modelStyle="{ backgroundImage: `url(${luckyBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }">
       <template #title>
         <div class="tw-flex tw-items-center tw-gap-3">
           <div class="tw-text-lg md:tw-text-2xl tw-font-bold tw-text-white">
@@ -345,9 +347,7 @@ defineExpose({
         </div>
       </template>
       <!-- 主内容区域 -->
-      <div class="cyber-content tw-relative  tw-p-4 ">
-        <!-- 替换网格背景为更好的背景效果 -->
-        <div class="cyber-background"></div>
+      <div class="cyber-content tw-relative tw-p-4">
         <div class="tw-flex tw-justify-end tw-relative tw-py-4 tw-px-2">
           <div class="tw-flex tw-gap-2">
             <button @click="sortByTime" class="cyber-sort-btn" :class="{ 'active': orderByFie === 1 }">
@@ -388,25 +388,15 @@ defineExpose({
         </div>
         <!-- 物品列表滚动区域 -->
         <div ref="scrollContainerRef"
-          class="cyber-items-container tw-py-3 md:tw-p-5 tw-h-[60vh] md:tw-h-[65vh] tw-overflow-y-auto no-scrollbar">
+          class="cyber-items-container tw-py-3 md:tw-p-5 tw-h-[60vh] md:tw-h-[65vh] tw-overflow-y-auto no-scrollbar tw-relative tw-z-10">
 
-          <!-- 调整网格布局以防止Box被挤压 -->
-          <div class="tw-grid tw-grid-cols-2 md:tw-grid-cols-4 tw-gap-4 md:tw-gap-[2.875rem]">
+          <!-- 使用与库存页面一致的布局 -->
+          <div class="inventory_list">
             <div v-for="(item, index) in userBagData" :key="item.id"
-              class="cyber-item-wrapper tw-transition-all tw-cursor-pointer tw-duration-300"
+              class="wq tw-transition-all tw-cursor-pointer tw-duration-300"
               :style="{ 'animation-delay': getItemAnimationDelay(index) }"
-              :class="{ 'cyber-selected': isSelected(item.id) }" @click="handleItemSelect(item)">
-              <div class="cyber-item">
-                <div>
-                  <Box :boxData="item" :isGold="true" />
-                </div>
-                <div class="cyber-item-select-indicator" v-if="isSelected(item.id)">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                </div>
-              </div>
+              :class="{ 'choose': isSelected(item.id) }" @click="handleItemSelect(item)">
+              <NewBoxs :boxData="item" :title="item.ornamentName" show-price />
             </div>
           </div>
 
@@ -464,45 +454,35 @@ defineExpose({
 }
 
 
-/* 改进背景效果 */
-.cyber-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(155, 81, 60, 0.15), transparent 70%),
-    radial-gradient(circle at 80% 20%, rgba(74, 29, 19, 0.1), transparent 50%);
-  z-index: 0;
-  overflow: hidden;
+/* 使用幸运饰品背景 - 覆盖整个弹框 */
+:deep(.cyber-modal) {
+  position: relative !important;
+  overflow: hidden !important;
+  background-color: transparent !important;
+  background-image: url(v-bind(luckyBg)) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
 }
 
-.cyber-background::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image:
-    linear-gradient(90deg, rgba(155, 81, 60, 0.05) 1px, transparent 1px),
-    linear-gradient(rgba(155, 81, 60, 0.05) 1px, transparent 1px);
-  background-size: 30px 30px;
-  transform: perspective(500px) rotateX(30deg) scale(2.5);
-  transform-origin: center bottom;
-  opacity: 0.3;
+:deep(.cyber-header) {
+  position: relative !important;
+  z-index: 1 !important;
+  background: transparent !important;
+  backdrop-filter: blur(2px);
 }
 
-.cyber-background::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 50%;
-  background: linear-gradient(to top, rgba(30, 15, 10, 0.6), transparent);
-  pointer-events: none;
+:deep(.cyber-footer) {
+  position: relative !important;
+  z-index: 1 !important;
+  background: transparent !important;
+  border-top: 1px solid rgba(155, 81, 60, 0.3);
+  backdrop-filter: blur(2px);
+}
+
+:deep(.cyber-content) {
+  position: relative !important;
+  z-index: 1 !important;
 }
 
 
@@ -512,8 +492,9 @@ defineExpose({
 
 .cyber-content {
   position: relative;
-  z-index: 2;
+  z-index: 1;
   padding-top: 0;
+  min-height: calc(60vh + 8rem);
 }
 
 .custom-scrollbar {
@@ -772,5 +753,45 @@ defineExpose({
   color: rgba(253, 224, 71, 1);
   border-color: rgba(180, 83, 60, 0.6);
   box-shadow: 0 0 8px rgba(155, 81, 60, 0.3);
+}
+
+/* 库存列表样式 */
+.inventory_list {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  margin: 10px;
+}
+
+.inventory_list .wq {
+  margin: 5px;
+  cursor: pointer;
+  position: relative;
+}
+
+.inventory_list .wq.choose::after {
+  content: '√';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-family: "titleFont", "Microsoft YaHei", 'sans-serif';
+  z-index: 10;
+  border-radius: 0.75rem;
+}
+
+@media (max-width: 521px) {
+  .inventory_list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    place-items: center;
+    margin: 0;
+  }
 }
 </style>

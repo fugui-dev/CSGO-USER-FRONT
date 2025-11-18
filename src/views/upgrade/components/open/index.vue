@@ -351,10 +351,17 @@ const getSegmentOffset = (index) => {
         class="tw-flex tw-flex-col tw-w-[75vw] md:tw-w-[31.25rem] tw-top-[-13vw] tw-absolute  tw-items-center tw-justify-center md:tw-top-[-8vh] md:tw-left-0  tw-left-[-20vw] md:tw-relative">
         <img :src="logoBg1" class="tw-w-[240px]">
         <div
-          class="tw-absolute tw-top-1/2 tw-left-1/2 tw-text-center  -tw-translate-x-1/2 -tw-translate-y-1/3 tw-cursor-pointer"
+          class="tw-absolute tw-top-1/3 tw-left-1/2 tw-text-center  -tw-translate-x-1/2 tw-cursor-pointer tw-flex tw-flex-col tw-items-center"
           @click="openBag">
-          <img :src="selectedItemsData.imageUrl || question" class="tw-w-[20vw] md:tw-w-[5.625rem] animate-bounce">
-          <div class="tw-mt-[15vw] md:tw-mt-[4.5rem]">注入饰品</div>
+          <img :src="selectedItemsData.imageUrl || question" class="tw-w-[20vw] md:tw-w-[5.625rem] animate-bounce tw-h-auto">
+          <div class="tw-mt-[2vw] md:tw-mt-[1rem] tw-text-white tw-text-sm md:tw-text-base tw-leading-none">注入饰品</div>
+          <div v-if="selectedItemsData.ornamentName" class="tw-mt-2 tw-text-[#FFF646] tw-text-xs md:tw-text-sm tw-max-w-[20vw] md:tw-max-w-[200px] tw-text-center tw-break-words tw-px-2" :title="selectedItemsData.ornamentName">
+            {{ selectedItemsData.ornamentName }}
+          </div>
+          <div v-if="selectedItemsData.ornamentsPrice" class="tw-mt-1 tw-text-white tw-text-xs md:tw-text-sm tw-flex tw-items-center tw-justify-center tw-gap-1">
+            <img :src="Money" class="tw-h-3 md:tw-h-4" />
+            <span>{{ selectedItemsData.ornamentsPrice?.toFixed(2) }}</span>
+          </div>
         </div>
       </div>
       <div
@@ -398,10 +405,6 @@ const getSegmentOffset = (index) => {
           <div
             class="tw-font-bold tw-text-[#FFFFFF] tw-text-xl md:tw-text-[21px]"> {{ sliderValue
             }}%</div>
-          <div class="tw-text-sm md:tw-text-lg md:tw-text-[16px]">
-            目标饰品：
-            <div class="tw-text-[#FFF646] tw-inline-block short-name">{{ boxData.shortName }}</div>
-          </div>
           <span class="tw-text-white/70 tw-text-xs md:tw-text-sm md:tw-text-[14px] tw-text-[#FFFFFF] tw-mb-[10px] tw-mt-[14px]">滑动可调整您的幸运值
           </span>
         </div>
@@ -409,8 +412,16 @@ const getSegmentOffset = (index) => {
       <div
         class="tw-flex tw-flex-col tw-w-[75vw]  md:tw-w-[31.25rem] tw-top-[-13vw]  tw-items-center tw-justify-center md:tw-top-[-8vh] md:tw-right-0 tw-right-[-20vw] tw-absolute md:tw-relative">
         <img :src="logoBg3" class="tw-w-[240px]">
-        <div class="tw-absolute tw-top-1/3 tw-left-1/2 tw-text-center  -tw-translate-x-1/2">
-          <img :src="boxData.imageUrl" class="tw-w-[20vw] md:tw-w-[10rem] animate-bounce">
+        <div class="tw-absolute tw-top-1/3 tw-left-1/2 tw-text-center  -tw-translate-x-1/2 tw-flex tw-flex-col tw-items-center">
+          <img :src="boxData.imageUrl" class="tw-w-[20vw] md:tw-w-[5.625rem] animate-bounce tw-h-auto">
+          <div class="tw-mt-[8vw] md:tw-mt-[2.5rem] tw-text-white tw-text-sm md:tw-text-base tw-leading-none">目标饰品</div>
+          <div v-if="boxData.ornamentName || boxData.shortName || boxData.name" class="tw-mt-2 tw-text-[#FFF646] tw-text-xs md:tw-text-sm tw-max-w-[20vw] md:tw-max-w-[200px] tw-text-center tw-break-words tw-px-2" :title="boxData.ornamentName || boxData.shortName || boxData.name">
+            {{ boxData.ornamentName || boxData.shortName || boxData.name }}
+          </div>
+          <div v-if="boxData.usePrice" class="tw-mt-1 tw-text-white tw-text-xs md:tw-text-sm tw-flex tw-items-center tw-justify-center tw-gap-1">
+            <img :src="Money" class="tw-h-3 md:tw-h-4" />
+            <span>{{ Number(boxData.usePrice).toFixed(2) }}</span>
+          </div>
         </div>
       </div>
     </div>
