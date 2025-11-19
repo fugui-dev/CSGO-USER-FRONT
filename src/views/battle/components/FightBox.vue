@@ -63,15 +63,70 @@ const boxList = inject('boxList', [])
 const musica = new Audio(m1) //滚动音频
 const musicb = new Audio(m2) //滚动音频
 
-// 多个饰品列表拼接
+// 打乱数组函数（Fisher-Yates洗牌算法）
+const shuffleArray = (array) => {
+  const newArray = [...array] // 创建副本，避免修改原数组
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]]
+  }
+  return newArray
+}
+
+// 获取目标饰品ID
+const getTargetOrnamentId = () => {
+  const currPlayerId = props.currPlayerId
+  const currRound = store.currRound
+  if (currPlayerId && currRound) {
+    const fightResult = props.fightResult
+    const result = fightResult?.find(item => item.userId === currPlayerId && item.fightRoundNumber === currRound)
+    return result?.ornamentId
+  }
+  return null
+}
+
+// 多个饰品列表拼接（打乱顺序，但确保目标元素在最后一组的中间位置）
 const tempMultiOrnamentsData = computed(() => {
   const currRound = store.currRound
   const ornamentsData = boxList.value[currRound-1].ornaments
+  const targetOrnamentId = getTargetOrnamentId()
   let arr = []
-  for (let i = 0; i < 8; i++) {
-    for (let j = 0; j < ornamentsData.length; j++) {
-      arr.push(ornamentsData[j])
+  
+  // 前7组：完全随机打乱
+  for (let i = 0; i < 7; i++) {
+    const shuffled = shuffleArray(ornamentsData)
+    arr.push(...shuffled)
+  }
+  
+  // 最后一组：确保目标元素在中间位置（这样滚动停止时会在中间）
+  if (targetOrnamentId && ornamentsData.length > 0) {
+    const targetOrnament = ornamentsData.find(item => item.ornamentId === targetOrnamentId)
+    
+    if (targetOrnament) {
+      // 其他元素（排除目标元素）
+      const otherOrnaments = ornamentsData.filter(item => item.ornamentId !== targetOrnamentId)
+      const shuffledOthers = shuffleArray(otherOrnaments)
+      
+      // 计算中间位置
+      const middleIndex = Math.floor(ornamentsData.length / 2)
+      
+      // 构建最后一组：前半部分 + 目标元素 + 后半部分
+      const lastGroup = [
+        ...shuffledOthers.slice(0, middleIndex),
+        targetOrnament,
+        ...shuffledOthers.slice(middleIndex)
+      ]
+      
+      arr.push(...lastGroup)
+    } else {
+      // 如果找不到目标元素，最后一组也随机打乱
+      const shuffled = shuffleArray(ornamentsData)
+      arr.push(...shuffled)
     }
+  } else {
+    // 如果没有目标元素，最后一组也随机打乱
+    const shuffled = shuffleArray(ornamentsData)
+    arr.push(...shuffled)
   }
   
   return arr
@@ -86,11 +141,37 @@ const calcScrollEndIndex = () => {
     const fightResult = props.fightResult
     result = fightResult?.find(item => item.userId === currPlayerId && item.fightRoundNumber === currRound)
   }
-  // 找到倒数第一组的目标元素
+  
   const multiOrnamentsData = Array.isArray(tempMultiOrnamentsData.value) ? tempMultiOrnamentsData.value : []
   if (result?.ornamentId && multiOrnamentsData.length) {
-    console.log(multiOrnamentsData.findLastIndex(item => item.ornamentId === result.ornamentId))
-    return multiOrnamentsData.findLastIndex(item => item.ornamentId === result.ornamentId)
+    const ornamentsData = boxList.value[currRound - 1].ornaments
+    const groupSize = ornamentsData.length
+    
+    // 计算最后一组的起始索引
+    const lastGroupStartIndex = groupSize * 7 // 前7组的长度
+    
+    // 计算目标元素在最后一组中的位置（中间位置）
+    const middleIndexInGroup = Math.floor(groupSize / 2)
+    
+    // 目标元素在整个数组中的索引 = 最后一组起始索引 + 中间位置
+    const targetIndex = lastGroupStartIndex + middleIndexInGroup
+    
+    console.log('计算目标元素索引:', {
+      lastGroupStartIndex,
+      middleIndexInGroup,
+      targetIndex,
+      totalLength: multiOrnamentsData.length,
+      targetOrnamentId: result.ornamentId
+    })
+    
+    // 验证：确保这个位置确实是目标元素
+    if (multiOrnamentsData[targetIndex]?.ornamentId === result.ornamentId) {
+      return targetIndex
+    } else {
+      // 如果验证失败，使用 findLastIndex 作为备选
+      console.warn('目标元素位置验证失败，使用 findLastIndex')
+      return multiOrnamentsData.findLastIndex(item => item.ornamentId === result.ornamentId)
+    }
   } else {
     return -1
   }
@@ -105,26 +186,47 @@ const calculateScrollPosition = () => {
         // 获取容器和单个元素
         const container = FightBoxRef.value;
         const items = container.querySelectorAll('.ornament-list-item');
+        const multiOrnamentsData = Array.isArray(tempMultiOrnamentsData.value) ? tempMultiOrnamentsData.value : []
 
         if (!container || items.length === 0) return;
         // 单个元素高度，固定170px（包括边距等）
         const itemHeight = 170;
         // 考虑间距 3px
         const gapHeight = 3;
-        // 容器高度
-        const containerHeight = container.offsetHeight;
-        // 目标是第 index 个元素居中，计算需要的位移
-        // 计算目标元素的位置（第 index 个，索引为index-1）- 考虑间距
+        // 容器可见高度（el-scrollbar的可见高度，CSS中设置了max-height: 360px）
+        // 获取el-scrollbar的可见区域高度
+        const scrollbarWrap = container.closest('.el-scrollbar')?.querySelector('.el-scrollbar__wrap');
+        const containerHeight = scrollbarWrap?.clientHeight || 360; // 使用clientHeight获取可见高度，默认360px
+        // 计算目标元素的索引
         const index = calcScrollEndIndex()
-        const targetPosition = (itemHeight * (index - 1)) + (gapHeight * (index - 2));
+        console.log('目标元素索引:', index, '数组长度:', multiOrnamentsData.length)
+        
+        if (index < 0) {
+          console.error('无法找到目标元素')
+          return
+        }
+        
+        // 计算目标元素的位置（索引从0开始）
+        // 第0个元素位置 = 0
+        // 第1个元素位置 = itemHeight + gapHeight
+        // 第n个元素位置 = n * (itemHeight + gapHeight)
+        const targetPosition = index * (itemHeight + gapHeight);
+        
         // 计算需要的位移量，使目标元素位于容器中央
-        // 减去容器宽度的一半，再加上元素宽度的一半
+        // 目标元素顶部位置 - 容器高度的一半 + 元素高度的一半 = 目标元素中心对齐到容器中心
         const scrollTo = targetPosition - (containerHeight / 2) + (itemHeight / 2);
+        
         // 设置滚动距离
         scrollEndPosition.value = `-${scrollTo}px`;
         // 动态设置CSS变量
         container.style.setProperty('--scroll-end-position', `-${scrollTo}px`);
-        console.log('垂直滚动位置计算完成:', scrollEndPosition.value);
+        console.log('垂直滚动位置计算完成:', {
+          index,
+          targetPosition,
+          containerHeight,
+          scrollTo,
+          scrollEndPosition: scrollEndPosition.value
+        });
         // 开始动画
         scrollAnimation.value = true
         if (props.localSet.music) {
