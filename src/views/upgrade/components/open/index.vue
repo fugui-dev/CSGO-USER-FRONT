@@ -253,90 +253,6 @@ onUnmounted(() => {
   })
 })
 
-// 添加用于顺序显示圆弧段的变量
-const visibleSegments = ref(0)
-const animatingTo = ref(0)
-let segmentAnimationFrame = null
-let lastAnimationTime = 0
-const SEGMENT_ANIMATION_INTERVAL = 50 // 毫秒
-
-// 改进动画处理，使用requestAnimationFrame
-const animateSegments = (timestamp) => {
-  if (!lastAnimationTime) lastAnimationTime = timestamp
-
-  // 控制动画速度
-  if (timestamp - lastAnimationTime >= SEGMENT_ANIMATION_INTERVAL) {
-    lastAnimationTime = timestamp
-
-    if (visibleSegments.value < animatingTo.value) {
-      visibleSegments.value++
-      segmentAnimationFrame = requestAnimationFrame(animateSegments)
-    } else if (visibleSegments.value > animatingTo.value) {
-      visibleSegments.value--
-      segmentAnimationFrame = requestAnimationFrame(animateSegments)
-    }
-  } else {
-    segmentAnimationFrame = requestAnimationFrame(animateSegments)
-  }
-}
-
-// 监视滑块值变化，触发顺序动画
-watch(() => sliderValue.value, (newVal) => {
-  // 更精确的段数计算方法
-  // 使用比例计算，不用取整，让每个段的显示更平滑
-  // 每个段代表8.33%的进度
-  const segmentPercentage = 100 / 12; // 每段表示的百分比
-  
-  // 计算当前应该完全显示的段数(整数部分)
-  const fullSegments = Math.floor(newVal / segmentPercentage);
-  
-  // 计算当前部分显示的段的进度(0-1之间的小数)
-  const partialSegment = (newVal % segmentPercentage) / segmentPercentage;
-  
-  // 将当前显示的总段数设置为目标值
-  // 这样可以更精确地反映滑块位置，而不是跳变显示
-  animatingTo.value = fullSegments + (partialSegment >= 0.5 ? 1 : 0);
-  
-  // 取消当前正在进行的动画
-  if (segmentAnimationFrame) {
-    cancelAnimationFrame(segmentAnimationFrame)
-    segmentAnimationFrame = null
-    lastAnimationTime = 0
-  }
-  
-  // 开始新动画
-  segmentAnimationFrame = requestAnimationFrame(animateSegments)
-}, { immediate: true })
-
-// 组件卸载时清理资源
-onUnmounted(() => {
-  if (segmentAnimationFrame) {
-    cancelAnimationFrame(segmentAnimationFrame)
-  }
-})
-
-// 计算每个段的偏移量，支持部分显示
-const getSegmentOffset = (index) => {
-  const segmentPercentage = 100 / 12;
-  const currentPercentage = sliderValue.value;
-  
-  // 如果当前百分比已经超过了这个段，完全显示
-  if (currentPercentage >= index * segmentPercentage) {
-    return 0;
-  }
-  // 如果当前百分比还没到达上一个段，完全隐藏
-  else if (currentPercentage < (index - 1) * segmentPercentage) {
-    return 35; // 完全隐藏
-  }
-  // 部分显示当前段
-  else {
-    // 计算当前段的显示比例
-    const progress = (currentPercentage - (index - 1) * segmentPercentage) / segmentPercentage;
-    // 根据比例计算偏移量
-    return 35 * (1 - progress);
-  }
-}
-
 </script>
 
 <template>
@@ -388,15 +304,19 @@ const getSegmentOffset = (index) => {
                 <!-- 底色圆环 -->
                 <circle cx="116.5" cy="116.5" r="100" fill="none" stroke="#210F0B" stroke-width="20" />
 
-                <!-- 进度圆环 - 使用12段小弧，每段间隔明显 -->
-                <g>
-                  <!-- 创建12个独立的弧段，每段20度，间隔10度，使用stroke-dasharray实现平滑过渡 -->
-                  <path v-for="i in 12" :key="i"
-                    :d="`M ${116.5 + 100 * Math.cos((i * 30 - 115) * Math.PI / 180)} ${116.5 + 100 * Math.sin((i * 30 - 115) * Math.PI / 180)} A 100 100 0 0 1 ${116.5 + 100 * Math.cos((i * 30 - 95) * Math.PI / 180)} ${116.5 + 100 * Math.sin((i * 30 - 95) * Math.PI / 180)}`"
-                    fill="none" stroke="#FFDC2E" stroke-width="10" :stroke-dasharray="35"
-                    :stroke-dashoffset="getSegmentOffset(i)"
-                    style="transition: stroke-dashoffset 0.3s ease-out" />
-                </g>
+                <!-- 进度圆环 - 连续显示 -->
+                <circle 
+                  cx="116.5" 
+                  cy="116.5" 
+                  r="100" 
+                  fill="none" 
+                  stroke="#FFDC2E" 
+                  stroke-width="10"
+                  :stroke-dasharray="circumference"
+                  :stroke-dashoffset="dashOffset"
+                  stroke-linecap="round"
+                  transform="rotate(-90 116.5 116.5)"
+                  style="transition: stroke-dashoffset 0.3s ease-out" />
               </svg>
             </div>
           </div>
