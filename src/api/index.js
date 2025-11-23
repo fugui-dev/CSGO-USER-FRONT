@@ -94,6 +94,22 @@ export const getExtractPackSackApi = (data) => {
     })
 }
 
+export const transferOrnamentApi = (data) => {
+    return request({
+        url: '/api/userPackSack/transferOrnament',
+        method: 'post',
+        data: data
+    })
+}
+
+export const getTransferRecordsApi = (data) => {
+    return request({
+        url: '/api/userPackSack/transferRecords',
+        method: 'post',
+        data: data
+    })
+}
+
 
 export const getShopListApi = (data) => {
     return request({

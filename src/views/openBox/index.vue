@@ -217,8 +217,13 @@ const handleOpen = () => {
     return
   }
 
-  // 检查余额是否足够
-  if (!userInfo.value?.accountAmount || userInfo.value.accountAmount < endPrice.value) {
+  // 检查余额是否足够（金币+弹药）
+  const accountAmount = userInfo.value?.accountAmount || 0
+  const accountCredits = userInfo.value?.accountCredits || 0
+  const totalBalance = new Decimal(accountAmount).plus(accountCredits)
+  const price = new Decimal(endPrice.value)
+  
+  if (totalBalance.lessThan(price)) {
     ElMessage.warning('余额不足')
     return
   }
