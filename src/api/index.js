@@ -110,6 +110,12 @@ export const getTransferRecordsApi = (data) => {
     })
 }
 
+export const getUserInfoByIdApi = (userId) => {
+    return request({
+        url: `/api/user/getUserInfoById/${userId}`,
+        method: 'get'
+    })
+}
 
 export const getShopListApi = (data) => {
     return request({

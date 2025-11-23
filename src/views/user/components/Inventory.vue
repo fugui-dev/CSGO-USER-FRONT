@@ -1,9 +1,10 @@
 <script setup>
 
 import {computed, ref, watch} from "vue";
-import {deliverPackSackApi, getExtractPackSackApi, getPackSackApi, getPackSackGlobalDataApi, transferOrnamentApi, getTransferRecordsApi} from "@/api";
+import {deliverPackSackApi, getExtractPackSackApi, getPackSackApi, getPackSackGlobalDataApi, transferOrnamentApi, getTransferRecordsApi, getUserInfoByIdApi} from "@/api";
 import {useThrottleFn} from "@vueuse/core";
-import {ElMessage} from "element-plus";
+import {ElMessage, ElIcon} from "element-plus";
+import {Loading} from "@element-plus/icons-vue";
 import {goto, formatDate} from "@/utils/common";
 import NewBoxs from "@/components/Box/NewBoxs.vue";
 import {postDecompose} from "@/views/openBox/server/api";
@@ -211,6 +212,9 @@ const totalDecomposePrice = computed(() => {
 // 转增相关
 const transferDialogRef = ref(null)
 const transferUserId = ref('')
+const transferUserInfo = ref(null)
+const transferConfirmChecked = ref(false)
+const queryingUser = ref(false)
 
 const handleTransfer = () => {
   if (loading.value) return
@@ -230,13 +234,65 @@ const handleTransfer = () => {
     })
     return
   }
+  // 重置状态
+  transferUserId.value = ''
+  transferUserInfo.value = null
+  transferConfirmChecked.value = false
   transferDialogRef.value?.open()
+}
+
+// 查询用户信息
+const queryUserInfo = () => {
+  if (!transferUserId.value || !/^\d+$/.test(transferUserId.value)) {
+    ElMessage({
+      message: '请输入有效的用户ID',
+      type: 'warning'
+    })
+    return
+  }
+  
+  queryingUser.value = true
+  getUserInfoByIdApi(parseInt(transferUserId.value)).then(res => {
+    if (res.code === 200 && res.data) {
+      transferUserInfo.value = res.data
+    } else {
+      transferUserInfo.value = null
+      ElMessage({
+        message: res.msg || '用户不存在',
+        type: 'warning'
+      })
+    }
+  }).catch(err => {
+    transferUserInfo.value = null
+    ElMessage({
+      message: err.message || '查询用户失败',
+      type: 'error'
+    })
+  }).finally(() => {
+    queryingUser.value = false
+  })
 }
 
 const confirmTransfer = () => {
   if (!transferUserId.value || !/^\d+$/.test(transferUserId.value)) {
     ElMessage({
       message: '请输入有效的用户ID',
+      type: 'warning'
+    })
+    return
+  }
+  
+  if (!transferUserInfo.value) {
+    ElMessage({
+      message: '请先查询并确认接收用户信息',
+      type: 'warning'
+    })
+    return
+  }
+  
+  if (!transferConfirmChecked.value) {
+    ElMessage({
+      message: '请勾选确认信息',
       type: 'warning'
     })
     return
@@ -254,6 +310,8 @@ const confirmTransfer = () => {
       })
       transferDialogRef.value?.close()
       transferUserId.value = ''
+      transferUserInfo.value = null
+      transferConfirmChecked.value = false
       form.value.page = 1
       list.value = []
       getTotal()
@@ -272,6 +330,11 @@ const confirmTransfer = () => {
     })
   })
 }
+
+// 获取选中的饰品列表
+const selectedOrnaments = computed(() => {
+  return list.value.filter(item => item.choosed)
+})
 
 </script>
 
@@ -414,14 +477,50 @@ const confirmTransfer = () => {
     <!-- 转增对话框 -->
     <BaseDialog ref="transferDialogRef" title="转增饰品" :show-cancel="true" :show-confirm="true" @confirm="confirmTransfer">
       <template #default>
-        <div style="height: 100%;display: flex;align-items: center;justify-content: center" class="base_dialog">
-          <el-input
-            v-model="transferUserId"
-            placeholder="请输入接收用户ID"
-            clearable
-            style="max-width: 650px;height: 70px"
-            @keyup.enter="confirmTransfer"
-          />
+        <div class="transfer-dialog-content">
+          <!-- 搜索框和查询按钮 -->
+          <div class="transfer-input-section" style="display: flex; flex-direction: row; align-items: center; gap: 10px; justify-content: center;">
+            <el-input
+              v-model="transferUserId"
+              placeholder="请输入接收用户ID"
+              clearable
+              class="transfer-user-input"
+              style="width: 180px; flex: 0 0 auto; height: 40px;"
+              @keyup.enter="queryUserInfo"
+            >
+              <template #suffix>
+                <el-icon v-if="queryingUser" class="is-loading">
+                  <Loading />
+                </el-icon>
+              </template>
+            </el-input>
+            <el-button 
+              type="primary" 
+              class="query-button"
+              style="flex: 0 0 auto; height: 40px; padding: 0 15px;"
+              @click="queryUserInfo"
+              :loading="queryingUser"
+            >
+              查询
+            </el-button>
+          </div>
+          
+          <!-- 用户信息展示 -->
+          <div v-if="transferUserInfo" class="transfer-user-info" style="margin: 20px auto 0 auto; width: fit-content;">
+            <div class="user-avatar">
+              <el-avatar :src="transferUserInfo.avatar" :size="60">
+                <img src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" alt="默认头像" />
+              </el-avatar>
+            </div>
+            <div class="user-name">{{ transferUserInfo.nickName || transferUserInfo.userName || '-' }}</div>
+          </div>
+          
+          <!-- 确认勾选框 -->
+          <div v-if="transferUserInfo && selectedOrnaments.length > 0" class="transfer-confirm-section" style="display: flex; justify-content: center; width: 100%;">
+            <el-checkbox v-model="transferConfirmChecked">
+              <span class="confirm-text">转增后无法撤回，请核实受赠人信息</span>
+            </el-checkbox>
+          </div>
         </div>
       </template>
     </BaseDialog>
@@ -645,6 +744,119 @@ $primary-color-user: rgb(138, 15, 198);
       --el-input-focus-border: rgba(255, 255, 255, 0.2);
       height: 45px;
       border-radius: 5px;
+    }
+  }
+
+  // 转增对话框样式
+  .transfer-dialog-content {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    min-height: 300px;
+
+    .transfer-input-section {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+
+      .transfer-user-input {
+        height: 40px !important;
+        :deep(.el-input) {
+          width: 180px !important;
+          max-width: 180px !important;
+          height: 40px !important;
+        }
+        :deep(.el-input__wrapper) {
+          background: #74705E;
+          border: none;
+          border-radius: 5px;
+          height: 40px !important;
+          min-height: 40px !important;
+          width: 180px !important;
+          max-width: 180px !important;
+        }
+        :deep(.el-input__inner) {
+          color: #ffffff;
+          width: 180px !important;
+          max-width: 180px !important;
+          height: 40px !important;
+          line-height: 40px !important;
+        }
+        :deep(.el-input__inner::placeholder) {
+          color: rgba(255, 255, 255, 0.6);
+        }
+      }
+
+      .query-button {
+        height: 40px;
+        padding: 0 20px;
+        background: #9B513C;
+        border-color: #9B513C;
+        color: #ffffff;
+        font-size: 14px;
+        border-radius: 5px;
+        white-space: nowrap;
+        flex: 0 0 auto;
+        &:hover {
+          background: #8a4632;
+          border-color: #8a4632;
+        }
+      }
+    }
+
+    .transfer-user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      padding: 20px;
+      background: rgba(116, 112, 94, 0.3);
+      border-radius: 8px;
+      width: auto;
+      margin: 0 auto;
+
+      .user-avatar {
+        :deep(.el-avatar) {
+          border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+      }
+
+      .user-name {
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 500;
+        text-align: center;
+        word-break: break-all;
+      }
+    }
+
+    .transfer-confirm-section {
+      width: 100%;
+      padding: 15px 0;
+      display: flex;
+      justify-content: center;
+
+      :deep(.el-checkbox) {
+        .el-checkbox__label {
+          color: #ffffff;
+          font-size: 14px;
+        }
+
+        .el-checkbox__input.is-checked .el-checkbox__inner {
+          background-color: #9B513C;
+          border-color: #9B513C;
+        }
+      }
+
+      .confirm-text {
+        color: #ffffff;
+        font-size: 14px;
+      }
     }
   }
 
