@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, nextTick } from "vue";
 import Box from '@/components/Box/NewBoxs.vue'
 import { useShopping } from '../../sever/useShopping'
 import bishou from '@/assets/upgrade/shopping/knife.png'
@@ -12,51 +12,27 @@ import xiangzi from '@/assets/upgrade/shopping/xiangzi.png'
 import shoutao from '@/assets/upgrade/shopping/shoutao.png'
 import Di from '@/assets/openBox/di.png'
 import search from '@/assets/upgrade/shopping/search.png'
+import back from '@/assets/images/upgrade/back.png'
 import BaseButton from '@/components/Btn/BaseButton.vue'
 import { useRouter } from 'vue-router'
-const mockData = [
-  {
-    name: '匕首',
-    value: '1',
-    img: bishou,
-    index: 0
-  },
-  {
-    name: '手枪',
-    value: '2',
-    img: shouqiang,
-    index: 1
-  }, {
-    name: '步枪',
-    value: '3',
-    img: buqiang,
-    index: 2
-  }, {
-    name: '微型冲锋枪',
-    value: '4',
-    img: weichong,
-    index: 3
-  }, {
-    name: '重型武器',
-    value: '5',
-    img: zhongxing,
-    index: 4
-  }, {
-    name: '手套',
-    value: '6',
-    img: shoutao,
-    index: 5
-  }, {
-    name: '印花',
-    value: '7',
-    img: yinhua,
-    index: 6
-  }, {
-    name: '武器',
-    value: '8',
-    img: xiangzi,
-    index: 7
-  }]
+import { getAvailableTypeList } from '../../sever/api'
+import { ElMessage } from 'element-plus'
+
+// 类型图标映射（根据 type_name 匹配）
+const typeIconMap = {
+  '匕首': bishou,
+  '手枪': shouqiang,
+  '步枪': buqiang,
+  '微型冲锋枪': weichong,
+  '重型武器': zhongxing,
+  '机枪': zhongxing,
+  '手套': shoutao,
+  '印花': yinhua,
+  '武器': xiangzi,
+  '武器箱': xiangzi,
+}
+
+const mockData = ref([])
 
 const updata = reactive({
   userInput: '',
@@ -91,8 +67,21 @@ const fetchData = async () => {
 const activeCategory = ref(-1)
 
 const choseType = (value, index) => {
-  updata.select = value
-  activeCategory.value = index
+  // 如果点击的是已选中的分类，则取消选择
+  if (activeCategory.value === index && updata.select === value) {
+    updata.select = '-1'
+    activeCategory.value = -1
+  } else {
+    updata.select = value
+    activeCategory.value = index
+  }
+  // 重置页码并立即触发搜索
+  page.pageNum = 1
+  fetchData()
+}
+
+const handleBack = () => {
+  router.push('/')
 }
 
 // 检测是否为移动设备
@@ -102,9 +91,62 @@ const checkMobile = () => {
   isMobile.value = window.innerWidth < 768;
 };
 
+// 加载类型列表
+const loadTypeList = async () => {
+  try {
+    const res = await getAvailableTypeList();
+    if (res.code === 200 && res.data) {
+      // 将后端返回的数据转换为前端需要的格式
+      mockData.value = res.data.map((item, index) => ({
+        name: item.label || item.type_name || '',
+        value: String(item.value || item.type || ''),
+        img: typeIconMap[item.label || item.type_name || ''] || bishou, // 默认使用匕首图标
+        index: index
+      }));
+    } else {
+      // 如果 API 失败，使用默认数据
+      console.warn('获取类型列表失败，使用默认数据');
+      mockData.value = [
+        { name: '匕首', value: '1', img: bishou, index: 0 },
+        { name: '手枪', value: '2', img: shouqiang, index: 1 },
+        { name: '步枪', value: '3', img: buqiang, index: 2 },
+        { name: '微型冲锋枪', value: '4', img: weichong, index: 3 },
+        { name: '重型武器', value: '5', img: zhongxing, index: 4 },
+        { name: '手套', value: '6', img: shoutao, index: 5 },
+        { name: '印花', value: '7', img: yinhua, index: 6 },
+        { name: '武器', value: '8', img: xiangzi, index: 7 }
+      ];
+    }
+  } catch (error) {
+    console.error('获取类型列表失败:', error);
+    ElMessage.error('获取类型列表失败');
+    // 使用默认数据
+    mockData.value = [
+      { name: '匕首', value: '1', img: bishou, index: 0 },
+      { name: '手枪', value: '2', img: shouqiang, index: 1 },
+      { name: '步枪', value: '3', img: buqiang, index: 2 },
+      { name: '微型冲锋枪', value: '4', img: weichong, index: 3 },
+      { name: '重型武器', value: '5', img: zhongxing, index: 4 },
+      { name: '手套', value: '6', img: shoutao, index: 5 },
+      { name: '印花', value: '7', img: yinhua, index: 6 },
+      { name: '武器', value: '8', img: xiangzi, index: 7 }
+    ];
+  }
+}
+
 onMounted(() => {
   checkMobile();
   window.addEventListener('resize', checkMobile);
+  // 加载类型列表
+  loadTypeList();
+  // 立即滚动到页面顶部，确保内容可见
+  nextTick(() => {
+    const container = document.getElementById('container');
+    if (container) {
+      container.scrollTop = 0;
+    }
+    window.scrollTo(0, 0);
+  });
 });
 
 const handleSearch = () => {
@@ -117,19 +159,11 @@ const handleClick = (item) => {
 </script>
 <template>
   <div class=" tw-flex tw-relative tw-mt-6 tw-w-full  tw-justify-center tw-flex-col tw-items-center   ">
-    <!-- <div
-      class="tw-mt-6 md:tw-mt-11 tw-grid tw-grid-cols-3 sm:tw-grid-cols-4 md:tw-grid-cols-5 lg:tw-flex tw-justify-between tw-w-full tw-mb-4 md:tw-mb-7 tw-place-content-center tw-px-2 md:tw-px-4">
-      <div v-for="(item, index) in mockData" :key="index"
-        class="category-item tw-relative tw-cursor-pointer tw-flex tw-justify-center tw-items-center tw-transition-all tw-duration-300 tw-mb-2 md:tw-mb-0"
-        :class="{ 'active-category': activeCategory === item.value }" @click="choseType(item.value)">
-        <div
-          class="tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full tw-flex-col tw-flex tw-justify-center tw-items-center">
-          <img :src="item.img" class="tw-w-[2rem] tw-h-[2rem] md:tw-w-[3.25rem] md:tw-h-[3.25rem] category-icon" alt="">
-          <span class="tw-text-white/80 tw-text-[10px] md:tw-text-xs tw-mt-1 md:tw-mt-2 tw-font-medium category-text">{{
-            item.name }}</span>
-        </div>
-      </div>
-    </div> -->
+    <div class="tw-flex tw-gap-2 tw-mt-8 tw-px-10 tw-mb-5 tw-text-xl md:tw-text-[14px] tw-font-bold tw-cursor-pointer tw-text-[#B1C5C7] tw-self-start"
+      @click="handleBack">
+      <img :src="back" alt="" class="tw-w-[2rem] tw-h-[1.8rem]">
+      返回
+    </div>
     <div class="top-wrapper">
       <div class="type-item" :class="activeCategory === index ? 'active' : ''" @click="choseType(item.value, item.index)" v-for="(item, index) in mockData" :key="index">
         <img :src="item.img" class="type-icon" alt="">
@@ -149,11 +183,11 @@ const handleClick = (item) => {
         :class="{ 'tw-w-full md:tw-px-2': !loading.list || loading.list }">
         <div class=" tw-flex tw-flex-wrap tw-items-start tw-w-full tw-relative tw-justify-center tw-min-h-[15rem]" style="row-gap: 3px;">
           <div v-if="loading.list"
-            class="tw-absolute tw-inset-0 tw-bg-black tw-bg-opacity-70 tw-flex tw-items-center tw-justify-center tw-z-10 tw-w-full tw-h-full tw-rounded-xl">
+            class="tw-absolute tw-inset-0 tw-flex tw-items-center tw-justify-center tw-z-10 tw-w-full tw-h-full">
             <div class="loading-spinner"></div>
           </div>
           <template v-if="page.pageTotal > 0">
-            <Box v-for="(item, index) in list" :key="index" :boxData="item" class="tw-cursor-pointer" isRound @click="handleClick(item)" />
+            <Box v-for="(item, index) in list" :key="index" :boxData="item" class="tw-cursor-pointer" isRound showPrice @click="handleClick(item)" />
           </template>
           <div v-else-if="!loading.list"
             class="empty-state tw-col-span-full tw-flex tw-flex-col tw-items-center tw-justify-center tw-w-full tw-h-full tw-py-12 md:tw-py-24">

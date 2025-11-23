@@ -24,14 +24,27 @@ export const useShopping = ({ updata }) => {
   const getList = async () => {
     loading.list = true;
     try {
-      const res = await getShoppingList({
+      // 构建请求参数，只有当 type 不是 "-1" 时才添加 type 参数
+      const requestParams = {
         size: page.pageSize,
         page: page.pageNum,
         isLevelDesc: updata.order ? "0" : "1",
         isPriceDesc: updata.price ? "1" : "0",
-        itemName: updata.userInput || null,
-        type: updata.select === "-1" ? null : updata.select,
-      });
+      };
+      
+      // 只有当 itemName 有值时才添加
+      if (updata.userInput) {
+        requestParams.itemName = updata.userInput;
+      }
+      
+      // 只有当 type 不是 "-1" 时才添加 type 参数
+      if (updata.select && updata.select !== "-1") {
+        requestParams.type = String(updata.select);
+      }
+      
+      console.log('请求参数:', requestParams); // 调试日志
+      
+      const res = await getShoppingList(requestParams);
 
       if (res.code === 200) {
         list.length = 0;

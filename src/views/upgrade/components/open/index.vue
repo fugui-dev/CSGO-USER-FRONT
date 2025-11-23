@@ -101,21 +101,25 @@ const startSpinAnimation = () => {
   // 根据结果确定最终位置区间
   let targetPercentage = 0
   if (openEnd.isVictory) {
-    // 成功时，指针停在0到sliderValue之间的特定区间
-    const sliderAngle = (sliderValue.value / 100) * 360 // 将sliderValue转换为角度
-    // 计算可用的区间数量
-    const availableIntervals = Math.floor(sliderAngle / 30) // 每30度一个区间
-    // 随机选择一个区间
-    const randomInterval = Math.floor(Math.random() * availableIntervals)
-    // 计算区间的起始角度
-    const intervalStart = randomInterval * 30
-    // 在区间内随机一个位置（区间长度为20度）
-    const randomOffset = Math.random() * 20
-    // 计算最终角度
-    targetPercentage = (intervalStart + randomOffset) / 360 * 100
+    // 成功时，指针停在0到sliderValue之间（不包括sliderValue本身）
+    // 确保至少有一个小的范围，避免边界问题
+    const minRange = 0
+    const maxRange = Math.max(0.1, sliderValue.value - 0.1) // 确保不超过sliderValue，留0.1%的缓冲
+    // 在范围内随机选择位置
+    targetPercentage = minRange + Math.random() * (maxRange - minRange)
+    // 确保不超过sliderValue
+    targetPercentage = Math.min(targetPercentage, sliderValue.value - 0.01)
   } else {
-    // 失败时，指针停在sliderValue到100之间
-    targetPercentage = sliderValue.value + Math.random() * (100 - sliderValue.value)
+    // 失败时，指针停在sliderValue到100之间（不包括sliderValue本身）
+    // 确保至少有一个小的范围，避免边界问题
+    const minRange = Math.min(99.9, sliderValue.value + 0.1) // 确保大于sliderValue，留0.1%的缓冲
+    const maxRange = 100
+    // 在范围内随机选择位置
+    targetPercentage = minRange + Math.random() * (maxRange - minRange)
+    // 确保大于sliderValue
+    targetPercentage = Math.max(targetPercentage, sliderValue.value + 0.01)
+    // 确保不超过100
+    targetPercentage = Math.min(targetPercentage, 100)
   }
 
   // 将百分比转换为角度（360度对应100%）

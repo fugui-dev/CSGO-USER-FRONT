@@ -75,13 +75,14 @@ defineExpose({
           <img :src="openData.ornamentImgUrl"
             class="tw-absolute tw-top-1/3 tw-left-1/2 -tw-translate-x-1/2 tw-w-[50%] tw-max-w-[200px]" />
           <img :src="openSuccess" class="tw-absolute tw-top-1/2 tw-right-0 tw-w-[30%] md:tw-w-[9.75rem]" />
+          <span class="tw-absolute tw-bottom-0 tw-left-1/2 -tw-translate-x-1/2 tw-text-white tw-text-xl md:tw-text-2xl tw-font-bold tw-truncate tw-max-w-full tw-px-4 tw-pb-2" :title="openData.ornamentName">{{ openData.ornamentName }}</span>
         </div>
         <div v-else class="tw-relative tw-w-full">
           <img :src="requireImg('/v2/open/open-fail.png')" class="tw-w-full" />
           <img :src="openData.ornamentImgUrl"
             class="tw-absolute tw-top-1/2 tw-left-1/2 tw-translate-x-[-50%] tw-translate-y-[-50%] tw-w-[70%] tw-max-w-[200px] tw-filter tw-brightness-80 tw-opacity-70 " />
+          <span class="tw-absolute tw-bottom-0 tw-left-1/2 -tw-translate-x-1/2 tw-text-white tw-text-xl md:tw-text-2xl tw-font-bold tw-truncate tw-max-w-full tw-px-4 tw-pb-4 md:tw-pb-6" :title="openData.ornamentName">{{ openData.ornamentName }}</span>
         </div>
-        <span class="tw-text-white tw-text-xl md:tw-text-2xl tw-font-bold -tw-translate-y-full tw-truncate tw-max-w-full tw-px-4" :title="openData.ornamentName">{{ openData.ornamentName }}</span>
         <BaseButton class="tw-text-white" :customStyle="{ width: isPC ? '12.625rem' : '10rem',height: isPC ? '' : '2.875rem' }" @click="close()">
           <template #name>
             确定

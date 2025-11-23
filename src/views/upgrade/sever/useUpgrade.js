@@ -1,9 +1,11 @@
 import { getCurrentData } from "./api";
 import { useRoute } from "vue-router";
 import { ref, computed } from "vue";
+import { useStore } from "@/store";
 
 export const useUpgrade = () => {
   const route = useRoute();
+  const store = useStore();
   const RecordData = ref([]);
   const loading = ref(false);
   const boxData = computed(() => {
@@ -25,13 +27,28 @@ export const useUpgrade = () => {
         ornamentId: boxData.value.ornamentId,
         page: page,
         size: pagination.value.pageSize,
+        userType: store.userInfo?.userType || null, // 添加 userType 参数
+        userId: store.userInfo?.userId || null, // 添加 userId 参数，只查询当前用户的记录
       });
       
       if (res.code === 200) {
-        RecordData.value = res.data.records.map(record => ({
-          ...record,
-          gainOrnamentList: JSON.parse(record.gainOrnamentList)
-        }));
+        RecordData.value = res.data.records.map(record => {
+          // 处理 gainOrnamentList，失败时可能为空字符串
+          let gainOrnamentList = [];
+          if (record.gainOrnamentList) {
+            try {
+              const parsed = JSON.parse(record.gainOrnamentList);
+              gainOrnamentList = Array.isArray(parsed) ? parsed : [];
+            } catch (e) {
+              console.warn('解析 gainOrnamentList 失败:', e);
+              gainOrnamentList = [];
+            }
+          }
+          return {
+            ...record,
+            gainOrnamentList: gainOrnamentList
+          };
+        });
         // 更新分页信息
         pagination.value.pageTotal = res.data.total
         pagination.value.pageNum = page

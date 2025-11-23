@@ -239,6 +239,28 @@ const routes = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    // 如果路由到 /upgrade 相关页面，滚动到顶部
+    if (to.path.startsWith('/upgrade')) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          const container = document.getElementById('container');
+          if (container) {
+            container.scrollTo({ top: 0, behavior: 'instant' });
+          } else {
+            window.scrollTo({ top: 0, behavior: 'instant' });
+          }
+          resolve({ top: 0 });
+        }, 0);
+      });
+    }
+    // 其他情况，如果有保存的位置则恢复，否则滚动到顶部
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      return { top: 0 };
+    }
+  },
 });
 
 router.beforeEach((to, from, next) => {
@@ -248,5 +270,22 @@ router.beforeEach((to, from, next) => {
     document.title = `CF开箱网 - ${to.meta.title}`;
   }
   next();
+});
+
+// 路由切换后立即滚动到顶部（针对 /upgrade 页面）
+router.afterEach((to) => {
+  if (to.path.startsWith('/upgrade')) {
+    // 使用 nextTick 确保 DOM 已更新
+    setTimeout(() => {
+      const container = document.getElementById('container');
+      if (container) {
+        container.scrollTop = 0;
+      }
+      // 同时滚动 window（如果 container 不存在）
+      if (!container) {
+        window.scrollTo(0, 0);
+      }
+    }, 0);
+  }
 });
 export default router;
