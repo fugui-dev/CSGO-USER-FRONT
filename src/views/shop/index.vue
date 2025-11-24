@@ -60,6 +60,25 @@
             </el-select>
           </div>
           <div class="select-item">
+            <div class="select-item-name">筛选：</div>
+            <el-select
+              v-model="affordableFilter"
+              placeholder="全部"
+              @change="handleAffordableFilterChange"
+            >
+              <el-option
+                label="全部"
+                :value="false"
+                class="options"
+              />
+              <el-option
+                label="可购买饰品"
+                :value="true"
+                class="options"
+              />
+            </el-select>
+          </div>
+          <div class="select-item">
             <div class="select-item-name">
               价格区间：
               <el-input
@@ -133,6 +152,7 @@ const list = ref([]);
 const typeList = ref([]);
 const exteriorList = ref([]);
 const total = ref(0);
+const affordableFilter = ref(false); // 筛选选项：false-全部，true-可购买饰品
 const search = ref({
   pageNum: 1,
   pageSize: 24,
@@ -142,9 +162,17 @@ const search = ref({
   sortBy: "",
   maxPrice: "",
   minPrice: "",
+  affordable: false, // 是否只显示可购买饰品
 });
 const handleSearch = (type, val) => {
   search.value[type] = val;
+  search.value.pageNum = 1; // 重置到第一页
+  getList();
+};
+
+// 筛选选项变化处理
+const handleAffordableFilterChange = () => {
+  search.value.affordable = affordableFilter.value;
   search.value.pageNum = 1; // 重置到第一页
   getList();
 };
