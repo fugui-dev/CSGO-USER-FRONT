@@ -142,6 +142,8 @@ const handleJoin = () => {
       try {
         await fetchUserInfo()
         console.log('用户信息更新完成')
+        // 加入成功后，后端已自动调用准备接口，前端无需再调用
+        // 准备按钮会根据座位状态自动隐藏（status === 2 时显示"已准备就绪"）
       } catch (error) {
         console.error('更新用户信息失败:', error)
       }
@@ -253,8 +255,8 @@ defineExpose({
         <div class="player-status">
           <div class="join-btn" v-if="cardData.status === 0" @click="handleJoin">加入</div>
           <div v-else-if="cardData.status === 1">
-            <div class="join-btn" v-if="cardData.playerId === currUserId" @click="handlePrepare">准备</div>
-            <p v-else>已入座</p>
+            <!-- 加入成功后自动准备，不再显示准备按钮 -->
+            <p>已入座</p>
           </div>
           <div v-else-if="cardData.status === 2">
             <!-- 房主可以结束对战（当除了房主没有其他玩家准备时） -->
