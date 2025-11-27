@@ -656,15 +656,6 @@ defineExpose({
                                         style="background: linear-gradient(90deg, #FFC74A 0%, #FF7C2B 100%);">
                                     </div>
                                     <img :src="lightDown" class="tw-w-[2.25rem]" alt="" /> -->
-                                    <div
-                                        class=" tw-text-white tw-text-sm tw-absolute tw-gap-6 -tw-bottom-28 tw-flex tw-flex-col tw-justify-center tw-items-center ">
-                                        <div class="three-body">
-                                            <div class="three-body__dot"></div>
-                                            <div class="three-body__dot"></div>
-                                            <div class="three-body__dot"></div>
-                                        </div>
-                                        <span class=" tw-w-[2.625rem] tw-text-white/70">开启中</span>
-                                    </div>
                                 </div>
                                 <div class="rooling_animin_wai tw-flex tw-flex-row tw-gap-0.5 tw-py-2"
                                     v-for="(item, index) in box" :key="index">

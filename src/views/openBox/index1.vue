@@ -478,8 +478,7 @@ const handleClickBack = () => {
         </div>
         <div class="open-button-wrapper" @click="handleOpen">
           <img src="@/assets/images/open/open-icon.png" class="open-icon" />
-          <span v-if="isLoading">开启中</span>
-          <template v-else>
+          <template v-if="!isLoading">
             {{ formattedEndPrice }}
             <span class="text">开启</span>
           </template>
