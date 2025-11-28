@@ -9,6 +9,7 @@ import {goto, formatDate} from "@/utils/common";
 import NewBoxs from "@/components/Box/NewBoxs.vue";
 import {postDecompose} from "@/views/openBox/server/api";
 import Money from '@/assets/images/home/coin.png'
+import Ammunition from '@/assets/images/shop/ammunition.png'
 import {useUserInfo} from '@/composables/useUesrInfo'
 import arrow from '@/assets/images/user/arrow.png'
 import BaseDialog from "@/components/dialogs/BaseDialog.vue";
@@ -392,7 +393,7 @@ const selectedOrnaments = computed(() => {
             @change="checkBoxChange" v-model="checkAll">
             全选
           </el-checkbox>
-          <div class="button" @click="handleDecompose">分解饰品 <img :src="Money" class="tw-h-[10px] md:tw-h-[1rem] tw-ml-[4px] tw-mr-[2px]" /> {{
+          <div class="button" @click="handleDecompose">分解饰品 <img :src="Ammunition" class="tw-h-[10px] md:tw-h-[1rem] tw-ml-[4px] tw-mr-[2px]" /> {{
             totalDecomposePrice }}</div>
           <div class="button" @click="handleDelivery">
             提取
