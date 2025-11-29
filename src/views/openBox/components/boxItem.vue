@@ -213,9 +213,9 @@ const displayPriceHave = computed(() => {
   }
   .name {
     position: absolute;
-    bottom: 11px;
-    left: 12px;
-    right: 12px;
+    bottom: 18px; /* 使用底部padding值，确保在背景图片范围内 */
+    left: 12px; /* 使用左侧padding值 */
+    right: 16px; /* 使用右侧padding值 */
     line-height: 1.3;
     max-height: 34px;
     overflow: hidden;
@@ -227,6 +227,8 @@ const displayPriceHave = computed(() => {
     box-sizing: border-box;
     word-break: break-word;
     word-wrap: break-word;
+    width: calc(100% - 28px); /* 确保不超出背景图片范围，减去左右padding (12px + 16px) */
+    max-width: calc(100% - 28px);
   }
 }
 </style>
