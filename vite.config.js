@@ -44,7 +44,7 @@ export default defineConfig({
     },
     proxy: {
 		  '/prod-api': {
-        target: 'http://8.136.42.105/:8090', //目标源，目标服务器，真实请求地址
+        target: 'http://8.136.42.105:8090', //目标源，目标服务器，真实请求地址
         changeOrigin: true //支持跨域
         // ws: false,        //如果要代理 websockets，配置这个参数
         // secure: false,// 如果是https接口，需要配置这个参数

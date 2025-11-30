@@ -12,11 +12,18 @@ const props = defineProps({
 const statusMap = {
   '0': '等待中',
   '1': '进行中',
-  '2': '已结束'
+  '2': '已结束',
+  '3': '已结束', // 房主主动结束
+  0: '等待中',
+  1: '进行中',
+  2: '已结束',
+  3: '已结束' // 房主主动结束
 }
 const modelMap = {
   '0': '欧皇',
-  '1': '非酋'
+  '1': '非酋',
+  0: '欧皇',
+  1: '非酋'
 }
 
 const boxList = computed(() => {
@@ -35,13 +42,26 @@ const boxList = computed(() => {
   return arr
 })
 
+// 获取状态文本
+const statusText = computed(() => {
+  const status = props.cardData.status
+  const text = statusMap[status] || statusMap[String(status)] || '未知'
+  return text
+})
+
+// 获取模式文本
+const modelText = computed(() => {
+  const model = props.cardData.model
+  return modelMap[model] || modelMap[String(model)] || '未知'
+})
+
 const statusColor = computed(() => {
-  switch (props.cardData.status) {
-    case '0': return '#FF952A';
-    case '1': return '#FF3C2A';
-    case '2': return '#602bCF';
-    default: return '#AAAAAA';
-  }
+  const status = props.cardData.status
+  // 同时支持字符串和数字
+  if (status === '0' || status === 0) return '#FF952A'
+  if (status === '1' || status === 1) return '#FF3C2A'
+  if (status === '2' || status === 2 || status === '3' || status === 3) return '#602bCF' // 状态2和3都表示已结束
+  return '#AAAAAA'
 })
 
 </script>
@@ -52,9 +72,9 @@ const statusColor = computed(() => {
       }">
       <!-- 头部 -->
       <div class="card-header">
-        <div class="card-status" :style="{ backgroundColor: statusColor }">{{ statusMap[cardData.status] }}</div>
+        <div class="card-status" :style="{ backgroundColor: statusColor }">{{ statusText }}</div>
         <div class="card-header-right">
-          <div class="card-model">{{ modelMap[cardData.model] }}模式</div>
+          <div class="card-model">{{ modelText }}模式</div>
           <div class="card-round-number">{{ cardData.roundNumber }}回合</div>
         </div>
       </div>
@@ -111,6 +131,8 @@ const statusColor = computed(() => {
     padding: 0 14px;
     border-top-left-radius: 12px;
     border-bottom-right-radius: 12px;
+    color: #ffffff; // 确保文字颜色为白色
+    font-weight: 500; // 加粗文字以便更清晰
   }
   .card-header-right {
     display: flex;

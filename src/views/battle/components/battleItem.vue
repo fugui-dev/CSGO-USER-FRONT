@@ -15,11 +15,21 @@ const statusMap = {
   0: "等待中",
   1: "进行中",
   2: "已结束",
+  3: "已结束", // 房主主动结束
+  "0": "等待中",
+  "1": "进行中",
+  "2": "已结束",
+  "3": "已结束", // 房主主动结束
 };
 const statusBgMap = {
   0: waitBg,
   1: ingBg,
   2: endBg,
+  3: endBg, // 房主主动结束，使用已结束的背景图
+  "0": waitBg,
+  "1": ingBg,
+  "2": endBg,
+  "3": endBg, // 房主主动结束，使用已结束的背景图
 };
 const modelMap = {
   0: "欧皇",
@@ -43,16 +53,12 @@ const boxList = computed(() => {
 });
 
 const statusColor = computed(() => {
-  switch (props.cardData.status) {
-    case "0":
-      return "#FF952A";
-    case "1":
-      return "#FF3C2A";
-    case "2":
-      return "#602bCF";
-    default:
-      return "#AAAAAA";
-  }
+  const status = props.cardData.status;
+  // 同时支持字符串和数字
+  if (status === "0" || status === 0) return "#FF952A";
+  if (status === "1" || status === 1) return "#FF3C2A";
+  if (status === "2" || status === 2 || status === "3" || status === 3) return "#602bCF"; // 状态2和3都表示已结束
+  return "#AAAAAA";
 });
 </script>
 <template>
@@ -61,9 +67,9 @@ const statusColor = computed(() => {
     <div class="card-header">
       <div
         class="card-status"
-        :style="{ backgroundImage: `url(${statusBgMap[cardData.status]})` }"
+        :style="{ backgroundImage: `url(${statusBgMap[cardData.status] || statusBgMap[String(cardData.status)] || endBg})` }"
       >
-        {{ statusMap[cardData.status] }}
+        {{ statusMap[cardData.status] || statusMap[String(cardData.status)] || "未知" }}
       </div>
       <div class="card-header-right">
         <div class="card-model">{{ modelMap[cardData.model] }}模式</div>
