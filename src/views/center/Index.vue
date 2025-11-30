@@ -153,8 +153,22 @@ getRNList()
               <div class="center-content-fl-item-name">
                 <div>{{ i.name }}</div>
                 <div style="white-space: nowrap">
-                  <!-- {{ ['金币 x2', '弹药 x10', '音乐盒 | Juelz-神枪手 x1'][index] }} -->
-                    {{ ['金币 x2', '音乐盒 | Juelz-神枪手 x1'][index] }}
+                  <template v-if="i.ornament">
+                    <!-- 饰品奖励 -->
+                    {{ i.ornament.name || i.ornament.marketHashName || '饰品 x1' }}
+                  </template>
+                  <template v-else-if="i.name && i.name.includes('金币')">
+                    <!-- 金币奖励 -->
+                    金币 x{{ i.awardMoney || 0 }}
+                  </template>
+                  <template v-else-if="i.name && i.name.includes('弹药')">
+                    <!-- 弹药奖励 -->
+                    弹药 x{{ i.awardMoney || 0 }}
+                  </template>
+                  <template v-else>
+                    <!-- 默认显示 -->
+                    {{ i.awardMoney ? `奖励 x${i.awardMoney}` : '奖励' }}
+                  </template>
                 </div>
                 <img :src="requireImg('/v2/center/bx.png',false)" alt="">
               </div>
