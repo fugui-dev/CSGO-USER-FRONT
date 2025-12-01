@@ -612,7 +612,7 @@ const createWs = () => {
   const userId = store.userInfo.userId;
   if (!userId || !stageGroupFightId) return
   // 连接ws
-  connect(`ws://8.136.42.105:8090/ws/fight/${stageGroupFightId}/${userId}`)
+  connect(`ws://8.136.42.105:80/ws/fight/${stageGroupFightId}/${userId}`)
 }
 
 onBeforeMount(() => {

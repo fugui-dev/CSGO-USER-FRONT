@@ -273,7 +273,7 @@ const createWs = () => {
   const fightId = route.params.id;
   if (!userId || !fightId) return
   // 连接ws
-  connect(`ws://8.136.42.105:8090/ws/fight/room/${userId}/${fightId}`)
+  connect(`ws://8.136.42.105:80/ws/fight/room/${userId}/${fightId}`)
 }
 
 // 获取历史对战信息

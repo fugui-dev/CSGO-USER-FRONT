@@ -56,7 +56,7 @@ const enableRechargeList = computed(() => {
 const payTypes = ref([
   // { id: '20', name: '微信', icon: 'wechat-icon' },
   { id: "30", name: "支付宝", icon: iPay },
-  { id: "card", name: "卡密支付", icon: cardPay },
+  // { id: "card", name: "卡密支付", icon: cardPay }, // 已隐藏
 ]);
 
 // 使用设备类型检测

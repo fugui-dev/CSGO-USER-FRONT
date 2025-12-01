@@ -267,7 +267,7 @@ router.beforeEach((to, from, next) => {
   console.log(to);
   console.log(from);
   if (to.meta.title) {
-    document.title = `CF开箱网 - ${to.meta.title}`;
+    document.title = `bibicsgo - ${to.meta.title}`;
   }
   next();
 });

@@ -239,7 +239,7 @@ const replaceBattleCard = (newData) => {
 const createWs = () => {
   const userId = store.userInfo.userId;
   if (userId) {
-    connect(`ws://8.136.42.105:8090/ws/fight/hall/${userId}`)
+    connect(`ws://8.136.42.105:80/ws/fight/hall/${userId}`)
   }
 }
 
