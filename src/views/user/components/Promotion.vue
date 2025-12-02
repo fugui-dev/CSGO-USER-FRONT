@@ -309,20 +309,22 @@ getS()
         @click="handleTabChange(0)">
         <span>基本信息</span>
       </div>
-      <div 
+      <!-- 已隐藏：推广用户列表 -->
+      <!-- <div 
         v-if="isAnchor"
         class="nav-item" 
         :class="{ 'active': activeTab === 1 }" 
         @click="handleTabChange(1)">
         <span>推广用户列表</span>
-      </div>
-      <div 
+      </div> -->
+      <!-- 已隐藏：充值记录 -->
+      <!-- <div 
         v-if="isAnchor"
         class="nav-item" 
         :class="{ 'active': activeTab === 2 }" 
         @click="handleTabChange(2)">
         <span>充值记录</span>
-      </div>
+      </div> -->
     </div>
     
     <!-- Tab内容 -->
@@ -405,9 +407,8 @@ getS()
           </div>
       </div>
       
-      <!-- Tab 2: 推广用户列表（仅主播可见） -->
-      <div v-show="activeTab === 1 && isAnchor" class="tab-content">
-          <!-- 推广用户列表 - 使用开箱记录样式 -->
+      <!-- 已隐藏：Tab 2: 推广用户列表（仅主播可见） -->
+      <!-- <div v-show="activeTab === 1 && isAnchor" class="tab-content">
           <div class="records">
             <div class="records-item">
               <div class="item avatar">头像</div>
@@ -427,13 +428,11 @@ getS()
               </div>
             </el-scrollbar>
           </div>
-      </div>
+      </div> -->
       
-      <!-- Tab 3: 充值记录（仅主播可见） -->
-      <div v-show="activeTab === 2 && isAnchor" class="tab-content">
-          <!-- 充值记录列表 - 使用开箱记录样式 -->
+      <!-- 已隐藏：Tab 3: 充值记录（仅主播可见） -->
+      <!-- <div v-show="activeTab === 2 && isAnchor" class="tab-content">
           <div class="records">
-            <!-- 可用余额和生成CDK按钮 - 右对齐，与列表对齐 -->
             <div class="anchor-header-right">
               <div class="available-balance">
                 <span class="balance-label">可用余额：</span>
@@ -464,7 +463,7 @@ getS()
               </div>
             </el-scrollbar>
           </div>
-      </div>
+      </div> -->
     </div>
     
     <!-- CDK生成弹窗 -->
