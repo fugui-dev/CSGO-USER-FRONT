@@ -30,7 +30,7 @@ const isAnchor = computed(() => {
 })
 
 const link=computed(()=>{
-  return location.origin+`/#/register?code=${userInfo.value.invitationCode}`
+  return location.origin+`/#/register?parentInvitationCode=${userInfo.value.invitationCode}`
 })
 const qrcode = useQRCode(link)
 const summarize=ref({
@@ -337,14 +337,14 @@ getS()
           <div class="promotion-item no_border">
             <div class="link">
               <div class="link-title">我的推广码:</div>
-              <el-input class="link-content" readonly v-model="userInfo.invitationCode"></el-input>
+              <el-input class="link-content" readonly :value="userInfo.invitationCode"></el-input>
               <BaseButton font-size="13px" style="width: 80px;height: 26px;transform: translateX(-110px);color: #072523;" class="link-btn" @click="onCopy(userInfo.invitationCode)" name="复制"></BaseButton>
             </div>
           </div>
           <div class="promotion-item no_border">
             <div class="link">
               <div class="link-title">我的推广链接:</div>
-              <el-input class="link-content" readonly v-model="link"></el-input>
+              <el-input class="link-content" readonly :value="link"></el-input>
               <BaseButton  font-size="13px" style="width: 80px;height: 26px;transform: translateX(-110px);color: #072523;" class="link-btn" @click="onCopy(link)" name="复制"></BaseButton>
             </div>
             <img :src="qrcode" alt="" class="qr">

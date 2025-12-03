@@ -197,6 +197,7 @@ watch(() => store.needLogin, () => {
   immediate: true
 })
 
+// 监听 sessionStorage 中的邀请码（支持向后兼容）
 watch(()=>sessionStorage.getItem('code'),(val)=>{
   if (val!==null && val!==''){
     registerForm.value.parentInvitationCode=val
