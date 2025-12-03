@@ -247,6 +247,11 @@ const kefuRef = ref();
     width: 20px;
     margin-right: 12px;
     cursor: pointer;
+
+    @include mobile {
+      width: 16px;
+      margin-right: 6px;
+    }
   }
 }
 
@@ -256,7 +261,7 @@ const kefuRef = ref();
   align-items: center;
   font-size: 16px;
   @include mobile {
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .item {
@@ -387,13 +392,14 @@ const kefuRef = ref();
         transition: 0.1s;
       }
       @include mobile {
-        width: 80px;
-        height: 29px;
-        font-size: 14px;
+        width: 74px;
+        height: 26px;
+        font-size: 12px;
 
         img {
           width: 16px;
           height: 16px;
+          margin-right: 2px;
         }
       }
     }

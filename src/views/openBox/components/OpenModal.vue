@@ -462,13 +462,13 @@ defineExpose({
                         class="tw-absolute tw-top-1/2 tw-translate-x-[-50%] md:tw-w-auto tw-w-3/4 tw-translate-y-[-50%] tw-left-1/2 ">
                     <img :src="endLeft" alt="" class=" tw-absolute md:tw-w-auto tw-w-1/2 tw-top-0 tw-left-0 ">
                     <img :src="endRight" alt="" class=" tw-absolute md:tw-w-auto tw-w-1/2 tw-top-0 tw-right-0 "> -->
-                    <div class="tw-flex tw-items-center tw-gap-3 md:tw-gap-6 tw-mt-[3.25rem] md:tw-mt-[2rem] ">
+                    <div class="tw-flex tw-items-center tw-gap-3 md:tw-gap-6 tw-mt-[3.25rem] md:tw-mt-[2rem] congratulation-wrap">
                         <img :src="lineLeft" alt="">
                         <img :src="congratulation" alt="" class="tw-w-[13rem]">
                         <img :src="lineRight" alt="">
                     </div>
 
-                    <div class="tw-flex tw-justify-center tw-gap-3 tw-flex-wrap tw-mt-[-4rem] md:tw-gap-6">
+                    <div class="tw-flex tw-justify-center tw-gap-3 tw-flex-wrap tw-mt-[-4rem] md:tw-gap-6 award-wrap">
                         <div v-for="(item, index) in openData" :key="index"
                             class="tw-relative tw-cursor-pointer md:tw-w-[11.75rem] tw-w-[8.75rem] tw-h-[7.5rem] md:tw-h-[8.875rem] tw-flex tw-flex-col tw-justify-end tw-items-center"
                             :class="{
@@ -702,6 +702,25 @@ defineExpose({
 
 </template>
 <style scoped lang="scss">
+@use "@/style" as *;
+.congratulation-wrap {
+  @include mobile {
+    img:nth-of-type(1) {
+      width: 25%;
+    }
+    img:nth-of-type(2) {
+      width: 46%;
+    }
+    img:nth-of-type(3) {
+      width: 25%;
+    }
+  }
+}
+.award-wrap {
+  @include mobile {
+    margin-top: 5rem;
+  }
+}
 .three-body {
     --uib-size: 3.125rem;
     --uib-speed: 0.8s;
@@ -1702,7 +1721,9 @@ defineExpose({
     }
 }
 </style>
-<style>
+<style scoped lang="scss">
+@use "@/style" as *;
+
 .list-move,
 /* 对移动中的元素应用的过渡 */
 .list-enter-active,
@@ -1752,9 +1773,32 @@ defineExpose({
 .open-again-btn {
   background: url('@/assets/images/login/green_btn.png') no-repeat;
   margin-right: 60px;
+  @include mobile {
+    margin-right: 20px;
+    height: 40px;
+    font-size: 14px;
+    img {
+      margin-right: 5px;
+    }
+    span {
+      margin-left: 6px;
+      font-size: 14px;
+    }
+  }
 }
 .break-down-btn {
   background: url('@/assets/images/login/yellow_btn.png') no-repeat;
+  @include mobile {
+    height: 40px;
+    font-size: 14px;
+    img {
+      margin-right: 5px;
+    }
+    span {
+      margin-left: 6px;
+      font-size: 14px;
+    }
+  }
 }
 .golden-bg {
   background: url('@/assets/images/open/golden-bg.png') no-repeat;
