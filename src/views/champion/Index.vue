@@ -102,11 +102,8 @@ onMounted(() => {
               <div class="title tw-flex tw-items-center tw-justify-between">
                 <div>{{ matchData.name }}</div>
                 <div class="num-wrapper tw-flex tw-items-center">
-                  最多
-                  <div class="num">{{ matchData.maxTeamNum }}</div>
-                  队 每队
-                  <div class="num">{{ matchData.teamSize }}</div>
-                  人
+                  <div class="tw-flex tw-mr-[8px]">最多<div class="num">{{ matchData.maxTeamNum }}</div>队</div>
+                  <div class="tw-flex">每队<div class="num">{{ matchData.teamSize }}</div>人</div>
                 </div>
               </div>
               <div class="time">
@@ -161,6 +158,9 @@ onMounted(() => {
   min-height: 100vh;
   font-family: "PingFang Medium";
   font-weight: 500;
+  @include mobile {
+    background-size: 100% 100%;
+  }
   .match-content {
     .matching {
       margin: 0 auto;
@@ -169,28 +169,57 @@ onMounted(() => {
       height: 286px;
       background: url("@/assets/images/champion/item-bg.png") no-repeat;
       background-size: 100% 100%;
+      @include mobile {
+        width: 90%;
+        height: auto;
+      }
       .left {
         width: 223px;
         height: 253px;
         background: url("@/assets/images/champion/item-left-bg.png") no-repeat;
         background-size: 100% 100%;
+        @include mobile {
+          width: 20vw;
+          height: 20vw;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
         .image {
           width: 153px;
           height: 198px;
           margin-top: 33px;
           margin-left: 35px;
+          @include mobile {
+            width: 15vw;
+            height: 18vw;
+            margin-top: 0;
+            margin-left: 0;
+          }
         }
       }
       .right {
         margin-left: 38px;
         font-size: 20px;
+        @include mobile {
+          margin-left: 10px;
+          font-size: 13px;
+        }
         .title {
           margin-top: 10px;
           font-size: 30px;
           color: #ffffff;
+          @include mobile {
+            font-size: 18px;
+            flex-direction: column;
+          }
           .num-wrapper {
             font-size: 22px;
             line-height: 37px;
+            @include mobile {
+              font-size: 14px;
+              line-height: 22px;
+            }
             .num {
               margin: 0 8px;
               text-align: center;
@@ -198,6 +227,10 @@ onMounted(() => {
               height: 37px;
               background: #cf9627;
               border-radius: 50%;
+              @include mobile {
+                width: 22px;
+                height: 22px;
+              }
             }
           }
         }
@@ -216,12 +249,22 @@ onMounted(() => {
             background: url("@/assets/images/champion/fee-bg.png") no-repeat;
             background-size: 100% 100%;
             font-size: 20px;
+            @include mobile {
+              width: 90px;
+              height: 30px;
+              line-height: 30px;
+              font-size: 14px;
+            }
             .fee-image {
               width: 41px;
               height: 43px;
               margin-top: -3px;
               margin-left: -3px;
               display: inline-block;
+              @include mobile {
+                width: 30px;
+                height: 30px;
+              }
             }
           }
         }
@@ -230,6 +273,9 @@ onMounted(() => {
           gap: 20px;
           justify-content: flex-end;
           margin-top: 20px;
+          @include mobile {
+            gap: 10px;
+          }
         }
         
         .enter-btn {
@@ -246,6 +292,14 @@ onMounted(() => {
           color: #ffffff;
           cursor: pointer;
           transition: all 0.3s ease;
+
+          @include mobile {
+            width: 90px;
+            height: 30px;
+            line-height: 26px;
+            border-radius: 15px;
+            font-size: 14px;
+          }
           
           &:hover {
             transform: translateY(-2px);
@@ -267,6 +321,14 @@ onMounted(() => {
           color: #ffffff;
           cursor: pointer;
           transition: all 0.3s ease;
+
+          @include mobile {
+            width: 90px;
+            height: 30px;
+            line-height: 26px;
+            border-radius: 15px;
+            font-size: 14px;
+          }
           
           &:hover {
             background: rgba(255, 255, 255, 0.2);

@@ -112,7 +112,7 @@ const showDialog=(item)=>{
   </div>
   <el-dialog
     v-model="visible"
-    width="722"
+    width="80%"
     :show-close="false"
     align-center
     style="--el-dialog-bg-color: transparent"
@@ -129,6 +129,7 @@ const showDialog=(item)=>{
 </template>
 
 <style scoped lang="scss">
+@use "@/style" as *;
 $primary-color-user: #B3B586;
 .records {
   padding: 20px;
@@ -154,6 +155,9 @@ $primary-color-user: #B3B586;
     display: flex;
     flex-direction: column;
     width: 80%;
+    @include mobile {
+      margin: 0 auto;
+    }
   }
 
   &-item {
@@ -164,6 +168,10 @@ $primary-color-user: #B3B586;
     border-radius: 5px;
     margin-bottom: 10px;
     display: flex;
+    @include mobile {
+      margin-left: auto;
+      margin-right: auto;
+    }
 
     .item {
       width: 33.33%;
@@ -178,7 +186,7 @@ $primary-color-user: #B3B586;
   }
 }
 .alert-wrapper {
-  width: 722px;
+  width: 100%;
   height: 423px;
   position: relative;
   background: url('@/assets/images/user/alert_bg.png') no-repeat;
@@ -204,7 +212,7 @@ $primary-color-user: #B3B586;
     text-align: center;
     height: 39px;
     line-height: 39px;
-    min-width: 240px;
+    min-width: 40%;
     width: max-content;
     padding: 0 12px;
     font-weight: 500;
@@ -212,11 +220,17 @@ $primary-color-user: #B3B586;
     color: #FFFFFF;
     background-color: #0B191C;
     border-radius: 10px;
+    @include mobile {
+      font-size: 16px;
+    }
   }
   .content {
     flex: 1;
     overflow-y: auto;
     padding-right: 10px;
+    @include mobile {
+      font-size: 14px;
+    }
     &::-webkit-scrollbar {
       width: 6px;
     }

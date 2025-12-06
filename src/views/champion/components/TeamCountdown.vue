@@ -263,7 +263,8 @@ defineExpose({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use "@/style" as *;
 .wait-wrapper {
   width: 100%;
   height: 55.36vw;
@@ -274,6 +275,9 @@ defineExpose({
   top: 0;
   left: 0;
   z-index: 2;
+  @include mobile {
+    height: 26vh;
+  }
   .content {
     position: relative;
     margin-top: 21vw;
@@ -285,6 +289,9 @@ defineExpose({
     font-size: 43px;
     color: #f2ffef;
     line-height: normal;
+    @include mobile {
+      font-size: 28px;
+    }
   }
   .count-time {
     position: relative;
@@ -293,6 +300,9 @@ defineExpose({
     font-weight: 500;
     font-size: 26px;
     color: #ffc923;
+    @include mobile {
+      font-size: 18px;
+    }
   }
 }
 </style>

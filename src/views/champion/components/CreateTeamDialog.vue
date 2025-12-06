@@ -109,6 +109,7 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
+@use "@/style" as *;
 .create-team-wrapper {
   height: 574px;
   background: url("@/assets/images/champion/create-team-bg.webp") no-repeat;
@@ -119,6 +120,10 @@ defineExpose({
   color: #1d1f22;
   overflow: hidden;
   margin-top: 30px;
+  @include mobile {
+    width: 94vw;
+    height: 300px;
+  }
   .close-click {
     width: 70px;
     height: 70px;
@@ -126,23 +131,44 @@ defineExpose({
     right: 32px;
     top: 37px;
     cursor: pointer;
+    @include mobile {
+      width: 40px;
+      height: 40px;
+      right: 6px;
+      top: 10px;
+    }
   }
   .title {
     text-align: center;
     margin-top: 82px;
     font-size: 28px;
+    @include mobile {
+      margin-top: 40px;
+      font-size: 18px;
+    }
   }
   .form {
     margin-top: 30px;
     margin-left: 145px;
     font-size: 23px;
     width: 867px;
+    @include mobile {
+      margin-top: 6px;
+      font-size: 14px;
+      margin-left: 40px;
+    }
     :deep() {
       .el-input {
         margin-top: 20px;
         width: 867px;
         height: 56px;
         font-size: 19px;
+        @include mobile {
+          width: 70vw;
+          height: 36px;
+          margin-top: 6px;
+          font-size: 14px;
+        }
       }
       .el-input__wrapper {
         background: #74705e;
@@ -168,6 +194,15 @@ defineExpose({
       color: #072523;
       cursor: pointer;
       border: 0;
+      @include mobile {
+        width: 80px;
+        margin-top: 8px;
+        height: 32px;
+        line-height: 28px;
+        margin-left: 25vw;
+        margin-right: 0;
+        font-size: 14px;
+      }
     }
   }
 }

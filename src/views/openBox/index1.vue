@@ -604,6 +604,9 @@ const handleClickBack = () => {
     right: 36px;
     display: flex;
     align-items: center;
+    @include mobile {
+      right: 10px;
+    }
     .record-wrapper {
       display: flex;
       align-items: center;
@@ -617,10 +620,21 @@ const handleClickBack = () => {
       color: #ffffff;
       margin-right: 43px;
       cursor: pointer;
+      @include mobile {
+        width: 110px;
+        font-size: 14px;
+        height: 34px;
+        margin-right: 18px;
+      }
       .record-icon {
         width: 28px;
         height: 31px;
         margin-right: 12px;
+        @include mobile {
+          width: 14px;
+          height: 15px;
+          margin-right: 5px;
+        }
       }
     }
     .settings {
@@ -635,6 +649,11 @@ const handleClickBack = () => {
           border-radius: 12px;
           cursor: pointer;
           position: relative;
+          @include mobile {
+            width: 40px;
+            height: 18px;
+            border-radius: 8px;
+          }
           .setting-switch {
             width: 24px;
             height: 24px;
@@ -642,6 +661,10 @@ const handleClickBack = () => {
             top: 1px;
             left: 1px;
             transition: all 0.3s;
+            @include mobile {
+              width: 16px;
+              height: 16px;
+            }
             &.active {
               left: auto;
               right: 1px;
@@ -653,6 +676,10 @@ const handleClickBack = () => {
           font-weight: 500;
           font-size: 17px;
           color: #ffffff;
+          @include mobile {
+            font-size: 13px;
+            margin-left: 6px;
+          }
         }
       }
     }
@@ -676,6 +703,9 @@ const handleClickBack = () => {
       width: 354px;
       height: 219px;
       object-fit: contain;
+      @include mobile {
+        width: 70vw;
+      }
     }
     .box-img-01 {
       position: relative;
@@ -714,6 +744,11 @@ const handleClickBack = () => {
       font-weight: 500;
       font-size: 18px;
       color: #ffffff;
+      @include mobile {
+        font-size: 14px;
+        margin-top: 28px;
+        padding: 0 14px;
+      }
       .count {
         cursor: pointer;
         margin-left: 30px;
@@ -724,6 +759,13 @@ const handleClickBack = () => {
         background: url("@/assets/images/open/count-bg.png") no-repeat;
         background-size: 100% auto;
         font-size: 16px;
+        @include mobile {
+          margin-left: 12px;
+          width: 46px;
+          height: 46px;
+          line-height: 46px;
+          font-size: 13px;
+        }
         & + .count {
           margin-left: 12px;
         }
@@ -746,15 +788,31 @@ const handleClickBack = () => {
       color: #072523;
       position: relative;
       cursor: pointer;
+      @include mobile {
+        margin-top: 20px;
+        width: 50%;
+        height: 50px;
+        line-height: 50px;
+        font-size: 14px;
+
+      }
       .open-icon {
         position: absolute;
         left: 18px;
         top: 5px;
         width: 63px;
         height: 60px;
+        @include mobile {
+          width: 32px;
+          height: 30px;
+          left: 28px;
+        }
       }
       .text {
         margin-left: 25px;
+        @include mobile {
+          margin-left: 8px;
+        }
       }
     }
     .group-wrapper {
@@ -763,6 +821,9 @@ const handleClickBack = () => {
       margin: 46px auto 0;
       display: flex;
       align-items: center;
+      @include mobile {
+        width: 100%;
+      }
       .goup-item {
         width: 148px;
         height: 60px;
@@ -787,6 +848,11 @@ const handleClickBack = () => {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
+      @include mobile {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 40px;
+      }
     }
   }
 }

@@ -184,6 +184,7 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
+  @use "@/style" as *;
 .fight-result {
   display: flex;
   flex-wrap: wrap;
@@ -213,6 +214,9 @@ defineExpose({
       object-fit: contain;
       object-position: center;
       flex-shrink: 0;
+      @include mobile {
+        margin-top: -20px;
+      }
     }
     h5 {
       position: absolute;
@@ -233,6 +237,9 @@ defineExpose({
       -webkit-box-orient: vertical;
       z-index: 10;
       pointer-events: none;
+      @include mobile {
+        bottom: 14px;
+      }
     }
     .btn {
       position: absolute;

@@ -91,6 +91,7 @@ const handleJoinTeam = () => {
 </template>
 
 <style scoped lang="scss">
+@use "@/style" as *;
 .team-card-container {
   position: relative;
   margin-top: 36px;
@@ -99,6 +100,11 @@ const handleJoinTeam = () => {
   height: 286px;
   border-radius: 8px;
   background-color: #38383894;
+  @include mobile {
+    width: 100%;
+    margin-top: 30px;
+    height: auto;
+  }
 }
 .match-logo {
   width: 133px;
@@ -107,6 +113,10 @@ const handleJoinTeam = () => {
   z-index: 2;
   left: 0;
   top: -24px;
+  @include mobile {
+    width: 70px;
+    height: 76px;
+  }
 }
 .avatar-wrapper {
   width: 79px;
@@ -115,6 +125,10 @@ const handleJoinTeam = () => {
   justify-content: center;
   align-items: center;
   position: relative;
+  @include mobile {
+    width: 60px;
+    height: 60px;
+  }
   &+.avatar-wrapper {
     margin-left: 11px;
   }
@@ -123,6 +137,10 @@ const handleJoinTeam = () => {
     height: 60px;
     border-radius: 50%;
     display: block;
+    @include mobile {
+      width: 40px;
+      height: 40px;
+    }
   }
   .avatar-bg {
     display: block;
@@ -141,6 +159,10 @@ const handleJoinTeam = () => {
   align-items: center;
   padding: 16px 16px 16px 173px;
   height: 140px;
+  @include mobile {
+    padding: 10px 10px 10px 60px;
+    height: auto;
+  }
   .card-header-left {
     display: flex;
     .avatar-wrapper {
@@ -154,12 +176,14 @@ const handleJoinTeam = () => {
         font-weight: 400;
         font-size: 24px;
         color: #FFFFFF;
+        font-size: 18px;
       }
       .people-num {
         font-weight: 500;
         font-size: 22px;
         color: #FFFFFF;
         margin-top: 8px;
+        font-size: 14px;
       }
     }
   }
@@ -175,6 +199,12 @@ const handleJoinTeam = () => {
     color: #072523;
     line-height: 64px;
     cursor: pointer;
+    @include mobile {
+      width: 100px;
+      height: 32px;
+      line-height: 28px;
+      font-size: 14px;
+    }
     &disabled {
       background-image: url('@/assets/images/champion/team/status-bg.png');
       color: #E8B253;
@@ -192,6 +222,9 @@ const handleJoinTeam = () => {
   display: flex;
   flex-wrap: wrap;
   padding: 14px 14px 14px 60px;
+  @include mobile {
+    padding: 10px;
+  }
   .card-box-list-item {
     display: flex;
     flex-direction: column;
@@ -220,6 +253,9 @@ const handleJoinTeam = () => {
       max-width: 80px;
       font-size: 17px;
       margin-top: 6px;
+      @include mobile {
+        font-size: 12px;
+      }
     }
   }
 }

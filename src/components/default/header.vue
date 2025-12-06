@@ -1,6 +1,9 @@
 <template>
   <div class="header-wrapper">
     <img class="bg" src="@/assets/images/header/bg.png" alt="" />
+    <div class="top-info" v-show="!isPC">
+      <TopInfo v-model:show-popover="showPopover" />
+    </div>
     <div class="header-menu">
       <div
         v-for="(item, index) in menuList"
@@ -11,11 +14,12 @@
       >
         {{ item.name }}
       </div>
-      <div class="top-info">
+      <div class="top-info" v-show="isPC">
         <TopInfo v-model:show-popover="showPopover" />
       </div>
     </div>
   </div>
+
   <RechargeModal ref="rechargeModalRef" />
 </template>
 
@@ -23,9 +27,10 @@
 import TopInfo from "@/components/TopInfo.vue";
 import RechargeModal from "@/components/RechargeModal/index.vue";
 import { useRoute, useRouter } from "vue-router";
+import {useStore} from "@/store/index.js";
 const route = useRoute();
 const router = useRouter();
-import { ref } from "vue";
+import { ref, computed } from "vue";
 const rechargeModalRef = ref();
 const menuList = [
   { name: "首页", path: "/" },
@@ -44,9 +49,17 @@ const toMenu = (item) => {
     ElMessage("敬请期待");
   }
 };
+const store = useStore()
+
+const isPC = computed(()=>{
+  console.log(store.isPC)
+  return store.isPC
+})
 </script>
 
 <style scoped lang="scss">
+@use "@/style" as *;
+
 .header-wrapper {
   position: fixed;
   top: 0;
@@ -57,7 +70,7 @@ const toMenu = (item) => {
   z-index: 10;
   .bg {
     width: 100%;
-    height: 80px;
+    height: 90px;
     object-fit: cover;
     position: absolute;
     top: 0;
@@ -73,6 +86,11 @@ const toMenu = (item) => {
     font-size: 18px;
     text-align: center;
     line-height: 68px;
+    @include mobile {
+      font-size: 12px;
+      height: 32px;
+      line-height: 32px;
+    }
     .menu-item {
       width: 94px;
       height: 100%;
@@ -84,6 +102,9 @@ const toMenu = (item) => {
     }
     .top-info {
       margin-left: 36px;
+      @include mobile {
+        margin-left: 8px;
+      }
     }
   }
 }

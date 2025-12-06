@@ -116,11 +116,12 @@
             v-model:page-size="search.pageSize"
             :page-sizes="[12, 24, 48, 96]"
             :total="total"
-            layout="total, sizes, prev, pager, next"
+            :layout="isPC ? 'total, sizes, prev, pager, next': 'total,prev, pager, next'"
             @size-change="handleSizeChange"
             @current-change="handlePageChange"
             background
             :hide-on-single-page="false"
+            :size="isPC ? 'default': 'small'"
           />
         </div>
       </div>
@@ -138,7 +139,7 @@ import Layout from "@/components/Layout.vue";
 import BaseDialog from "@/components/dialogs/BaseDialog.vue";
 import { useStore } from "@/store/index.js";
 import { category } from "@/views/options.js";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import boxItem from "@/views/openBox/components/boxItem.vue";
 import convertDialog from "./components/convertDialog.vue";
 import confirmDialog from "./components/confirmDialog.vue";
@@ -164,6 +165,10 @@ const search = ref({
   minPrice: "",
   affordable: false, // 是否只显示可购买饰品
 });
+
+const isPC = computed(()=>{
+  return store.isPC
+})
 const handleSearch = (type, val) => {
   search.value[type] = val;
   search.value.pageNum = 1; // 重置到第一页
@@ -285,6 +290,8 @@ const handleCommodityExchange = (item) => {
 </script>
 
 <style scoped lang="scss">
+@use "@/style" as *;
+
 .shop-wrapper {
   padding: 68px 37px 50px;
   display: flex;
@@ -298,6 +305,9 @@ const handleCommodityExchange = (item) => {
   width: 100%;
   font-weight: 500;
   font-family: "PingFang Medium";
+  @include mobile {
+    padding: 58px 10px;
+  }
   .header-wrapper {
     width: 1260px;
     display: flex;
@@ -305,12 +315,19 @@ const handleCommodityExchange = (item) => {
     justify-content: space-between;
     padding: 40px 0;
     font-size: 17px;
+    @include mobile {
+      width: 100%;
+      font-size: 14px;
+    }
     .select {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       flex: 1;
       gap: 16px 33px;
+      @include mobile {
+        gap: 10px;
+      }
       &-item {
         display: flex;
         align-items: center;
@@ -321,6 +338,10 @@ const handleCommodityExchange = (item) => {
           height: 40px;
           --el-input-text-color: #fff;
           --el-input-placeholder-color: #fff;
+          @include mobile {
+            width: 100px;
+            height: 32px;
+          }
           :deep(.el-input__wrapper) {
             background-color: #1d3337;
             border: 0;
@@ -334,12 +355,20 @@ const handleCommodityExchange = (item) => {
           --el-select-input-focus-border-color: none;
           --el-input-text-color: #fff;
           --el-text-color-placeholder: #fff;
+          @include mobile {
+            width: 100px;
+            height: 32px;
+          }
           :deep(.el-select__wrapper) {
             height: 40px;
             background-color: #1d3337;
             border: 0;
             border-radius: 20px;
             box-shadow: none !important;
+            @include mobile {
+              height: 32px;
+              border-radius: 16px;
+            }
           }
         }
       }
@@ -388,6 +417,10 @@ const handleCommodityExchange = (item) => {
     box-sizing: border-box;
     justify-items: center;
     min-height: 400px;
+    @include mobile {
+      gap: 7px;
+      padding: 10px 0;
+    }
   }
   
   @media (max-width: 1400px) {
@@ -418,11 +451,17 @@ const handleCommodityExchange = (item) => {
     margin-bottom: 30px;
     display: flex;
     justify-content: center;
+    @include mobile {
+      width: 100%;
+    }
     :deep(.el-pagination) {
       --el-pagination-button-color: #fff;
       --el-pagination-text-color: #fff;
       --el-pagination-bg-color: rgba(29, 51, 55, 0.8);
       --el-pagination-border-radius: 8px;
+      @include mobile {
+        width: 100%;
+      }
       .el-pagination__total,
       .el-pagination__jump {
         color: #fff;

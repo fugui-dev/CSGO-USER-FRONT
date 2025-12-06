@@ -164,11 +164,11 @@ const getOpenPrizeList = (data) => {
               for (let item of openPrize.value) {
                 if (item.holderUserId === store.userInfo.userId) {
                   myPrize.value = item
-                  baseDialogRef.value.open()
+                  baseDialogRef.value?.open()
                   return
                 }
               }
-              if (data.value.rollStatus == 1) {
+              if (data.value?.rollStatus == 1) {
                 baseDialogRef.value.open()
               }
             }
@@ -244,7 +244,7 @@ getDetails()
           </div>
           <div class="nav">
             <div class="nav-item" v-for="(i,index) in navList" :class="{'active':active===i.value}" :key="index"
-                  @click="changeActive(i.value)" v-show="!(index===2&&data.rollStatus=='0')">
+                  @click="changeActive(i.value)" v-show="!(index===2 && data && data.rollStatus=='0')">
               <span>{{ i.name }}</span>
             </div>
           </div>
@@ -269,7 +269,7 @@ getDetails()
             </div>
 
           </div>
-          <div class="room-info" v-else style="margin-top: 20px;padding :  0 10px">
+          <div class="room-info" v-else style="height: 240px;margin-top: 10px;padding:0 10px">
             <div style="display: flex;height: fit-content;width: 100%;justify-content: space-between;align-items: flex-end">
               <div style="display: flex;flex-direction: column">
                 <div class="deadline">
@@ -281,11 +281,11 @@ getDetails()
                   <div v-else>已结束</div>
                 </div>
               </div>
-              <div class="ico" style="height: 120px;width: 120px">
-                <div class="title" style="font-size: 16px">{{ data.rollName || '标题' }}</div>
+              <div class="ico" style="height: 200px;width: 160px">
+                <div class="title" style="font-size: 13px">{{ data.rollName || '标题' }}</div>
                 <img class="bx" style="width: 105px;margin-top: 0" :src="requireImg('/v2/roll/bx.png',false)" alt="">
-                <div class="desc" style="margin: 40px 10px;padding: 8px 12px;height: fit-content">
-                  <p>房间说明：</p>
+                <div class="desc" style="margin:4px;padding: 3px;height: fit-content">
+                  <p class="tw-font-[13px]">房间说明：</p>
                   {{ data.description || '暂无描述' }}
                 </div>
               </div>
@@ -440,7 +440,7 @@ getDetails()
     @include mobile {
       flex-direction: column;
       background-image: none;
-      margin-left: 0;
+      margin: 0 10px;
     }
 
     &-info {
@@ -466,7 +466,7 @@ getDetails()
         font-weight: 600;
         padding-left: 5px;
         @include mobile {
-          margin-top: 20px;
+          margin-top: 4px;
           white-space: wrap;
 
         }
@@ -482,6 +482,9 @@ getDetails()
         position: relative;
         background: url('@/assets/images/roll/roll_bg.png') no-repeat;
         background-size: 100% 100%;
+        @include mobile {
+          margin-top: 0;
+        }
         .bx{
           width: 120px;
           height: 119px;
@@ -716,9 +719,10 @@ getDetails()
     margin-right: 32px;
     background: linear-gradient(to right, #122c2e, #214147);
     @include mobile {
-      height: 36px;
-      width: 30%;
+      height: 32px;
+      width: 50%;
       margin: 0;
+      margin-left: 10px;
     }
 
     &.active {

@@ -113,6 +113,10 @@ const handleClickBtn = (teamId) => {
   line-height: normal;
   margin: 8px;
   position: relative;
+  @include mobile {
+    width: 40%;
+    height: 100px;
+  }
   
   .level-item-status {
     position: absolute;
@@ -134,12 +138,20 @@ const handleClickBtn = (teamId) => {
   .right {
     width: 100px;
     height: 168px;
+    @include mobile {
+      width: 40%;
+      height: 90px;
+    }
     
     .alias {
       margin-top: 12px;
       font-size: 14px;
       color: #ffffff;
       font-weight: bold;
+      @include mobile {
+        margin-top: 3px;
+        font-size: 12px;
+      }
     }
     
     .avatar-wrapper {
@@ -150,6 +162,9 @@ const handleClickBtn = (teamId) => {
       justify-content: center;
       align-items: center;
       position: relative;
+      @include mobile {
+        margin-top: 3px;
+      }
       
       .avatar {
         width: 32px;
@@ -175,6 +190,10 @@ const handleClickBtn = (teamId) => {
       font-size: 15px;
       color: #ffffff;
       font-weight: bold;
+      @include mobile {
+        margin-top: 3px;
+        font-size: 12px;
+      }
     }
     
     
@@ -193,6 +212,13 @@ const handleClickBtn = (teamId) => {
       transition: all 0.3s ease;
       min-width: 60px;
       padding: 0 12px;
+      @include mobile {
+        height: 18px;
+        line-height: 18px;
+        border-radius: 9px;
+        margin-top: 2px;
+        padding: 0 4px;
+      }
       
       &:hover {
         transform: translateY(-2px);
@@ -215,28 +241,32 @@ const handleClickBtn = (teamId) => {
     width: 60px;
     height: 65px;
     margin: 0 8px 0 12px;
+    @include mobile {
+      width: 30px;
+      height: 32px;
+    }
   }
 }
 
 /* 响应式调整 */
 @media (max-width: 768px) {
-  .level-item {
-    width: 90%;
-    height: auto;
-    flex-direction: column;
-    padding: 12px;
-    margin: 4px;
+  // .level-item {
+  //   width: 90%;
+  //   height: auto;
+  //   flex-direction: column;
+  //   padding: 12px;
+  //   margin: 4px;
     
-    .left,
-    .right {
-      width: 100%;
-      height: auto;
-      margin: 6px 0;
-    }
+  //   .left,
+  //   .right {
+  //     width: 100%;
+  //     height: auto;
+  //     margin: 6px 0;
+  //   }
     
-    .vs {
-      margin: 12px 0;
-    }
-  }
+  //   .vs {
+  //     margin: 12px 0;
+  //   }
+  // }
 }
 </style>

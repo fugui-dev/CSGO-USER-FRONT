@@ -143,11 +143,16 @@ const specialBg = computed(() => {
 
 .history-detail-container {
   position: relative;
+  width: 96%;
+  margin: 0 auto;
   .group-wrapper {
     height: 60px;
     margin-top: 56px;
     display: flex;
     align-items: center;
+    @include mobile {
+      margin-top: 24px;
+    }
     .goup-item {
       width: 159px;
       height: 63px;
@@ -157,6 +162,10 @@ const specialBg = computed(() => {
       font-size: 18px;
       color: #ffffff;
       cursor: pointer;
+      @include mobile {
+        width: 33.3%;
+        font-size: 16px;
+      }
       &.active {
         color: #8fedd8;
         background: url("@/assets/images/header/active-menu.png") no-repeat;

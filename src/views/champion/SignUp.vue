@@ -423,6 +423,13 @@ onMounted(() => {
   color: #072523;
   cursor: pointer;
   border: 0;
+  @include mobile {
+    width: 50%;
+    height: 36px;
+    line-height: 32px;
+    font-size: 16px;
+    margin-top: 18px;
+  }
   &.disable-btn {
     background-image: url('@/assets/images/champion/team/status-bg.png');
     color: #E8B253;
@@ -439,6 +446,9 @@ onMounted(() => {
     align-items: center;
     position: relative;
     z-index: 3;
+    @include mobile {
+      margin-top: 180px;
+    }
     .goup-item {
       width: 159px;
       height: 63px;
@@ -448,6 +458,11 @@ onMounted(() => {
       font-size: 18px;
       color: #ffffff;
       cursor: pointer;
+      @include mobile {
+        font-size: 16px;
+        width: 140px;
+      }
+      
       &.active {
         color: #8fedd8;
         background: url("@/assets/images/header/active-menu.png") no-repeat;
@@ -460,6 +475,10 @@ onMounted(() => {
     margin: 0 auto;
     position: relative;
     z-index: 2;
+    @include mobile {
+      width: 96%;
+      margin-top: 20px !important;
+    }
     .battle-list {
       .battle-list-container {
         display: grid;
@@ -475,8 +494,14 @@ onMounted(() => {
       margin-top: 40px;
       .nav-item {
         margin: 0 0 0 16px;
+        @include mobile {
+          margin-left: 8px;
+        }
         &+ .nav-item {
           margin: 0 0 0 26px;
+          @include mobile {
+            margin-left: 8px;
+          }
         }
       }
     }
@@ -567,6 +592,10 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
+    @include mobile {
+      width: 100%;
+      height: 300px;
+    }
   }
 }
 

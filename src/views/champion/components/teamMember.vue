@@ -82,6 +82,7 @@ const emit = defineEmits(['audit', 'reply']);
 </script>
 
 <style scoped lang="scss">
+@use "@/style" as *;
 .team-member-wrapper {
   width: 100%;
   min-height: 500px;
@@ -90,6 +91,9 @@ const emit = defineEmits(['audit', 'reply']);
   background-color: #38383894;
   font-weight: 500;
   font-family: "PingFang Medium";
+  @include mobile {
+    margin-top: 10px;
+  }
   .team-member-item {
     width: 100%;
     height: 98px;
@@ -97,9 +101,15 @@ const emit = defineEmits(['audit', 'reply']);
     padding-right: 35px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-evenly;
     color: #FFFFFF;
     font-size: 17px;
+    @include mobile {
+      padding-left: 10px;
+      padding-right: 10px;
+      font-size: 14px;
+      height: 50px;
+    }
     .info {
       flex: 1;
       display: flex;
@@ -111,6 +121,11 @@ const emit = defineEmits(['audit', 'reply']);
         line-height: 54px;
         background: url("@/assets/images/open/count-active-bg.png") no-repeat;
         background-size: 100% auto;
+        @include mobile {
+          width: 36px;
+          height: 36px;
+          line-height: 36px;
+        }
       }
       .avatar-wrapper {
         margin-left: 24px;
@@ -120,11 +135,19 @@ const emit = defineEmits(['audit', 'reply']);
         justify-content: center;
         align-items: center;
         position: relative;
+        @include mobile {
+          width: 45px;
+          height: 45px;
+        }
         .avatar {
           width: 61px;
           height: 61px;
           border-radius: 50%;
           display: block;
+          @include mobile {
+            width: 32px;
+            height: 32px;
+          }
         }
         .avatar-bg {
           display: block;
@@ -139,6 +162,15 @@ const emit = defineEmits(['audit', 'reply']);
       }
       .name {
         margin-left: 16px;
+        max-width: 240px;
+        text-overflow: ellipsis;// 显示省略符号来代表被修剪的文本
+        white-space: nowrap; //文本不会换行，文本会在在同一行上继续，直到遇到标签为止
+        overflow: hidden;// 超出部分隐藏
+        @include mobile {
+          margin-left: 4px;
+          max-width: 80px;
+
+        }
       }
     }
     .audit-btn-wrap {
@@ -155,6 +187,12 @@ const emit = defineEmits(['audit', 'reply']);
         background-size: 100% 100%;
         margin-left: 16px;
         cursor: pointer;
+        @include mobile {
+          width: 80px;
+          height: 32px;
+          line-height: 32px;
+          font-size: 14px;
+        }
         &.reject {
           background: url('@/assets/images/champion/team/red-btn.png') no-repeat;
           background-size: 100% 100%;
@@ -164,6 +202,9 @@ const emit = defineEmits(['audit', 'reply']);
     .status {
       font-size: 22px;
       color: #C4C4C4;
+      @include mobile {
+        font-size: 14px;
+      }
       &.active {
         color: #3BDF93;
       }

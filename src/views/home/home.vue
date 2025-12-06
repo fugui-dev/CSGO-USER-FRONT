@@ -94,18 +94,29 @@ const enter = (item: { img: string; text: string; path: string }) => {
 </script>
 
 <style scoped lang="scss">
+@use "@/style" as *;
+
 .home-wrapper {
   width: 100%;
   height: 120vw;
   background: url("@/assets/images/home/bg.webp") no-repeat;
   background-size: 100% 135vw;
+  background-position: 0 60px;
   background-color: #34393f;
   padding-top: 32vw;
+  @include mobile {
+    height: 130vh;
+  }
+
   .open {
     width: 20vw;
     height: 18vw;
     margin: 0 auto;
     cursor: pointer;
+    @include mobile {
+      width: 50vw;
+      height: 50vw;
+    }
   }
   .tip {
     width: 907px;
@@ -117,15 +128,30 @@ const enter = (item: { img: string; text: string; path: string }) => {
     background: url("@/assets/images/home/tip.png") no-repeat;
     background-size: 100% 100%;
     margin: 3vw auto 0;
+
+    @include mobile {
+      width: 80%;
+      line-height: 24px;
+      margin-top: 0;
+    }
+
     .icon {
       width: 26px;
       height: 26px;
       margin-right: 24px;
+      @include mobile {
+        width: 16px;
+        height: 16px;
+        margin-right: 10px;
+      }
     }
     .text {
       font-weight: 500;
       font-size: 17px;
       color: #b4c7c9;
+      @include mobile {
+        font-size: 12px;
+      }
     }
   }
   .enter-wrapper {
@@ -141,6 +167,10 @@ const enter = (item: { img: string; text: string; path: string }) => {
       .img {
         width: 215px;
         height: 303px;
+        @include mobile {
+          width: 80px;
+          height: 120px;
+        }
       }
       .text {
         text-align: center;
@@ -149,6 +179,10 @@ const enter = (item: { img: string; text: string; path: string }) => {
         font-size: 23px;
         color: #f2ffef;
         opacity: 0.4;
+        @include mobile {
+          font-size: 12px;
+          margin-top: 10px;
+        }
       }
     }
   }
@@ -165,6 +199,10 @@ const enter = (item: { img: string; text: string; path: string }) => {
       .img {
         width: 176px;
         height: 176px;
+        @include mobile {
+          width: 80px;
+          height: 70px;
+        }
       }
       .text {
         text-align: center;
@@ -172,6 +210,9 @@ const enter = (item: { img: string; text: string; path: string }) => {
         font-weight: 500;
         font-size: 30px;
         color: #f2ffef;
+        @include mobile {
+          font-size: 14px;
+        }
       }
     }
   }

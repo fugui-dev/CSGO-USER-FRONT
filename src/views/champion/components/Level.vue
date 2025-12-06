@@ -224,8 +224,12 @@ const headerImage = (index) => {
 </template>
 
 <style scoped lang="scss">
+@use "@/style" as *;
 .level-container {
   margin-top: 20px;
+  @include mobile {
+    margin-top: -10px;
+  }
   .champion-wrapper {
     margin: 0 auto;
     width: 316px;
@@ -235,18 +239,30 @@ const headerImage = (index) => {
     position: relative;
     overflow: hidden;
     z-index: 1;
+    @include mobile {
+      width: 128px;
+      height: 160px;
+    }
     .champion {
       width: 191px;
       height: 191px;
       margin-top: 81px;
       margin-left: 61px;
       border-radius: 50%;
+      @include mobile {
+        width: 78px;
+        height: 78px;
+        margin: 32px auto 0;
+      }
     }
   }
   .level-item-wrap {
     margin: -147px auto 0;
     position: relative;
     z-index: 2;
+    @include mobile {
+      margin-top: -50px;
+    }
   }
   .top {
     margin: 9px auto 10px;
@@ -260,6 +276,10 @@ const headerImage = (index) => {
     position: relative;
     margin: 0 auto;
     padding: 9px 7px 41px;
+    @include mobile {
+      width: 100%;
+      padding: 9px 7px 18px;
+    }
     .header-bg {
       position: absolute;
       top: 9px;
@@ -267,6 +287,10 @@ const headerImage = (index) => {
       transform: translateX(-50%);
       width: 1004px;
       height: 72px;
+      @include mobile {
+        width: 100%;
+        height: 50px;
+      }
     }
     .header {
       margin: 15px auto 0;
@@ -274,12 +298,20 @@ const headerImage = (index) => {
       height: 43px;
       position: relative;
       z-index: 1;
+      @include mobile {
+        height: 32px;
+        margin-top: 8px;
+      }
     }
     .level-detail {
       gap: 35px 119px;
       margin-top: 46px;
       overflow: hidden;
       flex-wrap: wrap;
+      @include mobile {
+        gap: 8px;
+        margin-top: 30px;
+      }
     }
   }
 }

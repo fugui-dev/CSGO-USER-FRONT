@@ -74,7 +74,7 @@ const props = defineProps({
             <span>{{ i.name }}</span>
           </router-link>
         </div>
-        <div style="margin-left: 32px;">
+        <div>
           <slot></slot>
         </div>
       </div>
@@ -92,6 +92,9 @@ const props = defineProps({
   min-height: 100vh;
   overflow: hidden;
   display: flex;
+  @include mobile {
+    background-size: 100% 100%;
+  }
   .detail-content {
     flex: 1;
     overflow: auto;
@@ -103,16 +106,28 @@ const props = defineProps({
       margin-top: 20px;
       margin-left: 32px;
       gap: 10px 12px;
+      @include mobile {
+        gap: 6px;
+        margin-left: 8px;
+        margin-right: 8px;
+      }
       .nav-item {
         width: 139px;
         height: 40px;
         text-align: center;
         line-height: 40px;
-        background-size: 100%;
+        background-size: 100% 100%;
         font-weight: 500;
         font-size: 17px;
         color: #ffffff;
         cursor: pointer;
+        @include mobile {
+          background-repeat: no-repeat;
+          width: 100px;
+          height: 32px;
+          line-height: 32px;
+          font-size: 14px;
+        }
       }
     }
   }

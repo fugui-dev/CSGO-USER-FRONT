@@ -95,6 +95,7 @@ const handleClickBoxItem = (item) => {
 </script>
 
 <style scoped lang="scss">
+@use "@/style" as *;
 .box-wrapper {
   width: 100%;
   padding: 0 20px;
@@ -104,16 +105,26 @@ const handleClickBoxItem = (item) => {
     align-items: center;
     flex-wrap: wrap;
     gap: 12px;
+    @include mobile {
+      padding-top: 20px;
+    }
     .box-type-item {
       width: 139px;
       height: 40px;
       text-align: center;
       line-height: 40px;
-      background-size: 100%;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
       font-weight: 500;
       font-size: 17px;
       color: #ffffff;
       cursor: pointer;
+      @include mobile {
+        width: 98px;
+        height: 28px;
+        line-height: 28px;
+        font-size: 13px;
+      }
     }
   }
   .box-item-wrapper {
@@ -121,6 +132,9 @@ const handleClickBoxItem = (item) => {
     align-items: center;
     height: 10vw;
     overflow-x: auto;
+    @include mobile {
+      height: 120px;
+    }
     &::-webkit-scrollbar {
       display: none;
     }
@@ -130,6 +144,10 @@ const handleClickBoxItem = (item) => {
       background: url("@/assets/images/battle/weapon-bg.png") no-repeat;
       background-size: 100% 100%;
       cursor: pointer;
+      @include mobile {
+        min-width: 120px;
+      }
+
       & + .box-item {
         margin-left: 20px;
       }

@@ -50,11 +50,8 @@ onMounted(() => {
             <div class="title tw-flex tw-items-center tw-justify-between">
               <div>{{ matchData.name }}</div>
               <div class="num-wrapper tw-flex tw-items-center">
-                最多
-                <div class="num">{{ matchData.maxTeamNum }}</div>
-                队 每队
-                <div class="num">{{ matchData.teamSize }}</div>
-                人
+                <div class="tw-flex tw-mr-[8px]">最多<div class="num">{{ matchData.maxTeamNum }}</div>队</div>
+                  <div class="tw-flex">每队<div class="num">{{ matchData.teamSize }}</div>人</div>
               </div>
             </div>
             <div class="time">
@@ -122,6 +119,9 @@ onMounted(() => {
     background-size: 100% 100%;
     display: flex;
     align-items: center;
+    @include mobile {
+      width: 100%;
+    }
     
     .left {
       width: 223px;
@@ -142,9 +142,17 @@ onMounted(() => {
         margin-top: 10px;
         font-size: 30px;
         color: #ffffff;
+        @include mobile {
+            font-size: 18px;
+            flex-direction: column;
+          }
         .num-wrapper {
           font-size: 22px;
           line-height: 37px;
+          @include mobile {
+              font-size: 14px;
+              line-height: 22px;
+            }
           .num {
             margin: 0 8px;
             text-align: center;
@@ -152,17 +160,28 @@ onMounted(() => {
             height: 37px;
             background: #cf9627;
             border-radius: 50%;
+            @include mobile {
+                width: 22px;
+                height: 22px;
+              }
           }
         }
       }
       .time {
         margin-top: 13px;
+        @include mobile {
+          font-size: 14px;
+          text-align: left;
+        }
         & + .time {
           margin-top: 10px;
         }
       }
       .fee {
         margin-top: 13px;
+        @include mobile {
+          font-size: 14px;
+        }
         .fee-num {
           width: 120px;
           height: 36px;
@@ -170,12 +189,22 @@ onMounted(() => {
           background: url("@/assets/images/champion/fee-bg.png") no-repeat;
           background-size: 100% 100%;
           font-size: 20px;
+          @include mobile {
+            width: 90px;
+            height: 30px;
+            line-height: 30px;
+            font-size: 14px;
+          }
           .fee-image {
             width: 41px;
             height: 43px;
             margin-top: -3px;
             margin-left: -3px;
             display: inline-block;
+            @include mobile {
+                width: 30px;
+                height: 30px;
+              }
           }
         }
       }
@@ -213,34 +242,37 @@ onMounted(() => {
     .match-card {
       width: 90%;
       height: auto;
-      flex-direction: column;
       text-align: center;
+      align-items: flex-start;
       
       .left {
-        width: 100%;
-        height: auto;
-        background: none;
+        width: 20vw;
+        height: 20vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         
         .image {
-          width: 100px;
-          height: 100px;
-          margin: 20px auto;
+          width: 15vw;
+          height: 18vw;
+          margin-top: 0;
+          margin-left: 0;
         }
       }
       
       .right {
-        margin-left: 0;
+        margin-left: 10px;
         
         .title {
-          font-size: 24px;
+          font-size: 18px;
         }
         
         .enter-btn {
-          width: 200px;
-          height: 60px;
-          line-height: 50px;
-          font-size: 20px;
-          margin: 20px auto;
+          width: 120px;
+          height: 36px;
+          line-height: 30px;
+          font-size: 16px;
+          margin: 10px auto;
           float: none;
         }
       }

@@ -68,6 +68,8 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
+@use "@/style" as *;
+
 .confirm-wrapper {
   height: 609px;
   background: url("@/assets/images/shop/dialog-bg.webp") no-repeat;
@@ -79,6 +81,10 @@ defineExpose({
   color: #1d1f22;
   overflow: hidden;
   margin-top: 30px;
+  @include mobile {
+    width: 94vw;
+    height: 280px;
+  }
   .close-click {
     width: 70px;
     height: 70px;
@@ -86,6 +92,12 @@ defineExpose({
     right: 32px;
     top: 37px;
     cursor: pointer;
+    @include mobile {
+      width: 40px;
+      height: 40px;
+      right: 6px;
+      top: 14px;
+    }
   }
   .title {
     text-align: center;
@@ -93,21 +105,36 @@ defineExpose({
     font-weight: 500;
     font-size: 28px;
     color: #1D1F22;
+    @include mobile {
+      font-size: 16px;
+      margin-top: 40px;
+    }
   }
   .split {
     display: block;
     width: 855px;
     height: 1px;
     margin: 20px auto 0;
+    @include mobile {
+      margin-top: 10px;
+    }
   }
   .confirm {
     display: block;
     width: 197px;
     height: 186px;
     margin: 51px auto 0;
+    @include mobile {
+      width: 100px;
+      height: 96px;
+      margin-top: 16px;
+    }
   }
   .button-wrapper {
     margin: 67px auto 0;
+    @include mobile {
+      margin-top: 20px;
+    }
   }
   .submit-btn {
     text-align: center;
@@ -121,10 +148,19 @@ defineExpose({
     color: #072523;
     cursor: pointer;
     border: 0;
+    @include mobile {
+      width: 100px;
+      height: 36px;
+      line-height: 32px;
+      font-size: 14px;
+    }
     &.cancel-btn {
       margin-right: 118px;
       background: url("@/assets/images/shop/cancel-btn.png") no-repeat;
       background-size: 100% 100%;
+      @include mobile {
+        margin-right: 20px;
+      }
     }
   }
 }

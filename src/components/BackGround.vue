@@ -60,7 +60,7 @@ const BackgroundImg = computed(() => {
   <div
     class="tw-absolute tw-h-[100vh] tw-w-[100vw] tw-overflow-hidden tw-z-[-1] md:tw-hidden"
     :class="{
-      'tw-pt-[11.25rem]': props.showBox,
+      'tw-pt-[3rem]': props.showBox,
       'tw-pt-[5.625rem]': !props.showBox,
     }"
   >
@@ -69,7 +69,7 @@ const BackgroundImg = computed(() => {
     >
       <img
         :src="BackgroundImg"
-        class="tw-w-full tw-h-full"
+        class="tw-w-full tw-h-full mobile-match"
         v-if="BackgroundImg"
         loading="eager"
         decoding="async"
@@ -78,3 +78,12 @@ const BackgroundImg = computed(() => {
   </div>
   <HomeBg v-if="props.path === '/required'" />
 </template>
+<style scoped lang="scss">
+@use "@/style" as *;
+
+.mobile-match {
+  @include mobile {
+    height:1300px;
+  }
+}
+</style>

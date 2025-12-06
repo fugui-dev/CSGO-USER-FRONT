@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import Avatar from "@/components/avatar.vue";
 
 import { useStore } from "@/store/index.js";
@@ -70,6 +70,10 @@ const userNav = ref([
 import envelopeIcon from '@/assets/images/header/envelope.png';
 import CDKIcon from '@/assets/images/header/cdk.png';
 import kefuIcon from '@/assets/images/header/kefu.png';
+const isPC = computed(()=>{
+  console.log(store.isPC)
+  return store.isPC
+})
 const icoNav = ref([
   {
     name: "红包",
@@ -164,7 +168,10 @@ const kefuRef = ref();
         popper-class="user-popper"
         @visible-change="visibleChange"
       >
-        <Avatar :src="store.userInfo && store.userInfo.avatar ? store.userInfo.avatar : null" width="56" inWidth="42" />
+        <Avatar
+          :src="store.userInfo && store.userInfo.avatar ? store.userInfo.avatar : null"
+          :width="isPC ? '56': '36'"
+          :inWidth="isPC ? '42': '30'" />
         <template #dropdown>
           <el-dropdown-menu
             style="
@@ -240,6 +247,10 @@ const kefuRef = ref();
     margin-right: 20px;
     cursor: pointer;
     object-fit: contain;
+    @include mobile {
+      width: 16px;
+      margin-right: 6px;
+    }
   }
 }
 
@@ -248,8 +259,11 @@ const kefuRef = ref();
   display: flex;
   align-items: center;
   font-size: 16px;
+  padding: 4px 6px 0 6px;
   @include mobile {
-    font-size: 14px;
+    font-size: 12px;
+    justify-content: end;
+    height: 60%;
   }
 
   .item {
@@ -369,13 +383,14 @@ const kefuRef = ref();
       font-weight: 500;
       cursor: pointer;
       @include mobile {
-        width: 80px;
-        height: 29px;
-        font-size: 14px;
+        height: 24px;
+        width: 60px;
+        font-size: 12px;
 
         img {
           width: 16px;
           height: 16px;
+          margin-right: 2px;
         }
       }
     }

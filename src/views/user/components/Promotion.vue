@@ -539,13 +539,17 @@ $records-border-color: #B3B586;
   margin-bottom: -32px;
 }
 .promotion{
-  padding: 20px;
   display: flex;
   flex-direction: column;
   position: relative;
   background: url('@/assets/images/user/user_info_bg.png') no-repeat;
   background-size: 90% 90%;
   padding: 80px;
+  @include mobile {
+    padding: 70px 20px 60px 40px;
+    background-size: 97% 94%;
+    background-position: 50% 50%;
+  }
   .el-input{
     width: 100%;
     height: 36px;
@@ -588,6 +592,7 @@ $records-border-color: #B3B586;
     .link{
       display: flex;
       align-items: center;
+      justify-content: space-between;
       height: 35px;
       width: 100%;
       font-size: 14px;
@@ -599,10 +604,16 @@ $records-border-color: #B3B586;
       &-content{
         display: flex;
         align-items: center;
-        flex:1;
+        // flex: 1;
       }
       &-btn{
-       width: 107px;height: 41px;margin-left: 20px
+       width: 107px;height: 41px;margin-left: 20px;
+       @include mobile {
+        transform: translateX(0) !important;
+        margin-left: 8px;
+        font-size: 12px;
+        margin-right: 13px;
+       }
       }
       }
   }
@@ -839,6 +850,9 @@ $records-border-color: #B3B586;
   font-size: 12px;
   color: #1D1F22;
   width: 80%;
+  @include mobile {
+    width: 92%;
+  }
   .top-left {
     border-top-left-radius: 8px;
   }
@@ -855,9 +869,6 @@ $records-border-color: #B3B586;
     display: flex;
     flex-direction: column;
     width:25%;
-    @include mobile{
-      width:33.33%;
-    }
 
     .item{
       display: flex;

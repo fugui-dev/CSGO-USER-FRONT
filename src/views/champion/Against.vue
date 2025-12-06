@@ -145,6 +145,9 @@ import bgImg from "@/assets/images/champion/match-bg.webp";
   width: 1018px;
   margin: 0 auto;
   padding-top: 16px;
+  @include mobile {
+    width: 92%;
+  }
   .match-list-item {
     width: 100%;
     height: 210px;
@@ -153,16 +156,28 @@ import bgImg from "@/assets/images/champion/match-bg.webp";
     padding-left: 45px;
     position: relative;
     cursor: pointer;
+    @include mobile {
+      height: 130px;
+      padding-left: 10px;
+    }
     .name-image {
       margin-top: 33px;
       width: 129px;
       height: 35px;
+      @include mobile {
+        margin-top: 20px;
+        width: 100px;
+        height: 28px;
+      }
     }
     .time {
       margin-top: 14px;
       font-weight: 500;
       font-size: 26px;
       color: #ffffff;
+      @include mobile {
+        font-size: 13px;
+      }
     }
     .status-image {
       position: absolute;
@@ -170,11 +185,21 @@ import bgImg from "@/assets/images/champion/match-bg.webp";
       top: 0;
       width: 118px;
       height: 124px;
+      @include mobile {
+        width: 76px;
+        height: 78px;
+      }
       &.ing {
         width: 204px;
         height: 203px;
         right: 70px;
         bottom: 0;
+        @include mobile {
+          width: 120px;
+          height: 120px;
+          right: 16px;
+          bottom: 10px;
+        }
       }
     }
   }

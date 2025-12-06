@@ -260,16 +260,30 @@ watchEffect(() => {
       justify-content: center;
       font-size: 16px;
       position: relative;
+      @include mobile {
+        font-size: 13px;
+      }
 
       img{
         width: 36px;
         margin-bottom: 10px;
         height: 42px;
+        @include mobile {
+          width: 26px;
+          height: 32px;
+          margin-bottom: 4px;
+        }
       }
     }
 
     :deep(.van-tab) {
       z-index: 6;
+    }
+
+    :deep(.van-tab--grow) {
+      @include mobile {
+        padding: 0 5px;
+      }
     }
 
     :deep(.van-tabs__line) {

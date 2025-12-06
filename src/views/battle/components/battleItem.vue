@@ -125,6 +125,7 @@ const statusColor = computed(() => {
 </template>
 
 <style scoped lang="scss">
+@use "@/style" as *;
 .battle-card-container {
   width: 331px;
   min-height: 368px;
@@ -135,6 +136,9 @@ const statusColor = computed(() => {
   flex-direction: column;
   margin-left: -10px;
   padding: 7px 30px 0 31px;
+  @include mobile {
+    width: 88%;
+  }
   &:nth-child(3) {
     margin-left: 0px;
   }

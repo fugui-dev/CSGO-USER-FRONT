@@ -215,7 +215,7 @@ defineExpose({
 <template>
     <div>
         <van-popup class="dialog no-scrollbar" v-model:show="visible" :close-on-click-overlay="false" teleport="body">
-            <div class="tw-w-[92vw] md:tw-w-[72.5rem] tw-mt-1 tw-py-4 tw-px-2 md:tw-p-5 tw-pb-3 tw-relative tw-z-10 tw-animate-modalAppear">
+            <div class="tw-w-[92vw] md:tw-w-[72.5rem] tw-mt-1 tw-py-4 tw-px-2 md:tw-p-5 tw-pb-3 tw-relative tw-z-10 tw-animate-modalAppear dialog-wrapper">
                 <!-- 背景光效 - 移到卡片内部 -->
                 <!-- <div class="tw-absolute tw-w-full tw-h-full tw-top-0 tw-left-0 tw-overflow-hidden tw-opacity-30 tw-rounded-xl tw-z-0">
                     <div class="tw-absolute tw-w-[40%] tw-h-[30%] tw-bg-[#FF7A21] tw-blur-[6.25rem] tw-rounded-full tw-top-[-10%] tw-left-[-10%] tw-animate-pulse"></div>
@@ -395,10 +395,19 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
+@use "@/style" as *;
 .dialog {
     background: url('@/assets/images/battle/create-room-bg.png') no-repeat;
     background-size: 100% 100%;
     padding: 0 20px;
+    @include mobile {
+      padding: 0 8px;
+    }
+}
+.dialog-wrapper {
+  @include mobile {
+    width: 100%;
+  }
 }
 
 // 分类切换样式
@@ -421,7 +430,13 @@ defineExpose({
     color: #ffffff;
     cursor: pointer;
     transition: all 0.3s ease;
-    
+    @include mobile {
+      font-size: 12px;
+      width: 90px;
+      height: 28px;
+      line-height: 28px;
+    }
+
     &:hover {
       opacity: 0.9;
       transform: scale(1.02);
@@ -465,6 +480,9 @@ defineExpose({
 .box-choose-list {
   color: #ffffff;
   padding-bottom: 16px;
+  @include mobile {
+    max-height: 20vh;
+  }
   .box-item {
     display: flex;
     flex-direction: column;
@@ -586,12 +604,18 @@ defineExpose({
     max-height: 160px;
     overflow: auto;
     padding-bottom: 4px;
+    @include mobile {
+      max-height: 100px;
+    }
   }
   .choosed-tips {
     display: flex;
     justify-content: center;
     color: #ffffff;
     padding: 4px 0 12px 0;
+    @include mobile {
+      font-size: 14px;
+    }
   }
   .total-price {
     display: flex;
@@ -609,6 +633,7 @@ defineExpose({
     font-size: 14px;
     padding: 6px 0;
     margin-top: 12px;
+    margin-bottom: 10px;
     cursor: pointer;
   }
 }
@@ -756,6 +781,9 @@ defineExpose({
     .box-item {
       width: 20%;
       font-size: 12px;
+      @include mobile {
+        width: 29%;
+      }
       
       .ornament-icon {
         width: 20px;

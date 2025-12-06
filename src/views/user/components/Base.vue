@@ -2,7 +2,7 @@
 
 import UAvatar from "@/components/UAvatar.vue";
 import {useStore} from "@/store";
-import {ref, watch} from "vue";
+import {ref, watch, computed} from "vue";
 import {
   getSmsCodeApi,
   getUserInfoApi,
@@ -30,6 +30,10 @@ const phone=ref(null)
 const shiming = ref({
   idNum: '',
   realName: ''
+})
+const isPC = computed(()=>{
+  console.log(store.isPC)
+  return store.isPC
 })
 const getUserInfo = () => {
   getUserInfoApi().then(res => {
@@ -176,13 +180,13 @@ const afterRead = (file) => {
     <div class="tabs-container-item user_info" style="height: 100px">
 
       <div style="position: relative">
-        <u-avatar :src="store.userInfo.avatar" size="80"/>
+        <u-avatar :src="store.userInfo.avatar" :size="isPC ? '80' : '40'"/>
         <van-uploader :after-read="afterRead"
                       style="opacity: 0;--van-uploader-size:100px;--van-padding-xs:0px;position: absolute;left: 50%;top:50%;width: 100%;height: 100%;transform: translate(-50%,-50%)"/>
       </div>
       <div
           class="tw-text-[13px] tw-text-[#1D1F22]"
-          style="display: flex;flex-direction: column;margin-left: 20px;height: 100%;justify-content: space-evenly">
+          style="display: flex;flex-direction: column;margin-left: 8px;height: 100%;justify-content: space-evenly">
         <div class="tw-flex">
           {{ store.userInfo.nickName }}
           <div class="button" style="height: fit-content" @click="openDialog(0)">编辑</div>
@@ -197,7 +201,7 @@ const afterRead = (file) => {
     <div class="tabs-container-title">
       <h3>交易链接</h3>
     </div>
-    <div class="tabs-container-item">
+    <div class="tabs-container-item url-wrap">
       <div style="display: flex;align-items: center;">
         <p class="tw-text-[#1D1F22] tw-text-[12px]">{{ link }}</p>
         <BaseButton name="修改" font-size="12px" style="width: 80px;height: 26px;margin-left: 20px;color: #072523;" @click="openDialog(3)"></BaseButton>
@@ -209,7 +213,7 @@ const afterRead = (file) => {
     <div class="tabs-container-item account_manage">
       <div>登录账号：{{ store.userInfo.userName }}</div>
       <div style="display:flex;align-items: center">
-        <div class="tw-mr-[200px]">登录密码：**********</div>
+        <div class="tw-mr-[200px] login-pwd">登录密码：**********</div>
         <div class="button" @click="openDialog(1)">修改密码</div>
         <div class="button" @click="openDialog(2)" v-if="store.userInfo.isRealCheck!=='1'">实名认证</div>
         <div class="button" style="cursor: not-allowed" v-else>已实名</div>
@@ -260,9 +264,27 @@ const afterRead = (file) => {
 </template>
 
 <style scoped lang="scss">
+@use "@/style" as *;
 $primary-color-user: #FF4545A6;
 
-
+.url-wrap {
+  @include mobile {
+    flex-direction: row !important;
+  }
+  p {
+    @include mobile {
+      width: 200px;
+      box-sizing: border-box;
+      padding-right: 80px;
+      overflow: auto;
+    }
+  }
+}
+.login-pwd {
+  @include mobile {
+    margin-right: 10px;
+  }
+}
 .base_dialog{
   width: 100%;
   .el-input{
@@ -284,6 +306,11 @@ $primary-color-user: #FF4545A6;
   font-size: 14px;
   background: url('@/assets/images/user/user_info_bg.png') no-repeat;
   background-size: 90% 90%;
+  @include mobile {
+    padding: 80px 60px 60px 60px !important;
+    background-size: 94% 94%;
+    background-position: 50% 50%;
+  }
 
   .button {
     font-size: 12px;
@@ -326,8 +353,6 @@ $primary-color-user: #FF4545A6;
     display: flex;
     flex-direction: column;
     padding: 6px 0;
-
-
 
     &.user_info {
       flex-direction: row;

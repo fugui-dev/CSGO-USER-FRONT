@@ -269,7 +269,7 @@ onUnmounted(() => {
     <div class="tw-w-full tw-flex tw-justify-center tw-relative tw-overflow-hidden tw-h-[37.5rem] md:tw-h-auto">
       <div
         class="tw-flex tw-flex-col tw-w-[75vw] md:tw-w-[31.25rem] tw-top-[-13vw] tw-absolute  tw-items-center tw-justify-center md:tw-top-[-8vh] md:tw-left-0  tw-left-[-20vw] md:tw-relative">
-        <img :src="logoBg1" class="tw-w-[240px]">
+        <img :src="logoBg1" class="tw-w-[240px] mobile-match1">
         <div
           class="tw-absolute tw-top-1/3 tw-left-1/2 tw-text-center  -tw-translate-x-1/2 tw-cursor-pointer tw-flex tw-flex-col tw-items-center"
           @click="openBag">
@@ -335,10 +335,10 @@ onUnmounted(() => {
       </div>
       <div
         class="tw-flex tw-flex-col tw-w-[75vw]  md:tw-w-[31.25rem] tw-top-[-13vw]  tw-items-center tw-justify-center md:tw-top-[-8vh] md:tw-right-0 tw-right-[-20vw] tw-absolute md:tw-relative">
-        <img :src="logoBg3" class="tw-w-[240px]">
+        <img :src="logoBg3" class="tw-w-[240px] mobile-match1">
         <div class="tw-absolute tw-top-1/3 tw-left-1/2 tw-text-center  -tw-translate-x-1/2 tw-flex tw-flex-col tw-items-center">
           <img :src="boxData.imageUrl" class="tw-w-[20vw] md:tw-w-[5.625rem] animate-bounce tw-h-auto">
-          <div class="tw-mt-[8vw] md:tw-mt-[2.5rem] tw-text-white tw-text-sm md:tw-text-base tw-leading-none">目标饰品</div>
+          <div class="tw-mt-[8vw] md:tw-mt-[2.5rem] tw-text-white tw-text-sm md:tw-text-base tw-leading-none mobile-match2">目标饰品</div>
           <div v-if="boxData.ornamentName || boxData.shortName || boxData.name" class="tw-mt-2 tw-text-[#FFF646] tw-text-xs md:tw-text-sm tw-max-w-[20vw] md:tw-max-w-[200px] tw-text-center tw-break-words tw-px-2" :title="boxData.ornamentName || boxData.shortName || boxData.name">
             {{ boxData.ornamentName || boxData.shortName || boxData.name }}
           </div>
@@ -472,6 +472,19 @@ onUnmounted(() => {
   <UpGradeModal ref="OpenModalRef" :openData="openEnd" @close="handleModalClose" />
 </template>
 <style scoped lang="scss">
+@use "@/style" as *;
+
+.mobile-match1 {
+  @include mobile {
+    width: 120px;
+    margin-top: 40px;
+  }
+}
+.mobile-match2 {
+  @include mobile {
+    margin-top: -10%;
+  }
+}
 .boxshadowBtn {
   background: url('@/assets/images/login/yellow_btn.png') no-repeat;
 }

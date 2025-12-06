@@ -327,14 +327,14 @@ onMounted(() => {
   }
 }
 .level-item-wrap {
-  width: 25%;
-  margin: 0 auto;
+  width: 24%;
+  margin: 10px auto 0;
 }
 
 /* 响应式调整 */
 @media (max-width: 768px) {
   .level-item-wrap {
-    width: 50%;
+    width: 48%;
   }
 }
 </style>

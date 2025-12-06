@@ -226,7 +226,7 @@ onMounted(() => {
       <div class="battle-content">
         <div class="creat-wrapper" @click="handleClickCreateRoom">
           <img src="@/assets/images/battle/creat-icon.png" class="creat-icon" />
-          创建房间
+          <span>创建房间</span>
         </div>
         <div class="group-wrapper">
           <div
@@ -318,6 +318,9 @@ onMounted(() => {
   background-size: 100% auto;
   background-color: rgba(144, 136, 129);
   min-height: 100vh;
+  @include mobile {
+    background-size: 100% 36%;
+  }
   .rule {
     margin-top: 60px;
     cursor: pointer;
@@ -333,10 +336,21 @@ onMounted(() => {
     font-weight: 500;
     font-size: 16px;
     color: #3b2712;
+    @include mobile {
+      margin: 10px 10px 0 0;
+      font-size: 13px;
+      width: 100px;
+      height: 30px;
+      line-height: 30px;
+      padding-left: 34px;
+    }
   }
   .battle-content {
     max-width: 1300px;
     margin: 0 auto;
+    @include mobile {
+      width: 100%;
+    }
     .creat-wrapper {
       width: 302px;
       height: 81px;
@@ -349,12 +363,32 @@ onMounted(() => {
       font-weight: 500;
       font-size: 27px;
       color: #3b2712;
+      display: flex;
+      @include mobile {
+        width: 40%;
+        height: 32px;
+        line-height: 32px;
+        font-size: 16px;
+        margin-top: 80px;
+        padding-left: 50px;
+        span {
+          width: 100px;
+          height: 32px;
+          display: inline-block;
+        }
+      }
       .creat-icon {
         position: absolute;
         left: 0;
         top: -12px;
         width: 90px;
         height: 92px;
+        @include mobile {
+          width: 40px;
+          height: 40px;
+          top: -4px;
+          left: 10px;
+        }
       }
     }
     .group-wrapper {
@@ -363,6 +397,10 @@ onMounted(() => {
       margin: 46px auto 0;
       display: flex;
       align-items: center;
+      @include mobile {
+        margin: 10px auto 0;
+        width: 100%;
+      }
       .goup-item {
         width: 148px;
         height: 60px;
@@ -382,6 +420,9 @@ onMounted(() => {
     .battle-list-wrapper {
       width: 990px;
       margin: 20px auto 0;
+      @include mobile {
+        width: 100%;
+      }
       .battle-list-container {
         display: flex;
         flex-wrap: wrap;

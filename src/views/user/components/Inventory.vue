@@ -565,6 +565,12 @@ $primary-color-user: rgb(138, 15, 198);
 
 .container {
   .nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding: 0 10px;
+  }
+  .nav-item {
     margin-bottom: 10px;
   }
 

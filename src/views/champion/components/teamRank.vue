@@ -77,6 +77,7 @@ const gatRankIcon = (index) => {
 </script>
 
 <style scoped lang="scss">
+@use "@/style" as *;
 .team-rank-wrapper {
   width: 1194px;
   background-color: #00000033;
@@ -89,6 +90,9 @@ const gatRankIcon = (index) => {
   font-size: 22px;
   color: #ffffff;
   min-height: 300px;
+  @include mobile {
+    width: 98%;
+  }
   .header {
     width: 100%;
     height: 72px;
@@ -99,10 +103,19 @@ const gatRankIcon = (index) => {
     background-size: 100% 100%;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+    @include mobile {
+      height: 46px;
+      line-height: 46px;
+      font-size: 14px;
+    }
   }
   .content {
     width: 1162px;
     margin-left: 7px;
+    @include mobile {
+      width: 100%;
+      margin: 0 5px;
+    }
     .team-rank-item {
       height: 87px;
       line-height: 87px;
@@ -111,11 +124,18 @@ const gatRankIcon = (index) => {
       margin-top: 7px;
       background: rgba(0, 0, 0, 0.25);
       border-radius: 8px;
+      @include mobile {
+        height: 43px;
+        line-height: 43px;
+      }
       & + .team-rank-item {
         margin-top: 10px;
       }
       .rank {
         padding-left: 32px;
+        @include mobile {
+          padding-left: 3px;
+        }
         .rank-icon {
           width: 82px;
           height: 78px;
@@ -125,6 +145,13 @@ const gatRankIcon = (index) => {
           text-align: center;
           line-height: 78px;
           font-size: 30px;
+          @include mobile {
+            width: 40px;
+            height: 36px;
+            line-height: 36px;
+            background-size: 30px 30px;
+            font-size: 14px;
+          }
           &.top3-icon {
             background-size: 100% 100%;
           }
@@ -137,11 +164,20 @@ const gatRankIcon = (index) => {
           justify-content: center;
           align-items: center;
           position: relative;
+          @include mobile {
+            margin-left: 6px;
+            width: 46px;
+            height: 42px;
+          }
           .avatar {
             width: 52px;
             height: 52px;
             border-radius: 50%;
             display: block;
+            @include mobile {
+              width: 28px;
+              height: 28px;
+            }
           }
           .avatar-bg {
             display: block;
@@ -157,15 +193,35 @@ const gatRankIcon = (index) => {
           font-size: 22px;
           color: #FFFFFF;
           margin-left: 12px;
+          width: 100px;
+          text-overflow: ellipsis;// 显示省略符号来代表被修剪的文本
+          white-space: nowrap; //文本不会换行，文本会在在同一行上继续，直到遇到标签为止
+          overflow: hidden;// 超出部分隐藏
+          @include mobile {
+            font-size: 12px;
+            margin-left: 6px;
+            line-height: 22px;
+            width: 36px;
+          }
         }
       }
       .win {
         text-align: center;
+        @include mobile {
+          font-size: 12px;
+        }
       }
       .score {
+        @include mobile {
+          font-size: 12px;
+        }
         .coin-image {
           width: 41px;
           height: 43px;
+          @include mobile {
+            width: 22px;
+            height: 23px;
+          }
         }
       }
     }

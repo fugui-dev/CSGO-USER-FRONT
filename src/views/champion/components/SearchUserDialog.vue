@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import {requireImg} from "@/utils/common";
 import {searchUserApi, inviteUserApi} from "@/api/champion"
 import {ElMessage} from "element-plus";
+import {useStore} from "@/store/index.js";
 
 const props = defineProps({
   teamId: {
@@ -12,6 +13,11 @@ const props = defineProps({
     type: Number
   }
 });
+
+const store = useStore()
+const isPC = computed(()=>{
+  return store.isPC
+})
 
 const visible = ref(false)
 const searchUserFormRef = ref()
@@ -78,7 +84,7 @@ defineExpose({
 <template>
   <el-dialog
     v-model="visible"
-    width="1163"
+    :width="isPC ? '1163' : '100%'"
     :show-close="false"
     align-center
     style="--el-dialog-bg-color: transparent"
@@ -131,6 +137,7 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
+@use "@/style" as *;
 .search-wrapper {
   height: 609px;
   background: url("@/assets/images/shop/dialog-bg.webp") no-repeat;
@@ -142,6 +149,10 @@ defineExpose({
   color: #1d1f22;
   overflow: hidden;
   margin-top: 30px;
+  @include mobile {
+    margin-top: 20px;
+    height: 400px;
+  }
   .close-click {
     width: 70px;
     height: 70px;
@@ -149,6 +160,12 @@ defineExpose({
     right: 32px;
     top: 37px;
     cursor: pointer;
+    @include mobile {
+      width: 40px;
+      height: 60px;
+      right: 4px;
+      top: 20px;
+    }
   }
   .title {
     text-align: center;
@@ -156,13 +173,22 @@ defineExpose({
     font-weight: 500;
     font-size: 28px;
     color: #1D1F22;
+    @include mobile {
+      margin-top: 50px;
+      font-size: 20px;
+    }
   }
   .search-form {
     margin-top: 18px;
     margin-left: 133px;
+    @include mobile {
+      width: 80%;
+      margin-left: 40px;
+    }
   }
   .input-wrapper {
     position: relative;
+    display: flex;
     .search {
       position: absolute;
       right: 7px;
@@ -176,6 +202,14 @@ defineExpose({
       line-height: 44px;
       text-align: center;
       cursor: pointer;
+      @include mobile {
+        width: 80px;
+        height: 36px;
+        line-height: 36px;
+        right: 0;
+        top: 0;
+        font-size: 14px;
+      }
     }
   }
   :deep() {
@@ -183,11 +217,20 @@ defineExpose({
       width: 867px;
       height: 56px;
       font-size: 22px;
+      flex: 1;
+      @include mobile {
+        width: 70%;
+        height: 36px;
+        font-size: 14px;
+      }
     }
     .el-input__wrapper {
       background: #74705e;
       box-shadow: none;
       padding-right: 140px;
+      @include mobile {
+        margin-right: 20px;
+      }
     }
     .el-input__inner {
       background: #74705e;
@@ -202,6 +245,11 @@ defineExpose({
     max-height: 330px;
     overflow-y: auto;
     overflow-x: hidden;
+    @include mobile {
+      width: 100%;
+      margin-left: 10px;
+      max-height: 200px;
+    }
     &::-webkit-scrollbar {
       display: none;
     }
@@ -211,6 +259,11 @@ defineExpose({
       display: flex;
       align-items: center;
       justify-content: space-between;
+      @include mobile {
+        width: 80%;
+        height: 50px;
+        margin: 0 auto;
+      }
       .info {
         display: flex;
         align-items: center;
@@ -221,11 +274,19 @@ defineExpose({
           justify-content: center;
           align-items: center;
           position: relative;
+          @include mobile {
+            width: 45px;
+            height: 45px;
+          }
           .avatar {
             width: 51px;
             height: 51px;
             border-radius: 50%;
             display: block;
+            @include mobile {
+              width: 30px;
+              height: 30px;
+            }
           }
           .avatar-bg {
             display: block;
@@ -244,6 +305,10 @@ defineExpose({
           max-width: 600px;
           white-space: nowrap;
           overflow: hidden;
+          @include mobile {
+            margin-left: 4px;
+            max-width: 120px;
+          }
         }
       }
       .invite-btn {
@@ -255,6 +320,11 @@ defineExpose({
         background-size: 100% 100%;
         margin-right: 7px;
         cursor: pointer;
+        @include mobile {
+          width: 76px;
+          height: 30px;
+          line-height: 30px;
+        }
       }
     }
     .split {
@@ -275,6 +345,10 @@ defineExpose({
       margin-top: 132px;
       font-size: 22px;
       color: #74705E;
+      @include mobile {
+        margin-top: 70px;
+        font-size: 16px;
+      }
     }
   }
 }

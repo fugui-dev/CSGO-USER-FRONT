@@ -64,9 +64,13 @@ const props = defineProps({
 </script>
 
 <style scoped lang="scss">
+@use "@/style" as *;
 .champion-team-wrapper {
   width: 100%;
   padding: 0 20px;
+  @include mobile {
+    padding: 0;
+  }
   .champion {
     margin: 61px auto 20px;
     width: 236px;
@@ -75,11 +79,20 @@ const props = defineProps({
     justify-content: center;
     align-items: center;
     position: relative;
+    @include mobile {
+      width: 118px;
+      height: 115px;
+      margin-top: 16px;
+    }
     .avatar {
       width: 191px;
       height: 191px;
       border-radius: 50%;
       display: block;
+      @include mobile {
+        width: 95px;
+        height: 95px;
+      }
     }
     .avatar-bg {
       display: block;
@@ -99,11 +112,20 @@ const props = defineProps({
       max-width: 577px;
       height: auto;
       z-index: -1;
+      @include mobile {
+        width: 289px;
+        min-width: 289px;
+        height: 289px;
+        left: -80px;
+      }
     }
   }
   .team-name {
     text-align: center;
     font-size: 28px;
+    @include mobile {
+      font-size: 16px;
+    }
   }
   .list-wrapper {
     width: 1018px;
@@ -116,6 +138,13 @@ const props = defineProps({
     border-radius: 22px;
     max-height: 800px;
     overflow-y: auto;
+    box-sizing: border-box;
+    justify-content: center;
+    @include mobile {
+      width: 98%;
+      margin: 20px auto;
+      padding: 10px;
+    }
     &::-webkit-scrollbar {
       display: none;
     }
@@ -132,6 +161,12 @@ const props = defineProps({
       font-weight: 500;
       font-size: 17px;
       color: #FFFFFF;
+      @include mobile {
+        width: 30%;
+        padding-top: 10px;
+        height: 140px;
+        font-size: 14px;
+      }
       .avatar-wrapper {
         width: 81px;
         height: 81px;
@@ -139,11 +174,19 @@ const props = defineProps({
         justify-content: center;
         align-items: center;
         position: relative;
+        @include mobile {
+          width: 60px;
+          height: 60px;
+        }
         .avatar {
           width: 60px;
           height: 60px;
           border-radius: 50%;
           display: block;
+          @include mobile {
+            width: 45px;
+            height: 45px;
+          }
         }
         .avatar-bg {
           display: block;
@@ -162,14 +205,25 @@ const props = defineProps({
         text-align: center;
         overflow: hidden;
         text-overflow: ellipsis;
+        @include mobile {
+          margin-top: 4px;
+        }
       }
       .amount {
         width: 100%;
         margin-top: 20px;
+        @include mobile {
+          margin-top: 6px;
+        }
         .coin {
           width: 29px;
           height: 28px;
           margin-right: 8px;
+          @include mobile {
+            width: 18px;
+            height: 18px;
+            margin-right: 4px;
+          }
         }
       }
     }

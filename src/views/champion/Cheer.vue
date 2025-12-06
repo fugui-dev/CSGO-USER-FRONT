@@ -57,7 +57,7 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
                   alt=""
                 />
               </div>
-              {{ item.teamName }}
+              <span class="mini">{{ item.teamName }}</span>
             </div>
             <div class="user tw-flex tw-items-center tw-justify-center">
               <div class="avatar-wrapper">
@@ -68,7 +68,7 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
                   alt=""
                 />
               </div>
-              {{ item.userName }}
+              <span class="mini">{{ item.userName }}</span>
             </div>
             <div class="stage-name tw-flex tw-items-center tw-justify-center">
               {{ item.stageName || '未知阶段' }}
@@ -102,15 +102,31 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
 <style scoped lang="scss">
 @use "@/style" as *;
 
+.mini {
+  width: 140px;
+  text-overflow: ellipsis;// 显示省略符号来代表被修剪的文本
+  white-space: nowrap; //文本不会换行，文本会在在同一行上继续，直到遇到标签为止
+  overflow: hidden;// 超出部分隐藏
+  @include mobile {
+    width: 36px;
+  }
+}
 .cheer-container {
   position: relative;
   padding-top: 26px;
   font-weight: 500;
   color: #ffffff;
   font-size: 17px;
+  @include mobile {
+    font-size: 13px;
+    padding-top: 14px;
+  }
   .cheer-list {
     width: 1018px;
     margin: 0 auto;
+    @include mobile {
+      width: 96%;
+    }
     .cheer-list-item {
       margin-top: 16px;
       padding: 9px 7px 0;
@@ -118,6 +134,9 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
       height: 210px;
       background: url("@/assets/images/champion/cheer/box-bg.png") no-repeat;
       background-size: 100% 100%;
+      @include mobile {
+        height: auto;
+      }
       .cheer-list-item-header {
         width: 100%;
         height: 72px;
@@ -129,6 +148,10 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
         gap: 3px;
         text-align: center;
+        @include mobile {
+          height: 40px;
+          line-height: 36px;
+        }
       }
       .cheer-list-item-content {
         display: grid;
@@ -141,10 +164,18 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
         .refund-amount {
           width: 100%;
           height: 129px;
+          @include mobile {
+            height: 60px;
+          }
           .coin {
             width: 42px;
             height: 39px;
             margin-right: 12px;
+            @include mobile {
+              width: 22px;
+              height: 20px;
+              margin-right: 3px;
+            }
           }
         }
         .avatar-wrapper {
@@ -155,11 +186,20 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
           align-items: center;
           position: relative;
           margin-right: 14px;
+          @include mobile {
+            width: 40px;
+            height: 35px;
+            margin-right: 4px;
+          }
           .avatar {
             width: 65px;
             height: 62px;
             border-radius: 50%;
             display: block;
+            @include mobile {
+              width: 30px;
+              height: 26px;
+            }
           }
           .avatar-bg {
             display: block;
@@ -168,6 +208,10 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
             left: 0;
             width: 99px;
             height: 89px;
+            @include mobile {
+              width: 40px;
+              height: 35px;
+            }
           }
         }
       }

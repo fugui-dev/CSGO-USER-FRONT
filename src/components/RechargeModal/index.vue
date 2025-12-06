@@ -564,6 +564,7 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
+@use "@/style" as *;
 .recharge-wrapper {
   transform: scale(0.9);
   height: 730px;
@@ -571,6 +572,9 @@ defineExpose({
   background-size: 100% 100%;
   position: relative;
   line-height: normal;
+  @include mobile {
+    width: 92vw;
+  }
   .title {
     width: 239px;
     height: 169px;
@@ -578,6 +582,11 @@ defineExpose({
     top: -40px;
     left: 50%;
     transform: translateX(-50%);
+    @include mobile {
+      width: 40%;
+      height: 110px;
+      top: -20px;
+    }
   }
   .close {
     width: 70px;
@@ -585,6 +594,11 @@ defineExpose({
     position: absolute;
     right: 26px;
     top: 47px;
+    @include mobile {
+      width: 50px;
+      height: 120px;
+      right: 0;
+    }
   }
   .close-click {
     width: 70px;
@@ -598,24 +612,45 @@ defineExpose({
     width: 900px;
     margin: 0 auto;
     padding-top: 110px;
+    @include mobile {
+      width: 100% !important;
+      padding: 76px 34px 0 34px;
+      flex-direction: column;
+    }
     .pay-content {
       flex: 1;
+      @include mobile {
+        flex: none;
+        width: 78vw;
+      }
       .tip {
         text-align: left;
         font-weight: 500;
         font-size: 24px;
         color: #1d1f22;
+        @include mobile {
+          font-size: 14px;
+        }
       }
       .recharge-select {
         margin-top: 33px;
         flex-wrap: wrap;
         gap: 30px 39px;
+        @include mobile {
+          gap: 10px 10px;
+          margin-top: 12px;
+        }
         .recharge-item {
           width: 139px;
           height: 40px;
           background: url("@/assets/images/recharge/coin-bg.png") no-repeat;
           background-size: 100% 100%;
           cursor: pointer;
+
+          @include mobile {
+            width: 90px;
+            height: 28px;
+          }
           &.active {
             background: url("@/assets/images/recharge/coin-active-bg.png")
               no-repeat;
@@ -626,6 +661,10 @@ defineExpose({
             margin-bottom: 5px;
             width: 37px;
             height: 36px;
+            @include mobile {
+              width: 22px;
+              height: 22px;
+            }
           }
           .amount {
             font-weight: 500;
@@ -633,21 +672,34 @@ defineExpose({
             color: #ffffff;
             flex: 1;
             text-align: center;
+            @include mobile {
+              font-size: 14px;
+            }
           }
         }
       }
       .pay-type {
         margin-top: 40px;
+        @include mobile {
+          margin-top: 16px;
+        }
       }
       .pay-type-select {
         margin-top: 21px;
         gap: 30px 18px;
+        @include mobile {
+          margin-top: 14px;
+        }
         .pay-type-item {
           width: 191px;
           height: 66px;
           background: url("@/assets/images/recharge/pay-bg.png") no-repeat;
           background-size: 100% 100%;
           cursor: pointer;
+          @include mobile {
+            width: 36%;
+            height: 36px;
+          }
           &.active {
             background: url("@/assets/images/recharge/pay-active-bg.png")
               no-repeat;
@@ -658,16 +710,28 @@ defineExpose({
             margin-right: 15px;
             width: 44px;
             height: 44px;
+            @include mobile {
+              margin-left: 14px;
+              margin-right: 4px;
+              width: 24px;
+              height: 24px;
+            }
           }
           .pay-text {
             font-weight: 500;
             font-size: 17px;
             color: #ffffff;
+            @include mobile {
+              font-size: 14px;
+            }
           }
         }
       }
       .pay-select {
         margin-top: 37px;
+        @include mobile {
+          margin-top: 16px;
+        }
       }
       .pay-channel-select {
         margin-top: 12px;
@@ -683,6 +747,12 @@ defineExpose({
           font-size: 17px;
           color: #ffffff;
           cursor: pointer;
+          @include mobile {
+            width: 94%;
+            height: 32px;
+            line-height: 32px;
+            font-size: 14px;
+          }
           &.active {
             background: url("@/assets/images/recharge/pay-channel-active-bg.png")
               no-repeat;
@@ -697,15 +767,27 @@ defineExpose({
         background: url("@/assets/images/recharge/card-bg.png") no-repeat;
         background-size: 100% 100%;
         padding: 18px 12px 9px;
+        @include mobile {
+          width: 94%;
+          padding: 10px;
+          height: auto;
+        }
         .card-input {
           width: 479px;
           height: 43px;
           border-radius: 8px;
+          @include mobile {
+            width: 94%;
+            height: 24px;
+          }
           :deep() {
             .el-input__wrapper {
               background-color: #a4a592;
               box-shadow: none;
               font-size: 19px;
+              @include mobile {
+                font-size: 13px;
+              }
             }
             .el-input__inner {
               color: #49473c;
@@ -719,6 +801,10 @@ defineExpose({
           font-weight: 500;
           font-size: 17px;
           color: #77786c;
+          @include mobile {
+            font-size: 13px;
+            margin-top: 8px;
+          }
         }
       }
       .card-pay {
@@ -732,10 +818,20 @@ defineExpose({
         font-weight: 500;
         font-size: 17px;
         color: #ffffff;
+        @include mobile {
+          width: 94%;
+          height: 30px;
+          font-size: 14px;
+          margin-top: 10px;
+        }
         .card-pay-coin-icon {
           width: 31px;
           height: 29px;
           margin-right: 7px;
+          @include mobile {
+            width: 24px;
+            height: 23px;
+          }
         }
         .price {
           color: #49473c;
@@ -744,19 +840,34 @@ defineExpose({
           width: 26px;
           height: 30px;
           margin: 0 6px 0 52px;
+          @include mobile {
+            width: 20px;
+            height: 22px;
+          }
         }
       }
     }
     .qrcode {
       margin-top: 35px;
+      @include mobile {
+        margin-top: 14px;
+      }
       .pay-amount {
         font-weight: 500;
         font-size: 20px;
         color: #1d1f22;
+        @include mobile {
+          font-size: 14px;
+        }
         .pay-coin-icon {
           width: 47px;
           height: 45px;
           margin: 0 15px 0 17px;
+          @include mobile {
+            width: 22px;
+            height: 21px;
+            margin: 0 4px 0 10px;
+          }
         }
       }
       .qrcode-img {
@@ -764,18 +875,31 @@ defineExpose({
         width: 229px;
         height: 229px;
         background-color: #fff;
+        @include mobile {
+          width: 100px;
+          height: 100px;
+        }
       }
       .qrcode-tip {
         margin-top: 34px;
         font-weight: 500;
         font-size: 16px;
         color: #1d1f22;
+        @include mobile {
+          margin-top: 10px;
+          font-size: 12px;
+        }
       }
       .pay-tip {
         margin-top: 16px;
         font-weight: 500;
         font-size: 18px;
         color: #f14848;
+        @include mobile {
+          margin-top: -8px;
+          font-size: 13px;
+          height: 24px;
+        }
       }
       .create-qrcode {
         text-align: center;
@@ -789,6 +913,13 @@ defineExpose({
         font-size: 24px;
         color: #072523;
         cursor: pointer;
+        @include mobile {
+          margin-top: 6px;
+          width: 56%;
+          height: 42px;
+          font-size: 14px;
+          line-height: 38px;
+        }
       }
     }
   }

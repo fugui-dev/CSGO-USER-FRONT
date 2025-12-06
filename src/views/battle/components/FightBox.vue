@@ -190,7 +190,7 @@ const calculateScrollPosition = () => {
 
         if (!container || items.length === 0) return;
         // 单个元素高度，固定170px（包括边距等）
-        const itemHeight = 170;
+        const itemHeight = 170; // 170勿动
         // 考虑间距 3px
         const gapHeight = 3;
         // 容器可见高度（el-scrollbar的可见高度，CSS中设置了max-height: 360px）
@@ -367,7 +367,7 @@ defineExpose({
   margin: 0 auto;
   .ornament-list-item {
     width: 100%;
-    height: 170px;
+    height: 170px; // 170勿动
     position: relative;
     margin-bottom: 3px;
     display: flex;

@@ -99,12 +99,24 @@ const handleClickBtn = (teamId) => {
   font-size: 19px;
   color: #d4c7af;
   line-height: normal;
+  @include mobile {
+    width: 48%;
+    height: 100px;
+  }
   .left,
   .right {
     width: 124px;
     height: 198px;
+    @include mobile {
+      width: 34%;
+      height: 100%;
+    }
     .alias {
       margin-top: 16px;
+      @include mobile {
+        margin-top: 2px;
+        font-size: 13px;
+      }
     }
     .avatar-wrapper {
       margin-top: 24px;
@@ -114,6 +126,9 @@ const handleClickBtn = (teamId) => {
       justify-content: center;
       align-items: center;
       position: relative;
+      @include mobile {
+        margin-top: 0;
+      }
       .avatar {
         width: 39px;
         height: 39px;
@@ -132,6 +147,10 @@ const handleClickBtn = (teamId) => {
     .team-name {
       margin-top: 19px;
       font-size: 18px;
+      @include mobile {
+        margin-top: 2px;
+        font-size: 12px;
+      }
     }
   }
   .left {
@@ -146,6 +165,11 @@ const handleClickBtn = (teamId) => {
     width: 74px;
     height: 80px;
     margin: 0 11px 0 18px;
+    @include mobile {
+      width: 40px;
+      height: 42px;
+      margin: 0 3px 0 6px;
+    }
   }
 }
 </style>

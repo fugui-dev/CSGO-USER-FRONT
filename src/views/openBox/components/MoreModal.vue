@@ -160,6 +160,7 @@ defineExpose({
   </el-dialog>
 </template>
 <style scoped lang="scss">
+@use "@/style" as *;
 .box-modal-wrapper {
   width: 957px;
   height: 417px;
@@ -170,6 +171,12 @@ defineExpose({
   padding: 0 28px;
   line-height: normal;
   color: #FFFFFF;
+  box-sizing: border-box;
+  @include mobile {
+    width: 96vw;
+    padding: 0 10px;
+    height: auto;
+  }
   .close-click {
     position: absolute;
     width: 20px;
@@ -179,6 +186,9 @@ defineExpose({
     background-image: url('@/assets/images/user/close.png');
     background-size: 100% 100%;
     cursor: pointer;
+    @include mobile {
+      top: 8px;
+    }
   }
   .line {
     position: absolute;
@@ -192,15 +202,28 @@ defineExpose({
     margin-top: 16px;
     font-weight: 500;
     font-size: 19px;
+    @include mobile {
+      margin-top: 6px;
+      font-size: 16px;
+    }
   }
   .content {
     display: flex;
     margin-top: 10px;
+    @include mobile {
+      flex-direction: column;
+      align-items: center;
+    }
     .left {
       position: relative;
       margin-top: 65px;
       width: 238px;
       height: 169px;
+      @include mobile {
+        margin-top: 14px;
+        width: 156px;
+        height: 120px;
+      }
       .level-bg {
         width: 100%;
         height: 100%;
@@ -213,6 +236,10 @@ defineExpose({
         width: 207px;
         height: 130px;
         object-fit: contain;
+        @include mobile {
+          width: 80%;
+          height: auto;
+        }
       }
     }
     .right {
@@ -222,25 +249,48 @@ defineExpose({
       background-color: #0f1f256b;
       border-radius: 17px;
       padding: 20px 24px;
+      box-sizing: border-box;
+      @include mobile {
+        width: 96%;
+        padding: 10px;
+        margin-left: 0;
+        height: 300px;
+        overflow: scroll;
+        margin-bottom: 10px;
+      }
       .name {
         font-size: 18px;
+        @include mobile {
+          font-size: 14px;
+        }
       }
       .desc {
         margin-top: 22px;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         grid-gap: 22px 72px;
+        @include mobile {
+          margin-top: 12px;
+          grid-gap: 10px;
+        }
         .desc-item {
           width: 228px;
           height: 70px;
           padding-left: 22px;
           padding-top: 10px;
+          @include mobile {
+            width: auto;
+            padding-left: 10px;
+          }
           .item-tile {
             font-size: 15px;
           }
           .item-value {
             margin-top: 5px;
             font-size: 18px;
+            @include mobile {
+              font-size: 16px;
+            }
             .icon {
               width: 18px;
               height: 18px;
