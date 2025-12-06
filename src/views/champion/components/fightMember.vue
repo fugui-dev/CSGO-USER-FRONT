@@ -43,6 +43,10 @@ const props = defineProps({
   font-size: 18px;
   color: #ffffff;
   line-height: normal;
+  @include mobile {
+    width: 100%;
+    font-size: 12px;
+  }
   .avatar-wrapper {
     margin-top: 15px;
     width: 74px;
@@ -51,11 +55,19 @@ const props = defineProps({
     justify-content: center;
     align-items: center;
     position: relative;
+    @include mobile {
+      width: 48px;
+      height: 44px;
+    }
     .avatar {
       width: 51px;
       height: 51px;
       border-radius: 50%;
       display: block;
+      @include mobile {
+        width: 30px;
+        height: 30px;
+      }
       &.highLight {
         animation: smooth 2s infinite;
       }
@@ -78,16 +90,31 @@ const props = defineProps({
     background: #564b39;
     border-radius: 6px;
     border: 2px solid #c89063;
+    @include mobile {
+      white-space: nowrap; /* 防止文本换行 */
+      overflow: hidden; /* 隐藏溢出的内容 */
+      text-overflow: ellipsis; /* 显示省略符号来代表被修剪的文本 */
+      max-width: 60px;
+    }
   }
   .data {
     margin-top: 8px;
     font-size: 18px;
     color: #564b39;
     width: 100%;
+    @include mobile {
+      font-size: 12px;
+      margin-top: 3px;
+    }
     .image {
       width: 31px;
       height: 33px;
       margin-right: 6px;
+      @include mobile {
+        width: 18px;
+        height: 19px;
+        margin-right: 4px;
+      }
     }
   }
 }

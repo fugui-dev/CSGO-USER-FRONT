@@ -90,6 +90,7 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
+@use "@/style" as *;
 .choose-odds-wrapper {
   height: 628px;
   background: url("@/assets/images/match/cheer-bg.webp") no-repeat;
@@ -104,6 +105,10 @@ defineExpose({
   margin-top: 30px;
   line-height: normal;
   text-align: center;
+  @include mobile {
+    width: 96vw;
+    height: 320px;
+  }
   .close-click {
     width: 70px;
     height: 70px;
@@ -111,18 +116,36 @@ defineExpose({
     right: 32px;
     top: 37px;
     cursor: pointer;
+    @include mobile {
+      width: 40px;
+      height: 40px;
+      right: 6px;
+      top: 10px;
+    }
   }
   .title {
     margin-top: 80px;
+    @include mobile {
+      margin-top: 40px;
+      font-size: 18px;
+    }
   }
   .select {
     font-size: 23px;
     color: #999686;
     margin-top: 14px;
+    @include mobile {
+      font-size: 15px;
+      margin-top: 5px;
+    }
   }
   .slider {
     width: 819px;
     margin: 14px auto 0;
+    @include mobile {
+      width: 76%;
+      margin-top: 6px;
+    }
     :deep() {
       .el-slider__runway {
         background: #999686;
@@ -137,6 +160,10 @@ defineExpose({
         background: url("@/assets/images/champion/game/slider.png") no-repeat;
         background-size: 100% 100%;
         border: none;
+        @include mobile {
+          width: 30px;
+          height: 32px;
+        }
       }
       .el-slider__bar {
         display: none;
@@ -148,16 +175,28 @@ defineExpose({
     margin: 16px auto 0;
     font-size: 23px;
     color: #1d1f22;
+    @include mobile {
+      width: 76%;
+      font-size: 12px;
+      margin-top: 6px;
+    }
   }
   .selected-text {
     margin-top: 40px;
     text-align: center;
     font-size: 23px;
     color: #1d1f22;
+    @include mobile {
+      margin-top: 6px;
+      font-size: 14px;
+    }
     .selected {
       margin-left: 15px;
       font-size: 30px;
       color: #bc7e04;
+      @include mobile {
+        font-size: 16px;
+      }
     }
   }
   .submit-btn {
@@ -173,6 +212,12 @@ defineExpose({
     color: #072523;
     cursor: pointer;
     border: 0;
+    @include mobile {
+      width: 100px;
+      height: 32px;
+      line-height: 28px;
+      font-size: 14px;
+    }
   }
 }
 </style>

@@ -67,9 +67,17 @@ const props = defineProps({
   font-size: 22px;
   color: #d4c7af;
   line-height: normal;
+  @include mobile {
+    width: 120px;
+    height: 180px;
+  }
   .alias {
     margin-top: 10px;
     font-size: 24px;
+    @include mobile {
+      font-size: 13px;
+      margin-top: 6px;
+    }
   }
   .avatar-wrapper {
     margin-top: 22px;
@@ -79,11 +87,20 @@ const props = defineProps({
     justify-content: center;
     align-items: center;
     position: relative;
+    @include mobile {
+      width: 60px;
+      height: 54px;
+      margin-top: 4px;
+    }
     .avatar {
       width: 51px;
       height: 51px;
       border-radius: 50%;
       display: block;
+      @include mobile {
+        width: 36px;
+        height: 36px;
+      }
     }
     .avatar-bg {
       display: block;
@@ -96,6 +113,10 @@ const props = defineProps({
   }
   .team-name {
     margin-top: 12px;
+    @include mobile {
+      margin-top: 4px;
+      font-size: 13px;
+    }
   }
   .score-section {
     margin-top: 10px;
@@ -103,12 +124,23 @@ const props = defineProps({
     flex-direction: column;
     align-items: center;
     gap: 6px;
+
+    @include mobile {
+      margin-top: 4px;
+    }
     
     .score {
+      @include mobile {
+        font-size: 14px;
+      }
       .coin-image {
         width: 31px;
         height: 33px;
         margin-right: 5px;
+        @include mobile {
+          width: 25px;
+          height: 26px;
+        }
       }
     }
     

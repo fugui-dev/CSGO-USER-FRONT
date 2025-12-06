@@ -83,8 +83,8 @@ const calculateScrollPosition = (isPlayAnimation) => {
       const items = container.querySelectorAll(".ornament-list-item");
 
       if (!container || items.length === 0) return;
-      // 单个元素高度，固定287px（包括边距等）
-      const itemHeight = 287;
+      // 单个元素高度，固定170px（包括边距等）
+      const itemHeight = 170;
       // 考虑间距 3px
       const gapHeight = 3;
       // 容器高度
@@ -213,6 +213,7 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
+  @use "@/style" as *;
 .scroll-wrap {
   position: relative;
   overflow: inherit;
@@ -246,6 +247,11 @@ defineExpose({
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    @include mobile {
+      width: 30vw;
+      min-width: 30vw;
+      max-width: 30vw;
+    }
   }
 }
 .fight-box-container {
@@ -258,7 +264,7 @@ defineExpose({
   margin: 0 auto;
   .ornament-list-item {
     width: 100%;
-    height: 287px;
+    height: 170px;
     position: relative;
     margin-bottom: 3px;
     display: flex;
@@ -267,8 +273,8 @@ defineExpose({
 
     .img-bg {
       position: absolute;
-      width: 160px;
-      height: 241px;
+      width: 90px;
+      height: 140px;
       z-index: -1;
     }
     h5 {

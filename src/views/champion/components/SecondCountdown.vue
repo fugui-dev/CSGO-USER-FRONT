@@ -41,12 +41,16 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
+  @use "@/style" as *;
 .countdown-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   margin: 12px auto;
+  @include mobile {
+    margin: 6px auto;
+  }
   .countdown {
     width: 89px;
     height: 89px;
@@ -57,6 +61,12 @@ onUnmounted(() => {
     background: url("@/assets/images/champion/game/odds-countdown.png")
       no-repeat;
     background-size: 100% 100%;
+    @include mobile {
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      font-size: 18px;
+    }
   }
 }
 </style>

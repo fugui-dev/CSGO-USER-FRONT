@@ -267,7 +267,8 @@ defineExpose({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use "@/style" as *;
 .wait-wrapper {
   width: 100%;
   height: 48.23vw;
@@ -275,6 +276,7 @@ defineExpose({
   background: url("@/assets/images/champion/waiting-shadow-bg.png") no-repeat;
   background-size: 100vw 46.15vw;
   overflow: hidden;
+  
   .waiting-img {
     position: absolute;
     top: 50%;
@@ -295,6 +297,9 @@ defineExpose({
     font-size: 43px;
     color: #f2ffef;
     line-height: normal;
+    @include mobile {
+      font-size: 28px;
+    }
   }
   .count-time {
     position: relative;

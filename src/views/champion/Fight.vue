@@ -612,7 +612,7 @@ const createWs = () => {
   const userId = store.userInfo.userId;
   if (!userId || !stageGroupFightId) return
   // 连接ws
-  connect(`ws://8.136.42.105:80/ws/fight/${stageGroupFightId}/${userId}`)
+  connect(`ws://121.229.204.223:8090/ws/fight/${stageGroupFightId}/${userId}`)
 }
 
 onBeforeMount(() => {
@@ -723,10 +723,10 @@ onMounted(() => {
     top: 0,    // 目标y轴位置（顶部）
     left: 0,   // 目标x轴位置（不横向滚动）
   });
-    musica.src = bgm
-    musica.loop = true
-    musica.load()
-    musica.play()
+  musica.src = bgm
+  musica.loop = true
+  musica.load()
+  musica.play()
 })
 
 onUnmounted(() => {
@@ -796,7 +796,7 @@ import bgImg from "@/assets/images/champion/bg.webp";
         />
             </div>
       <div class="detail-wrapper tw-flex tw-items-center tw-justify-center">
-        <el-scrollbar max-height="577px" ref="teamScrollRef">
+        <el-scrollbar max-height="344px" ref="teamScrollRef">
           <FightMember
             class="team-member-item"
             v-for="(item, index) in fightData.team?.stageRecordStartList"
@@ -930,7 +930,7 @@ import bgImg from "@/assets/images/champion/bg.webp";
           />
               <div class="team-fight-status" v-else>系统错误</div>
             </div>
-        <el-scrollbar max-height="577px" ref="opponentTeamScrollRef">
+        <el-scrollbar max-height="344px" ref="opponentTeamScrollRef">
           <FightMember
             class="team-member-item"
             v-for="(item, index) in fightData.opponentTeam
@@ -986,6 +986,11 @@ import bgImg from "@/assets/images/champion/bg.webp";
     font-size: 60px;
     color: #f2ffef;
     margin-bottom: 10px;
+    @include mobile {
+      font-size: 28px;
+      margin-bottom: 0;
+      margin-top: 60px;
+    }
   }
 }
 
@@ -994,6 +999,12 @@ import bgImg from "@/assets/images/champion/bg.webp";
   top: 20px;
   right: 30px;
   z-index: 4;
+  @include mobile {
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    top: 60px;
+  }
 
   .back {
     width: 72px;
@@ -1003,6 +1014,9 @@ import bgImg from "@/assets/images/champion/bg.webp";
 
   .setting-item {
     margin-top: 40px;
+    @include mobile {
+      margin-top: 6px;
+    }
 
     .setting-switch-wrapper {
       width: 71px;
@@ -1010,7 +1024,12 @@ import bgImg from "@/assets/images/champion/bg.webp";
       background-color: #343a3e;
       border-radius: 12px;
       cursor: pointer;
-  position: relative;
+      position: relative;
+      @include mobile {
+        width: 60px;
+        height: 20px;
+        border-radius: 9px;
+      }
 
       .setting-switch {
         width: 24px;
@@ -1019,6 +1038,10 @@ import bgImg from "@/assets/images/champion/bg.webp";
         top: 1px;
         left: 1px;
         transition: all 0.3s;
+        @include mobile {
+          width: 18px;
+          height: 18px;
+        }
 
         &.active {
           left: auto;
@@ -1032,6 +1055,10 @@ import bgImg from "@/assets/images/champion/bg.webp";
       font-weight: 500;
       font-size: 17px;
       color: #ffffff;
+      @include mobile {
+        margin-top: 3px;
+        font-size: 13px;
+      }
     }
   }
 }
@@ -1042,12 +1069,20 @@ import bgImg from "@/assets/images/champion/bg.webp";
   margin: 0 auto;
   padding-top: 9.5vw;
   font-family: "PingFang Medium";
+  @include mobile {
+    width: 98vw;
+    padding-top: 34vw;
+  }
 
   .header {
     .count {
       margin: 0 250px;
       font-size: 38px;
       font-family: Jijiati;
+      @include mobile {
+        margin: 0 10px;
+        font-size: 28px;
+      }
     }
   }
 
@@ -1063,7 +1098,7 @@ import bgImg from "@/assets/images/champion/bg.webp";
       width: 264px;
       min-width: 264px;
       max-width: 264px;
-      height: 577px;
+      height: 344px;
       background: rgba(0, 0, 0, 0.29);
       border-radius: 16px;
       border: 3px solid rgba(86, 153, 167, 0.96);
@@ -1075,10 +1110,21 @@ import bgImg from "@/assets/images/champion/bg.webp";
       display: flex;
       justify-content: center;
       align-items: center;
+      @include mobile {
+        width: 28%;
+        min-width: 28%;
+        max-width: 28%;
+        // height: 300px;
+        margin-left: 8px;
+        font-size: 13px;
+      }
 
       &.right {
         margin: 0 20px 0 0;
         border: 3px solid rgba(198, 128, 102, 0.96);
+        @include mobile {
+          margin-right: 8px;
+        }
       }
     }
 
@@ -1086,6 +1132,11 @@ import bgImg from "@/assets/images/champion/bg.webp";
       width: 53px;
       height: 71px;
       margin: 0 22px;
+      @include mobile {
+        width: 22px;
+        height: 30px;
+        margin: 0 8px;
+      }
     }
   }
 }
