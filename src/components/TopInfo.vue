@@ -102,8 +102,10 @@ const icoNav = ref([
 ]);
 
 onMounted(() => {
-  if (route.query.code && !store.isLogin) {
-    sessionStorage.setItem("code", route.query.code);
+  // 优先使用 parentInvitationCode，如果没有则使用 code（向后兼容）
+  const invitationCode = route.query.parentInvitationCode || route.query.code;
+  if (invitationCode && !store.isLogin) {
+    sessionStorage.setItem("code", invitationCode);
     loginDialog.value.open("register");
   }
 });

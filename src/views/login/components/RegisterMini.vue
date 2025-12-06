@@ -24,7 +24,10 @@ const registerForm = ref({
   parentInvitationCode: '',
   nickName: ''
 })
-if (route.query.code){
+// 优先使用 parentInvitationCode，如果没有则使用 code（向后兼容）
+if (route.query.parentInvitationCode){
+  registerForm.value.parentInvitationCode=route.query.parentInvitationCode
+} else if (route.query.code){
   registerForm.value.parentInvitationCode=route.query.code
 }
 
