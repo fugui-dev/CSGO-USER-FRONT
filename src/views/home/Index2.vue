@@ -331,7 +331,8 @@ const handleNavClick = (item) => {
           padding-top: 20px;
 
           @include mobile {
-            height: 120px;
+            width: 80%;
+            height: auto;
           }
 
           .bj {

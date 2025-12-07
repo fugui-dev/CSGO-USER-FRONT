@@ -105,7 +105,11 @@ const enter = (item: { img: string; text: string; path: string }) => {
   background-color: #34393f;
   padding-top: 32vw;
   @include mobile {
-    height: 130vh;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // background-size: 100% 100%;
   }
 
   .open {

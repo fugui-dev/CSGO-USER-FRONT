@@ -470,7 +470,7 @@ defineExpose({
 
                     <div class="tw-flex tw-justify-center tw-gap-3 tw-flex-wrap tw-mt-[-4rem] md:tw-gap-6 award-wrap">
                         <div v-for="(item, index) in openData" :key="index"
-                            class="tw-relative tw-cursor-pointer md:tw-w-[11.75rem] tw-w-[8.75rem] tw-h-[7.5rem] md:tw-h-[8.875rem] tw-flex tw-flex-col tw-justify-end tw-items-center"
+                            class="tw-relative tw-cursor-pointer md:tw-w-[11.75rem] tw-w-[8.75rem] tw-h-[7.5rem] md:tw-h-[8.875rem] tw-flex tw-flex-col tw-justify-end tw-items-center award-item"
                             :class="{
                                 'tw-transform tw-scale-105 tw-transition-all tw-duration-200': selectedItems.includes(index),
                                 'tw-transition-all tw-duration-200 hover:tw-shadow-lg hover:tw-scale-[1.02]': !selectedItems.includes(index)
@@ -665,7 +665,7 @@ defineExpose({
                                             >
                                             <img :src="v.imageUrl" alt="" class="tw-max-w-full tw-max-h-full tw-object-contain">
                                             <!-- 价格显示在右上角：如果是实际开出的饰品（openData中的），使用ornamentsPrice，否则使用boxPrice -->
-                                            <div v-if="v.ornamentsPrice || v.boxPrice" class="tw-absolute tw-top-2 tw-right-2 tw-flex tw-items-center tw-gap-1 tw-bg-black/70 tw-px-2 tw-py-1 tw-rounded">
+                                            <div v-if="v.ornamentsPrice || v.boxPrice" class="tw-absolute tw-top-2 tw-right-2 tw-flex tw-items-center tw-gap-1 tw-bg-black/70 tw-px-2 tw-py-1 tw-rounded match-fix-coin">
                                                 <img :src="Money" class="tw-h-3 tw-w-3" alt="">
                                                 <span class="tw-text-white tw-text-xs tw-font-bold">{{ Number(v.ornamentsPrice || v.boxPrice).toFixed(2) }}</span>
                                             </div>
@@ -704,6 +704,12 @@ defineExpose({
 </template>
 <style scoped lang="scss">
 @use "@/style" as *;
+.match-fix-coin {
+  img {
+    width: 10px !important;
+    height: 10px;
+  }
+}
 .congratulation-wrap {
   @include mobile {
     img:nth-of-type(1) {
@@ -720,6 +726,9 @@ defineExpose({
 .award-wrap {
   @include mobile {
     margin-top: 5rem;
+  }
+  .award-item {
+    transform: scale(1.0);
   }
 }
 .three-body {

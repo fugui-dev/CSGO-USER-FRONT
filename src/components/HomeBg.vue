@@ -45,6 +45,7 @@ window.onresize = () => {
 
 .bgb {
   position: fixed;
+  height: 100vh;
   top: 0;
   bottom: 0;
   right: 0;

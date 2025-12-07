@@ -137,7 +137,10 @@ const statusColor = computed(() => {
   margin-left: -10px;
   padding: 7px 30px 0 31px;
   @include mobile {
-    width: 88%;
+    width: 50%;
+    padding: 7px 16px;
+    height: auto;
+    min-height: 240px;
   }
   &:nth-child(3) {
     margin-left: 0px;
@@ -147,6 +150,10 @@ const statusColor = computed(() => {
   display: flex;
   justify-content: space-between;
   line-height: 36px;
+  @include mobile {
+    line-height: 24px;
+    width: 100%;
+  }
   .card-status {
     text-align: center;
     width: 98px;
@@ -156,6 +163,13 @@ const statusColor = computed(() => {
     color: #ffffff;
     background-repeat: no-repeat;
     background-size: 100% 100%;
+    @include mobile {
+      width: auto;
+      height: 24px;
+      line-height: 24px;
+      font-size: 12px;
+      padding-right: 5px;
+    }
   }
   .card-header-right {
     display: flex;
@@ -164,6 +178,15 @@ const statusColor = computed(() => {
       font-weight: 500;
       font-size: 17px;
       color: #ffcc69;
+      @include mobile {
+        font-size: 12px;
+        margin-right: 0;
+      }
+    }
+    div:nth-of-type(1) {
+      @include mobile {
+        margin-right: 4px;
+      }
     }
   }
 }
@@ -180,10 +203,20 @@ const statusColor = computed(() => {
   align-items: center;
   justify-content: center;
   margin-top: 16px;
+  @include mobile {
+    margin-top: 0;
+    font-size: 12px;
+    line-height: 22px;
+  }
   .coin {
     width: 29px;
     height: 29px;
     margin-right: 10px;
+    @include mobile {
+      width: 15px;
+      height: 15px;
+      margin-right: 6px;
+    }
   }
 }
 .seat-list {
@@ -191,12 +224,21 @@ const statusColor = computed(() => {
   justify-content: center;
   align-items: center;
   margin-top: 15px;
+  @include mobile {
+    margin-top: 5px;
+    gap: 3px;
+  }
   .empty-seat {
     width: 41px;
     height: 41px;
     background: url("@/assets/images/battle/join.png") no-repeat;
     background-size: 100% 100%;
     margin-right: 6px;
+    @include mobile {
+      width: 26px;
+      height: 26px;
+      margin-right: 0;
+    }
   }
   .avatar-wrapper {
     width: 58px;
@@ -205,11 +247,19 @@ const statusColor = computed(() => {
     justify-content: center;
     align-items: center;
     position: relative;
+    @include mobile {
+      width: 34px;
+      height: 34px;
+    }
     .avatar {
       width: 39px;
       height: 39px;
       border-radius: 50%;
       display: block;
+      @include mobile {
+        width: 24px;
+        height: 24px;
+      }
     }
     .avatar-bg {
       display: block;
@@ -218,6 +268,10 @@ const statusColor = computed(() => {
       left: 0;
       width: 58px;
       height: 58px;
+      @include mobile {
+        width: 34px;
+        height: 34px;
+      }
     }
   }
 }
@@ -227,11 +281,21 @@ const statusColor = computed(() => {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  @include mobile {
+    margin: 5px 0 0;
+  }
   .card-box-list-item {
     width: 60px;
     height: 47px;
     margin-bottom: 12px;
     margin-left: 1px;
+    @include mobile {
+      width: 25%;
+      height: auto;
+      margin-bottom: 0;
+      margin-left: 0;
+      gap: 2px;
+    }
     .bx {
       width: 100%;
       height: 100%;

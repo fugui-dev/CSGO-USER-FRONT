@@ -267,15 +267,19 @@ const afterRead = (file) => {
 @use "@/style" as *;
 $primary-color-user: #FF4545A6;
 
+.update-dialog {
+  padding: 0;
+}
 .url-wrap {
   @include mobile {
     flex-direction: row !important;
   }
   p {
     @include mobile {
-      width: 200px;
+      width: 40vw;
+      max-width: 40vw;
       box-sizing: border-box;
-      padding-right: 80px;
+      // padding-right: 80px;
       overflow: auto;
     }
   }

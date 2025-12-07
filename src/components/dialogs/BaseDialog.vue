@@ -79,7 +79,8 @@ defineExpose({
   border-radius: 12px;
   z-index: 99;
   @include mobile {
-    padding: 50px 60px;
+    // padding: 50px 60px;
+    padding: 20px;
   }
 
   .close {
@@ -125,7 +126,7 @@ defineExpose({
     .buttons {
       display: flex;
       width: 80%;
-      margin: 60px auto 32px;
+      margin: 30px auto 32px;
       justify-content: space-evenly;
     }
 

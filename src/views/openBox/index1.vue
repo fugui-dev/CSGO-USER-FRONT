@@ -557,6 +557,10 @@ const handleClickBack = () => {
   background-color: #383d36;
   min-height: 100vh;
   position: relative;
+  @include mobile {
+    background-size: 110% auto;
+    background-position: 50% 0;
+  }
   .box-bg {
     position: absolute;
     top: 80px;
@@ -565,6 +569,9 @@ const handleClickBack = () => {
     width: 630px;
     height: 425px;
     z-index: -1;
+    @include mobile {
+      height: 43vh;
+    }
   }
   .box-big-bg {
     position: absolute;
@@ -574,6 +581,11 @@ const handleClickBack = () => {
     width: 476px;
     height: 467px;
     z-index: -1;
+    @include mobile {
+      width: 80vw;
+      height: auto;
+      top: 120px;
+    }
   }
   .back-button {
     position: absolute;
@@ -690,6 +702,9 @@ const handleClickBack = () => {
     display: flex;
     flex-direction: column;
     align-items: center;
+    @include mobile {
+      margin-top: 80px;
+    }
     .box-img-wrapper {
       position: relative;
       width: 354px;
@@ -697,6 +712,9 @@ const handleClickBack = () => {
       display: flex;
       align-items: center;
       justify-content: center;
+      @include mobile {
+        width: 44%;
+      }
     }
     .box-img {
       display: block;

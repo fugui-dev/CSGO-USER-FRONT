@@ -319,7 +319,7 @@ onMounted(() => {
   background-color: rgba(144, 136, 129);
   min-height: 100vh;
   @include mobile {
-    background-size: 100% 36%;
+    background-size: 100% 31.5%;
   }
   .rule {
     margin-top: 60px;
@@ -338,11 +338,11 @@ onMounted(() => {
     color: #3b2712;
     @include mobile {
       margin: 10px 10px 0 0;
-      font-size: 13px;
-      width: 100px;
-      height: 30px;
-      line-height: 30px;
-      padding-left: 34px;
+      font-size: 12px;
+      width: 90px;
+      height: 28px;
+      line-height: 28px;
+      padding-left: 30px;
     }
   }
   .battle-content {
@@ -369,7 +369,7 @@ onMounted(() => {
         height: 32px;
         line-height: 32px;
         font-size: 16px;
-        margin-top: 80px;
+        margin-top: 10px;
         padding-left: 50px;
         span {
           width: 100px;
@@ -400,6 +400,7 @@ onMounted(() => {
       @include mobile {
         margin: 10px auto 0;
         width: 100%;
+        height: 40px;
       }
       .goup-item {
         width: 148px;
@@ -410,10 +411,17 @@ onMounted(() => {
         font-size: 18px;
         color: #ffffff;
         cursor: pointer;
+        @include mobile {
+          font-size: 14px;
+          height: 40px;
+          line-height: 34px;
+        }
         &.active {
           color: #8fedd8;
           background: url("@/assets/images/header/active-menu.png") no-repeat;
-          background-size: 100% 60px;
+          @include mobile {
+            background-size: 100% 40px;
+          }
         }
       }
     }

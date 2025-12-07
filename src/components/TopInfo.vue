@@ -78,7 +78,7 @@ const icoNav = ref([
   {
     name: "红包",
     img: envelopeIcon,
-    width: "24px",
+    width: isPC.value ? "24px": "18px",
     func: () => {
       redEnvelopeDialogRef.value.open();
     },
@@ -86,7 +86,7 @@ const icoNav = ref([
   {
     name: "CDK兑换",
     img: CDKIcon,
-    width: "39px",
+    width: isPC.value ? "39px": "30px",
     func: () => {
       cdkDialogRef.value.open();
     },
@@ -94,7 +94,7 @@ const icoNav = ref([
   {
     name: "客服",
     img: kefuIcon,
-    width: "30px",
+    width: isPC.value ? "30px": "22px",
     func: () => {
       kefuRef.value.open();
     },
@@ -143,7 +143,7 @@ const kefuRef = ref();
       >
         充值
       </div>
-      <div v-if="store.isPC" style="display: flex">
+      <div style="display: flex" class="amount">
         <div class="item">
           <img src="@/assets/images/champion/game/coin.png" alt="" />
           {{ store.userInfo?.accountAmount || 0.0 }}
@@ -222,11 +222,18 @@ const kefuRef = ref();
   <LoginDialog ref="loginDialog" />
   <RechargeModal ref="rechargeModalRef" />
 </template>
-<style lang="scss">
+<style scoped lang="scss">
 @use "@/style" as *;
 
 .el-popper__arrow {
   display: none;
+}
+.amount {
+  .item {
+    @include mobile {
+      font-size: 12px !important;
+    }
+  }
 }
 
 .user-popper {
@@ -274,6 +281,11 @@ const kefuRef = ref();
     align-items: center;
     @include mobile {
       margin-right: 5px !important;
+      img {
+        width: 15px !important;
+        height: 15px;
+        margin-right: 2px !important;
+      }
     }
 
     &.coin {
@@ -385,8 +397,8 @@ const kefuRef = ref();
       font-weight: 500;
       cursor: pointer;
       @include mobile {
-        height: 24px;
-        width: 60px;
+        height: 22px;
+        width: 54px;
         font-size: 12px;
 
         img {
