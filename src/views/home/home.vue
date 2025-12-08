@@ -2,12 +2,6 @@
   <layout>
     <div class="home-wrapper">
       <div class="open" @click="open" />
-      <div class="tip">
-        <img class="icon" src="@/assets/images/home/laba.png" alt="" />
-        <div class="text">
-          本平台禁止成年人消费,所有盲盒均为消遣娱乐，请勿沉迷，每次开启盲盒为独立
-        </div>
-      </div>
       <div class="enter-wrapper">
         <div class="enter-item" @click="enter(item)" v-for="item in enterList">
           <img class="img" :src="item.img" alt="" />
@@ -18,6 +12,12 @@
         <div class="enter-item" @click="enter(item)" v-for="item in enterList2">
           <img class="img" :src="item.img" alt="" />
           <div class="text">{{ item.text }}</div>
+        </div>
+      </div>
+      <div class="tip">
+        <img class="icon" src="@/assets/images/home/laba.png" alt="" />
+        <div class="text">
+          本平台禁止成年人消费,所有盲盒均为消遣娱乐，请勿沉迷，每次开启盲盒为独立
         </div>
       </div>
     </div>
@@ -131,12 +131,12 @@ const enter = (item: { img: string; text: string; path: string }) => {
     justify-content: center;
     background: url("@/assets/images/home/tip.png") no-repeat;
     background-size: 100% 100%;
-    margin: 3vw auto 0;
+    margin: 3vw auto 2vw;
 
     @include mobile {
       width: 80%;
       line-height: 24px;
-      margin-top: 0;
+      margin: 2vw auto;
     }
 
     .icon {

@@ -8,7 +8,7 @@ import {
   getBattleRankingApi,
   getMyOwnFightListApi,
 } from "@/api/battle";
-import { requireImg, deepClone } from "@/utils/common";
+import { requireImg, deepClone, getWebSocketUrl } from "@/utils/common";
 import { useDebounceFn } from "@vueuse/core";
 import { ElMessage } from "element-plus";
 import BoxDetailModal from "./components/BoxDetail.vue";
@@ -209,7 +209,7 @@ const replaceBattleCard = (newData) => {
 const createWs = () => {
   const userId = store.userInfo.userId;
   if (userId) {
-    connect(`ws://121.229.204.223:8090/ws/fight/hall/${userId}`);
+    connect(getWebSocketUrl(`/ws/fight/hall/${userId}`));
   }
 };
 

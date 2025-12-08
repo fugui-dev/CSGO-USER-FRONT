@@ -8,6 +8,8 @@ import {ElMessage} from "element-plus";
 import {useStore} from "@/store";
 import Title from "@/components/Title.vue";
 import BaseButton from "@/components/Btn/BaseButton.vue";
+// 导入本地图片
+import boxTigerImg from "@/assets/center/bx-tiger.png";
 
 const store = useStore()
 const loading = ref(false)
@@ -170,7 +172,7 @@ getRNList()
                     {{ i.awardMoney ? `奖励 x${i.awardMoney}` : '奖励' }}
                   </template>
                 </div>
-                <img :src="requireImg('/v2/center/bx.png',false)" alt="">
+                <img :src="boxTigerImg" alt="">
               </div>
               <BaseButton v-if="i.getStatus==0" @click="getRNAward(index+1)" class="btn_n ungetted" font-size="13px" name="立即领取">
               </BaseButton>
@@ -193,7 +195,7 @@ getRNList()
                 <div style="white-space: nowrap">
                   金币：{{ JSON.parse(i.awardSection)[0] }} - {{ JSON.parse(i.awardSection)[1] }}
                 </div>
-                <img :src="requireImg('/v2/center/bx.png',false)" alt="">
+                <img :src="boxTigerImg" alt="">
               </div>
 
               <BaseButton :is-gray="!(i.getStatus==1&&i.recharge>=i.rechargeThreshold)"  @click="getAward(i)" class="btn_n ungetted2" font-size="12px">
