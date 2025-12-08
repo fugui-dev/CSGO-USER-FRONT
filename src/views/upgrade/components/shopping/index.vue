@@ -158,8 +158,8 @@ const handleClick = (item) => {
 }
 </script>
 <template>
-  <div class=" tw-flex tw-relative tw-mt-6 tw-w-full  tw-justify-center tw-flex-col tw-items-center   ">
-    <div class="tw-flex tw-gap-2 tw-mt-8 tw-px-10 tw-mb-5 tw-text-xl md:tw-text-[14px] tw-font-bold tw-cursor-pointer tw-text-[#B1C5C7] tw-self-start"
+  <div class=" tw-flex tw-relative tw-mt-6 tw-w-full  tw-justify-center tw-flex-col tw-items-center mobile-match-container">
+    <div class="tw-flex tw-gap-2 tw-mt-8 tw-px-10 tw-mb-5 tw-text-xl md:tw-text-[14px] tw-font-bold tw-cursor-pointer tw-text-[#B1C5C7] tw-self-start mobile-match-back"
       @click="handleBack">
       <img :src="back" alt="" class="tw-w-[2rem] tw-h-[1.8rem]">
       返回
@@ -211,6 +211,20 @@ const handleClick = (item) => {
 </template>
 
 <style scoped lang="scss">
+@use "@/style" as *;
+.mobile-match-container {
+  @include mobile {
+    margin-top: 0;
+  }
+}
+.mobile-match-back {
+  @include mobile {
+    font-size: 13px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 0 10px;
+  }
+}
 .shopping {
   border: 1px solid rgba(38, 39, 92, 0.3);
   box-shadow: 0 0 20px rgba(38, 39, 92, 0.2);
@@ -687,6 +701,10 @@ const handleClick = (item) => {
   justify-content: end;
   align-items: center;
   width: 100%;
+  @include mobile {
+    margin: 18px 0 10px;
+    justify-content: center;
+  }
   .search-input {
     width: 236px;
     position: relative;
@@ -695,6 +713,10 @@ const handleClick = (item) => {
         width: 236px;
         height: 32px;
         font-size: 19px;
+        @include mobile {
+          font-size: 14px;
+          width: 60vw;
+        }
       }
       .el-input__wrapper {
         background: #191e1c3b;

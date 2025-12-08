@@ -269,28 +269,32 @@ getDetails()
             </div>
 
           </div>
-          <div class="room-info" v-else style="height: 240px;margin-top: 10px;padding:0 10px">
-            <div style="display: flex;height: fit-content;width: 100%;justify-content: space-between;align-items: flex-end">
-              <div style="display: flex;flex-direction: column">
-                <div class="deadline">
-                  <el-countdown
-                      format="D天HH时mm分ss秒"
-                      :value="new Date(data.endTime)"
-                      style="--el-statistic-content-color: #FFFFFFB2;--el-statistic-content-font-size: 12px"
-                      v-if="new Date(data.endTime) > new Date()"/>
-                  <div v-else>已结束</div>
+          <div class="room-info" v-else style="height: auto;margin-top: 10px;padding:0 10px">
+            <div style="display: flex;;width: 100%;justify-content: space-between;">
+              <div class="room-info-left-mobile">
+                <div style="display: flex;flex-direction: column">
+                  <div class="deadline">
+                    <el-countdown
+                        format="D天HH时mm分ss秒"
+                        :value="new Date(data.endTime)"
+                        style="--el-statistic-content-color: #FFFFFFB2;--el-statistic-content-font-size: 12px"
+                        v-if="new Date(data.endTime) > new Date()"/>
+                    <div v-else style="font-size: 14px;">已结束</div>
+                  </div>
+                </div>
+                <div class="ico" style="width: 34vw; height: 44vw;padding-top: 10px;">
+                  <div class="title" style="font-size: 14px">{{ data.rollName || '标题' }}</div>
+                  <img class="bx" style="width: 25vw; height: auto;margin-top: 10px" :src="requireImg('/v2/roll/bx.png',false)" alt="">
                 </div>
               </div>
-              <div class="ico" style="height: 200px;width: 160px">
-                <div class="title" style="font-size: 13px">{{ data.rollName || '标题' }}</div>
-                <img class="bx" style="width: 105px;margin-top: 0" :src="requireImg('/v2/roll/bx.png',false)" alt="">
-                <div class="desc" style="margin:4px;padding: 3px;height: fit-content">
-                  <p class="tw-font-[13px]">房间说明：</p>
-                  {{ data.description || '暂无描述' }}
-                </div>
+              <div class="desc" style="margin:40px 20px 10px 20px;padding: 6px;height: 40vw; overflow: scroll;">
+                <p class="tw-font-[13px]">房间说明：</p>
+                {{ data.description || '暂无描述' }}
               </div>
             </div>
-
+            <div class="join-btn-wrap" style="margin-top: 12px;" v-if="data && !store.isPC">
+              <BaseButton @click="joinRoll" class="btn_n_mobile" name="参与活动"></BaseButton>
+            </div>
           </div>
           <div class="room-content" v-loading="loading">
             <div class="number" v-show="active===0">
@@ -325,7 +329,7 @@ getDetails()
             </div>
           </div>
         </div>
-        <div class="join-btn-wrap" v-if="data">
+        <div class="join-btn-wrap" v-if="data && store.isPC">
           <BaseButton @click="joinRoll" class="btn_n" name="参与活动"></BaseButton>
         </div>
       </div>
@@ -498,6 +502,12 @@ getDetails()
           height: 41px;
           font-size: 14px;
         }
+      }
+
+      .btn_n_mobile {
+        width: 50%;
+        height: 32px;
+        line-height: 32px;
       }
 
       .deadline {

@@ -261,7 +261,7 @@ onUnmounted(() => {
 
 <template>
   <div class="tw-flex tw-relative tw-flex-col ">
-    <div class="tw-flex tw-gap-2 tw-mt-8 tw-px-10 tw-mb-5 tw-text-xl md:tw-text-[14px] tw-font-bold tw-cursor-pointer tw-text-[#B1C5C7]"
+    <div class="tw-flex tw-gap-2 tw-mt-8 tw-px-10 tw-mb-5 tw-text-xl md:tw-text-[14px] tw-font-bold tw-cursor-pointer tw-text-[#B1C5C7] mobile-match-back"
  @click="handleBack">
       <img :src="back" alt="" class="tw-w-[2rem] tw-h-[1.8rem]">
       返回
@@ -483,6 +483,14 @@ onUnmounted(() => {
 .mobile-match2 {
   @include mobile {
     margin-top: -10%;
+  }
+}
+.mobile-match-back {
+  @include mobile {
+    font-size: 13px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 0 10px;
   }
 }
 .boxshadowBtn {

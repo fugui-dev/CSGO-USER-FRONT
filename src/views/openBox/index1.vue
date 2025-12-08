@@ -703,7 +703,7 @@ const handleClickBack = () => {
     flex-direction: column;
     align-items: center;
     @include mobile {
-      margin-top: 80px;
+      margin-top: 70px;
     }
     .box-img-wrapper {
       position: relative;
@@ -722,7 +722,7 @@ const handleClickBack = () => {
       height: 219px;
       object-fit: contain;
       @include mobile {
-        width: 70vw;
+        width: 50vw;
       }
     }
     .box-img-01 {
@@ -754,6 +754,13 @@ const handleClickBack = () => {
       background: url("@/assets/images/open/box-name-bg.png") no-repeat;
       background-size: 100% auto;
       text-align: center;
+      @include mobile {
+        width: 110px;
+        height: 40px;
+        line-height: 40px;
+        font-size: 14px;
+        background-size: 100% 100%;
+      }
     }
     .open-count-wrapper {
       display: flex;
@@ -764,7 +771,7 @@ const handleClickBack = () => {
       color: #ffffff;
       @include mobile {
         font-size: 14px;
-        margin-top: 28px;
+        margin-top: 24px;
         padding: 0 14px;
       }
       .count {
