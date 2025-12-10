@@ -1,7 +1,9 @@
 <template>
   <layout>
     <div class="home-wrapper">
-      <div class="open" @click="open" />
+      <div class="open" @click="open">
+        <img :src="luckyOpenBox" alt="">
+      </div>
       <div class="enter-wrapper">
         <div class="enter-item" @click="enter(item)" v-for="item in enterList">
           <img class="img" :src="item.img" alt="" />
@@ -26,14 +28,15 @@
 
 <script lang="ts" setup>
 import Layout from "@/components/Layout.vue";
-import arenaImg from "@/assets/images/home/arena.png";
-import shopImg from "@/assets/images/home/shop.png";
-import rollImg from "@/assets/images/home/roll.png";
-import item1 from "@/assets/images/home/item1.png";
-import item2 from "@/assets/images/home/item2.png";
-import item3 from "@/assets/images/home/item3.png";
-import item4 from "@/assets/images/home/item4.png";
-import item5 from "@/assets/images/home/item5.png";
+import arenaImg from "@/assets/images/home/arena.gif";
+import shopImg from "@/assets/images/home/shop.gif";
+import rollImg from "@/assets/images/home/roll.gif";
+import item1 from "@/assets/images/home/item1.gif";
+import item2 from "@/assets/images/home/item2.gif";
+import item3 from "@/assets/images/home/item3.gif";
+import item4 from "@/assets/images/home/item4.gif";
+import item5 from "@/assets/images/home/item5.gif";
+import luckyOpenBox from "@/assets/images/home/lucky_open_box.gif";
 const enterList = [
   {
     img: arenaImg,
@@ -98,28 +101,29 @@ const enter = (item: { img: string; text: string; path: string }) => {
 
 .home-wrapper {
   width: 100%;
-  height: 120vw;
-  background: url("@/assets/images/home/bg.webp") no-repeat;
-  background-size: 100% 135vw;
+  min-height: 100vh;
+  background: url("@/assets/images/home/bg.png") no-repeat;
+  background-size: 100% auto;
   background-position: 0 60px;
-  background-color: #34393f;
-  padding-top: 32vw;
+  background-color: #353b43;
+  padding-top: 22vw;
   @include mobile {
-    height: 100vh;
+    overflow: visible;
     display: flex;
     flex-direction: column;
     align-items: center;
-    // background-size: 100% 100%;
+    padding-top: 30vw;
   }
 
   .open {
-    width: 20vw;
-    height: 18vw;
     margin: 0 auto;
     cursor: pointer;
+    width: 54vw;
+    img {
+      width: 100%;
+    }
     @include mobile {
-      width: 50vw;
-      height: 50vw;
+      width: 70vw;
     }
   }
   .tip {
@@ -195,6 +199,7 @@ const enter = (item: { img: string; text: string; path: string }) => {
     display: flex;
     align-items: center;
     justify-self: center;
+    padding-bottom: 4vw;
     .enter-item {
       cursor: pointer;
       & + .enter-item {
