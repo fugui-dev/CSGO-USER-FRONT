@@ -1,6 +1,6 @@
 <script setup>
 import {computed, onBeforeMount, onMounted, onUnmounted, ref, reactive, nextTick} from "vue";
-import {requireImg} from "@/utils/common";
+import {requireImg, getWebSocketUrl} from "@/utils/common";
 import {useStore} from "@/store"
 import useWebSocketHeartbeat from '../../composables/useWebSocketHeartbeat'
 import Detail from './Detail.vue';
@@ -612,7 +612,7 @@ const createWs = () => {
   const userId = store.userInfo.userId;
   if (!userId || !stageGroupFightId) return
   // 连接ws
-  connect(`ws://121.229.204.223:8090/ws/fight/${stageGroupFightId}/${userId}`)
+  connect(getWebSocketUrl(`/ws/fight/${stageGroupFightId}/${userId}`))
 }
 
 onBeforeMount(() => {

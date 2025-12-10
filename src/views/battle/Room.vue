@@ -2,7 +2,7 @@
 import Layout from "@/components/Layout.vue";
 import {ref, computed, reactive, onBeforeMount, provide, nextTick, onMounted, onUnmounted
 } from "vue";
-import {goto, requireImg, deepClone} from "@/utils/common";
+import {goto, requireImg, deepClone, getWebSocketUrl} from "@/utils/common";
 import {getHistoryDetailApi, saveFightBoutApi, endFightApi} from "@/api/battle";
 import { useRoute, useRouter } from 'vue-router';
 import { useStore } from "@/store";
@@ -273,7 +273,7 @@ const createWs = () => {
   const fightId = route.params.id;
   if (!userId || !fightId) return
   // 连接ws
-  connect(`ws://121.229.204.223:8090/ws/fight/room/${userId}/${fightId}`)
+  connect(getWebSocketUrl(`/ws/fight/room/${userId}/${fightId}`))
 }
 
 // 获取历史对战信息
