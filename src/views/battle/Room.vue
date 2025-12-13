@@ -641,9 +641,6 @@ const ownerCall = () => {
       align-items: center;
       color: #FFF5F5CC;
     ;
-      @include mobile {
-        display: none;
-      }
 
       img {
         height: 24px;

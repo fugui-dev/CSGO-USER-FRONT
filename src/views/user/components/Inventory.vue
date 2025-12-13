@@ -13,6 +13,7 @@ import Ammunition from '@/assets/images/shop/ammunition.png'
 import {useUserInfo} from '@/composables/useUesrInfo'
 import arrow from '@/assets/images/user/arrow.png'
 import BaseDialog from "@/components/dialogs/BaseDialog.vue";
+import { useStore } from "@/store/index.js";
 
 const active = ref(0)
 const list = ref([])
@@ -227,6 +228,11 @@ const transferUserInfo = ref(null)
 const transferConfirmChecked = ref(false)
 const queryingUser = ref(false)
 
+const store = useStore();
+const isPC = computed(()=>{
+  return store.isPC
+})
+
 const handleTransfer = () => {
   if (loading.value) return
   // 转增功能只能在商城饰品库存中使用
@@ -435,7 +441,8 @@ const selectedOrnaments = computed(() => {
           v-model:page-size="form.size"
           :page-sizes="[14, 28, 56, 112]"
           :total="pageTotal"
-          layout="total, sizes, prev, pager, next"
+          :layout="isPC ? 'total, sizes, prev, pager, next': 'prev, pager, next'"
+          :size="isPC ? 'default': 'small'"
           @size-change="handleSizeChange"
           @current-change="handlePageChange"
           background

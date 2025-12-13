@@ -67,12 +67,13 @@ watchEffect(() => {
 })
 
 
+
 </script>
 
 <template>
   <Layout  :show-box="store.isPC">
     <template #item>
-      <div class="user">
+      <div class="user" :class="{ inventoryBg: active === 'inventory'}">
         <van-tabs v-model:active="active" class="tabs" @click-tab="onClickTab">
           <van-tab v-for="(i,index) in tabs" :title="i.label" :name="i.value" :key="index">
             <template #title>
@@ -100,6 +101,9 @@ watchEffect(() => {
 </template>
 <style lang="scss">
 @use "@/style" as *;
+.inventoryBg {
+  background: url('@/assets/images/user/storage_bg.png') no-repeat;
+}
 .user{
   .self-title{
     position: relative;

@@ -116,7 +116,7 @@
             v-model:page-size="search.pageSize"
             :page-sizes="[12, 24, 48, 96]"
             :total="total"
-            :layout="isPC ? 'total, sizes, prev, pager, next': 'total,prev, pager, next'"
+            :layout="isPC ? 'total, sizes, prev, pager, next': 'prev, pager, next'"
             @size-change="handleSizeChange"
             @current-change="handlePageChange"
             background

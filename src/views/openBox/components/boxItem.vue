@@ -1,6 +1,7 @@
 <template>
   <div
     class="box-item-wrapper"
+    :class="{'shop-box-item-wrapper': isShop}"
     :style="{
       background: `url(${bgImage}) no-repeat center/100%`,
     }"
@@ -230,5 +231,8 @@ const displayPriceHave = computed(() => {
     width: calc(100% - 28px); /* 确保不超出背景图片范围，减去左右padding (12px + 16px) */
     max-width: calc(100% - 28px);
   }
+}
+.shop-box-item-wrapper {
+  width: 170px;
 }
 </style>

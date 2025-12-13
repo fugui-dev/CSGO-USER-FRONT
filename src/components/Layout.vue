@@ -144,11 +144,16 @@ const hideOld = computed(() => {
 </template>
 
 <style lang="scss">
+@use "@/style" as *;
+
 #container {
   display: flex;
   flex-direction: column;
   padding-top: 90px;
   flex: 1;
   height: 100%;
+  @include mobile {
+    padding-top: 70px;
+  }
 }
 </style>
