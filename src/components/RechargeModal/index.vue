@@ -141,17 +141,24 @@ const submitPay = async () => {
       payType: selectPayType.value,
     });
     if (res.code === 200) {
+      // 兼容不同的响应格式
+      const orderId = res.data.orderId || res.data.orderNo;
+      const outTradeNo = res.data.outTradeNo || res.data.outTradeNo;
+      const payUrl = res.data.payUrl || res.data.payUrl;
+      
       order.value = {
-        orderNo: res.data.orderId,
-        outTradeNo: res.data.outTradeNo,
+        orderNo: orderId,
+        outTradeNo: outTradeNo,
         amount: rechargeList.value[curIndex.value].price,
         payType: selectPayType.value,
-        payUrl: res.data.payUrl,
+        payUrl: payUrl,
+        payTag: selectPayChannel.value?.payTag, // 保存支付通道标识
       };
-      console.log(order.value);
+      console.log("订单信息:", order.value);
+      
       // 生成二维码
       try {
-        qrCode.value = await QRCode.toDataURL(res.data.payUrl, {
+        qrCode.value = await QRCode.toDataURL(payUrl, {
           width: 200,
           margin: 1,
           color: {
@@ -173,10 +180,13 @@ const submitPay = async () => {
       startPayStatusPolling();
 
       return res.data;
+    } else {
+      ElMessage.error(res.msg || "创建订单失败，请重试");
     }
   } catch (error) {
     loading.value = false;
-    console.log(error, "123");
+    console.error("支付下单失败:", error);
+    ElMessage.error(error?.response?.data?.msg || error?.message || "支付下单失败，请重试");
   }
 };
 
@@ -214,8 +224,20 @@ const startPayStatusPolling = () => {
     }
 
     try {
-      const res = await queryOrderStatus(order.value.orderNo);
-      if (res.code === 200 && res.data === true) {
+      // 根据支付通道选择不同的查询方式
+      const res = await queryOrderStatus(order.value.orderNo, order.value.payTag);
+      
+      // 处理不同的响应格式
+      let isPaid = false;
+      if (order.value.payTag === "banmasp") {
+        // 斑马支付的响应格式
+        isPaid = res.code === 200 && res.data && res.data.return_code === "1";
+      } else {
+        // 其他支付的响应格式
+        isPaid = res.code === 200 && res.data === true;
+      }
+      
+      if (isPaid) {
         // 支付成功
         clearInterval(pollingTimer.value);
         pollingTimer.value = null;
@@ -277,8 +299,20 @@ const checkPayStatus = async () => {
   payStatusLoading.value = true;
   pollingStatus.value = "手动查询支付状态...";
   try {
-    const res = await queryOrderStatus(order.value.orderNo);
-    if (res.code === 200 && res.data === true) {
+    // 根据支付通道选择不同的查询方式
+    const res = await queryOrderStatus(order.value.orderNo, order.value.payTag);
+    
+    // 处理不同的响应格式
+    let isPaid = false;
+    if (order.value.payTag === "banmasp") {
+      // 斑马支付的响应格式
+      isPaid = res.code === 200 && res.data && res.data.return_code === "1";
+    } else {
+      // 其他支付的响应格式
+      isPaid = res.code === 200 && res.data === true;
+    }
+    
+    if (isPaid) {
       pollingStatus.value = "支付成功";
       ElMessage.success("充值成功");
       fetchUserInfo(); // 刷新用户信息
@@ -453,7 +487,7 @@ defineExpose({
                 :key="channel.id"
                 @click="selectChannel(channel)"
                 v-show="
-                  channel.status === 1 &&
+                  channel.status === 0 &&
                   channel.payTag &&
                   channel.payTag.length > 0
                 "

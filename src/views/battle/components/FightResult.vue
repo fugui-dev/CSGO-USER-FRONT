@@ -83,6 +83,13 @@ const startAnimation = () => {
         newItem.ornamentName = name
       }
     }
+    // 根据对战状态决定显示原始价格还是最终价格
+    // 进行中（status === 1）：显示原始价格；已结束（status === 2 或 3）：显示最终价格
+    if (props.roomStatus === 1 && item.originalOrnamentsPrice != null) {
+      newItem.displayPrice = item.originalOrnamentsPrice
+    } else {
+      newItem.displayPrice = item.ornamentsPrice
+    }
     return newItem
   })
   }
@@ -134,6 +141,13 @@ const setFinalReult = () => {
     if (!item.ornamentName && item.marketHashName) {
       newItem.ornamentName = item.marketHashName
     }
+    // 根据对战状态决定显示原始价格还是最终价格
+    // 进行中（status === 1）：显示原始价格；已结束（status === 2 或 3）：显示最终价格
+    if (props.roomStatus === 1 && item.originalOrnamentsPrice != null) {
+      newItem.displayPrice = item.originalOrnamentsPrice
+    } else {
+      newItem.displayPrice = item.ornamentsPrice
+    }
     return newItem
   })
 }
@@ -174,7 +188,7 @@ defineExpose({
       @animationend="handleMagnifyAnimationEnd">
       <img :src="item.ornamentLevelImg || item.levelImg || leavel[4].img" alt="" class="img-bg">
       <div class="btn">
-        <div>{{item.ornamentsPrice}}</div>
+        <div>{{item.displayPrice != null ? item.displayPrice : item.ornamentsPrice}}</div>
         <img :src="coin" alt="">
       </div>
       <img :src="item.imageUrl" alt="" class="knife">

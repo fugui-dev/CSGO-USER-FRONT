@@ -98,7 +98,12 @@ const calcPerRoundTotalPrice = () => {
   const arr = playerResult.value[playerId][currRound]
   if (Array.isArray(arr) && arr.length) {
     totalPrice.value = arr.reduce((prev, next) => {
-      return new Decimal(next.ornamentsPrice).plus(prev).toNumber()
+      // 根据对战状态决定使用原始价格还是最终价格
+      // 进行中（status === 1）：使用原始价格；已结束（status === 2 或 3）：使用最终价格
+      const price = (props.roomStatus === 1 && next.originalOrnamentsPrice != null) 
+        ? next.originalOrnamentsPrice 
+        : next.ornamentsPrice
+      return new Decimal(price || 0).plus(prev).toNumber()
     }, 0)
   }
 }
