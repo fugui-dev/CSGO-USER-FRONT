@@ -11,6 +11,7 @@ import Promotion from "@/views/user/components/Promotion.vue";
 import BoxRecords from "@/views/user/components/BoxRecords.vue";
 import AmountRecords from "@/views/user/components/AmountRecords.vue";
 import Mail from "@/views/user/components/Mail.vue";
+import DailyBenefits from "@/views/user/components/DailyBenefits.vue";
 import email from '@/assets/images/user/email.png';
 import record from '@/assets/images/user/record.png';
 import share from '@/assets/images/user/share.png';
@@ -54,6 +55,11 @@ const tabs = ref([
     label: '邮件信息',
     value: 'mail',
     icon: email
+  },
+  {
+    label: '福利中心',
+    value: 'benefits',
+    icon: share
   }
 ])
 
@@ -92,6 +98,7 @@ watchEffect(() => {
             <Promotion v-if="active==='promote'"/>
             <AmountRecords v-if="active==='log'"/>
             <Mail v-if="active==='mail'"/>
+            <DailyBenefits v-if="active==='benefits'"/>
           </van-tab>
         </van-tabs>
       </div>
@@ -103,6 +110,11 @@ watchEffect(() => {
 @use "@/style" as *;
 .inventoryBg {
   background: url('@/assets/images/user/storage_bg.png') no-repeat;
+}
+.benefitsBg {
+  background: url('@/assets/images/user/user_info_bg.png') no-repeat;
+  background-size: 90% 90%;
+  background-position: center center;
 }
 .user{
   .self-title{

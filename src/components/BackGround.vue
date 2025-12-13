@@ -35,7 +35,7 @@ const BackgroundImg = computed(() => {
   if (props.path.startsWith("/user/base") || props.path.startsWith("/user/promote")) {
     return userBg;
   }
-  if (props.path.startsWith("/user/inventory") || props.path.startsWith("/user/record") || props.path.startsWith("/user/log") || props.path.startsWith("/user/mail")) {
+  if (props.path.startsWith("/user/inventory") || props.path.startsWith("/user/record") || props.path.startsWith("/user/log") || props.path.startsWith("/user/mail") || props.path.startsWith("/user/benefits")) {
     return userStorageBg;
   }
 

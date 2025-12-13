@@ -59,6 +59,13 @@ const userNav = ref([
     },
   },
   {
+    name: "福利中心",
+    img: requireImg("/v2/nav/u4.png"),
+    func: () => {
+      goto("/user/benefits");
+    },
+  },
+  {
     name: "退出登录",
     img: requireImg("/v2/nav/u7.png"),
     func: () => {

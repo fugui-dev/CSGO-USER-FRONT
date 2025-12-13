@@ -312,6 +312,30 @@ export const createGenerateCardApi = () => {
     })
 }
 
+// 获取用户每日福利信息
+export const getDailyBenefitsApi = () => {
+    return request({
+        url: '/api/user/dailyBenefits',
+        method: 'get'
+    })
+}
+
+// 获取用户VIP进程信息
+export const getVipProgressApi = () => {
+    return request({
+        url: '/api/user/vipProgress',
+        method: 'get'
+    })
+}
+
+// 获取用户奖励列表
+export const getRewardListApi = () => {
+    return request({
+        url: '/api/user/rewardList',
+        method: 'get'
+    })
+}
+
 export const accessorySalvageApi = (data) => {
     return request({
         url: "/api/userPackSack/decompose",
