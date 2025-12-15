@@ -247,7 +247,7 @@ onMounted(() => {
           </div>
         </div>
         <div class="info-row">
-          <div class="info-label">累计消费</div>
+          <div class="info-label">累计充值</div>
           <div class="info-value consume-amount">
             {{ (vipProgressData.totalConsume || 0).toFixed(2) }}
           </div>
@@ -301,7 +301,7 @@ onMounted(() => {
                 <span v-if="level.achieved" class="achieved-badge">已达成</span>
               </div>
               <div class="vip-level-details">
-                <span>所需消费：{{ (level.growthValue || 0).toFixed(2) }}</span>
+                <span>所需充值：{{ (level.growthValue || 0).toFixed(2) }}</span>
                 <span>返点比例：{{ (level.rebateRate || 0).toFixed(2) }}%</span>
               </div>
             </div>
