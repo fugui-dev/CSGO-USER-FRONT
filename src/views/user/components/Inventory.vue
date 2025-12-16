@@ -322,7 +322,7 @@ const confirmTransfer = () => {
   }).then(res => {
     if (res.code === 200) {
       ElMessage({
-        message: res.msg || '转增成功',
+        message: '操作成功，待审核请前往转增记录查看',
         type: 'success'
       })
       transferDialogRef.value?.close()
@@ -477,6 +477,7 @@ const selectedOrnaments = computed(() => {
           <div class="item type">类型</div>
           <div class="item user-id">用户ID</div>
           <div class="item user-name">用户名称</div>
+          <div class="item status">状态</div>
           <div class="item time">时间</div>
         </div>
         <el-scrollbar height="500px" v-loading="loading">
@@ -491,6 +492,13 @@ const selectedOrnaments = computed(() => {
               <div class="item type">{{ i.transferType || '-' }}</div>
               <div class="item user-id">{{ i.transferUserId || '-' }}</div>
               <div class="item user-name">{{ i.transferUserName || '-' }}</div>
+              <div class="item status">
+                <span v-if="i.status === 0" style="color: #E6A23C;">待审核</span>
+                <span v-else-if="i.status === 1" style="color: #67C23A;">已通过</span>
+                <span v-else-if="i.status === 2" style="color: #F56C6C;">已拒绝</span>
+                <span v-else>-</span>
+                <span v-if="i.auditRemark" style="margin-left: 5px; font-size: 12px; color: #909399;" :title="i.auditRemark">(备注)</span>
+              </div>
               <div class="item time">{{ i.createTime ? formatDate(i.createTime) : '-' }}</div>
             </div>
           </div>
@@ -955,11 +963,11 @@ $primary-color-user: rgb(138, 15, 198);
         }
 
         &.name {
-          width: 20%;
+          width: 18%;
         }
 
         &.price {
-          width: 12%;
+          width: 10%;
         }
 
         &.type {
@@ -967,15 +975,20 @@ $primary-color-user: rgb(138, 15, 198);
         }
 
         &.user-id {
-          width: 10%;
+          width: 8%;
         }
 
         &.user-name {
-          width: 15%;
+          width: 12%;
+        }
+
+        &.status {
+          width: 10%;
+          font-size: 12px;
         }
 
         &.time {
-          width: 25%;
+          width: 24%;
         }
       }
     }
