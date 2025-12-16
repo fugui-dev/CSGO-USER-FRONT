@@ -154,6 +154,70 @@ export const useRedEnvelopeApi = (cdk) => {
     })
 }
 
+// 贴纸系统API
+// 查询用户贴纸列表
+export const getUserStickerListApi = () => {
+    return request({
+        url: "/api/user/sticker/list",
+        method: "get"
+    })
+}
+
+// 查询所有贴纸类型和规则
+export const getStickerTypesApi = () => {
+    return request({
+        url: "/api/user/sticker/types",
+        method: "get"
+    })
+}
+
+// 查询可兑换奖励列表
+export const getStickerRewardListApi = () => {
+    return request({
+        url: "/api/user/sticker/reward/list",
+        method: "get"
+    })
+}
+
+// 查询奖励详情
+export const getStickerRewardDetailApi = (rewardId) => {
+    return request({
+        url: `/api/user/sticker/reward/${rewardId}`,
+        method: "get"
+    })
+}
+
+// 兑换奖励
+export const exchangeStickerRewardApi = (rewardId) => {
+    return request({
+        url: `/api/user/sticker/reward/exchange/${rewardId}`,
+        method: "post"
+    })
+}
+
+// 领取连续登录贴纸
+export const claimLoginStickerApi = () => {
+    return request({
+        url: "/api/user/sticker/claim/login",
+        method: "post"
+    })
+}
+
+// 领取连续充值贴纸
+export const claimRechargeStickerApi = () => {
+    return request({
+        url: "/api/user/sticker/claim/recharge",
+        method: "post"
+    })
+}
+
+// 根据贴纸类型获取箱子列表
+export const getBoxesByStickerTypeApi = (stickerType) => {
+    return request({
+        url: `/api/user/sticker/boxes/${stickerType}`,
+        method: "get"
+    })
+}
 
 export const getMyBoxRecordApi = (data) => {
     return request({

@@ -83,11 +83,24 @@ const enterList2 = [
 ];
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import { useStore } from "@/store";
 const router = useRouter();
+const store = useStore();
 const open = () => {
   router.push("/required");
 };
 const enter = (item: { img: string; text: string; path: string }) => {
+  // VIP 特殊处理：需要登录才能跳转到福利中心
+  if (item.text === "VIP") {
+    if (!store.isLogin) {
+      ElMessage("请先登录");
+      router.push("/login");
+      return;
+    }
+    router.push("/user/benefits");
+    return;
+  }
+  
   if (item.path) {
     router.push(item.path);
   } else {

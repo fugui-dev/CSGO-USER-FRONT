@@ -228,6 +228,12 @@ const routes = [
           title: "商店",
         },
       },
+      {
+        path: "/sticker",
+        redirect: (to) => {
+          return { path: "/center", query: { tab: "sticker" } };
+        },
+      },
     ],
   },
   {
