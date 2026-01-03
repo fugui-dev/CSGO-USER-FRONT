@@ -124,6 +124,11 @@ const findOrnamentName = (ornamentId, boxId) => {
 const setFinalReult = () => {
   const currPlayerId = props.currPlayerId
   const fightResult = props.fightResult
+  // 如果没有数据，直接返回
+  if (!fightResult || !Array.isArray(fightResult) || !currPlayerId) {
+    perResultList.value = []
+    return
+  }
   // 过滤条件：holderUserId 匹配，并且有 ornamentId（即使没有 boxId 也要显示）
   const filtered = fightResult.filter(item => item.holderUserId === currPlayerId && item.ornamentId)
   
@@ -168,6 +173,20 @@ onMounted(() => {
 
 watch(() => props.roomStatus, (newVal) => {
   if (newVal === 2) {
+    setFinalReult()
+  }
+})
+
+// 监听 fightResult 变化，确保数据更新时重新设置结果
+watch(() => props.fightResult, (newVal) => {
+  if (newVal && props.roomStatus === 2) {
+    setFinalReult()
+  }
+}, { deep: true })
+
+// 监听 currPlayerId 变化
+watch(() => props.currPlayerId, () => {
+  if (props.roomStatus === 2) {
     setFinalReult()
   }
 })

@@ -230,6 +230,7 @@ const calculateScrollPosition = () => {
         // 开始动画
         scrollAnimation.value = true
         if (props.localSet.music) {
+          musica.currentTime = 0 // 重置音效到开头
           musica.play()
         }
     } catch (error) {
@@ -275,6 +276,7 @@ const pauseMusic = () => {
 
 onMounted(() => {
     musica.src = m1
+    musica.loop = true // 设置循环播放，确保5秒动画期间音效持续
     musica.load()
     musicb.src = m2
     musicb.load()
@@ -414,7 +416,7 @@ defineExpose({
   }
 }
 .scroll-animation {
-  animation-duration: 13s;
+  animation-duration: 5s;
   animation-iteration-count: 1;
   animation-name: scroll-end;
   animation-timing-function: cubic-bezier(0.1, 0.1, 0.3, 0.4, 0.6, 0.8, 0.9, 0.9, 0.9, 1);

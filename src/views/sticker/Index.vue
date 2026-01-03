@@ -211,52 +211,7 @@ onMounted(() => {
   <Layout>
     <template #item>
       <div class="sticker-page">
-        <!-- 板块1：贴纸获取规则 -->
-        <div class="section sticker-rules">
-          <div class="section-title">
-            <h2>贴纸获取规则</h2>
-          </div>
-          
-          <div class="sticker-grid">
-            <div
-              v-for="(config, code) in stickerConfig"
-              :key="code"
-              class="sticker-card"
-              :style="{ borderColor: config.color }"
-            >
-              <div class="sticker-icon" :style="{ color: config.color }">
-                {{ config.icon }}
-              </div>
-              <div class="sticker-name">{{ config.name }}</div>
-              <div class="sticker-type">{{ config.type }}</div>
-              <div class="sticker-quantity">
-                拥有：{{ getUserStickerQuantity(code) }}
-              </div>
-              
-              <!-- 连续登录贴纸领取按钮 -->
-              <div v-if="code === 'purple' && loginProgress.canClaim" class="claim-btn-wrapper">
-                <button class="claim-btn" @click="handleClaimLogin">
-                  领取 ({{ loginProgress.days }}/7天)
-                </button>
-              </div>
-              <div v-else-if="code === 'purple'" class="progress-info">
-                进度：{{ loginProgress.days }}/7天
-              </div>
-              
-              <!-- 连续充值贴纸领取按钮 -->
-              <div v-if="code === 'orange' && rechargeProgress.canClaim" class="claim-btn-wrapper">
-                <button class="claim-btn" @click="handleClaimRecharge">
-                  领取 ({{ rechargeProgress.days }}/7天)
-                </button>
-              </div>
-              <div v-else-if="code === 'orange'" class="progress-info">
-                进度：{{ rechargeProgress.days }}/7天
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 板块2：兑换奖励列表 -->
+        <!-- 板块1：兑换奖励列表 -->
         <div class="section reward-list-section">
           <div class="section-title">
             <h2>兑换奖励</h2>
@@ -347,6 +302,52 @@ onMounted(() => {
           
           <div v-if="!rewardLoading && rewardList.length === 0" class="empty-state">
             <p>暂无可兑换奖励</p>
+          </div>
+        </div>
+
+        <!-- 板块2：贴纸获取规则 -->
+        <div class="section sticker-rules">
+          <div class="section-title">
+            <h2>贴纸获取规则</h2>
+          </div>
+          
+          <div class="sticker-grid">
+            <div
+              v-for="(config, code) in stickerConfig"
+              :key="code"
+              class="sticker-card"
+              :style="{ borderColor: config.color }"
+            >
+              <div class="sticker-icon" :style="{ color: config.color }">
+                {{ config.icon }}
+              </div>
+              <div class="sticker-name">{{ config.name }}</div>
+              <div class="sticker-type">{{ config.type }}</div>
+              <!-- 连续登入和连续充值奖励贴纸不显示拥有数量 -->
+              <div v-if="code !== 'purple' && code !== 'orange'" class="sticker-quantity">
+                拥有：{{ getUserStickerQuantity(code) }}
+              </div>
+              
+              <!-- 连续登录贴纸领取按钮 -->
+              <div v-if="code === 'purple' && loginProgress.canClaim" class="claim-btn-wrapper">
+                <button class="claim-btn" @click="handleClaimLogin">
+                  领取 ({{ loginProgress.days }}/7天)
+                </button>
+              </div>
+              <div v-else-if="code === 'purple'" class="progress-info">
+                进度：{{ loginProgress.days }}/7天
+              </div>
+              
+              <!-- 连续充值贴纸领取按钮 -->
+              <div v-if="code === 'orange' && rechargeProgress.canClaim" class="claim-btn-wrapper">
+                <button class="claim-btn" @click="handleClaimRecharge">
+                  领取 ({{ rechargeProgress.days }}/7天)
+                </button>
+              </div>
+              <div v-else-if="code === 'orange'" class="progress-info">
+                进度：{{ rechargeProgress.days }}/7天
+              </div>
+            </div>
           </div>
         </div>
       </div>

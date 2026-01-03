@@ -137,7 +137,7 @@ const registerFormSubmit = () => {
         <div style="width: 100%;display: flex;align-items: baseline;justify-content: center;">
           <el-checkbox size="large" v-model="checked1"/>
           <div class="checkbox_note" @click="checked1=!checked1">
-            确认已年满18周岁，<a href="">用户协议</a> 和 <a href="">隐私政策</a>
+            确认已年满18周岁，<a href="/#/user-agreement" @click.stop>用户协议</a> 和 <a href="/#/privacy-agreement" @click.stop>隐私政策</a>
           </div>
         </div>
       </el-form-item>

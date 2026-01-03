@@ -602,17 +602,17 @@ onMounted(() => {
         <div class="tab-header">
           <div 
             class="tab-item" 
-            :class="{ active: activeTab === 'activity' }"
-            @click="activeTab = 'activity'"
-          >
-            福利活动
-          </div>
-          <div 
-            class="tab-item" 
             :class="{ active: activeTab === 'sticker' }"
             @click="activeTab = 'sticker'"
           >
             贴纸系统
+          </div>
+          <div 
+            class="tab-item" 
+            :class="{ active: activeTab === 'activity' }"
+            @click="activeTab = 'activity'"
+          >
+            福利活动
           </div>
         </div>
       </div>
@@ -693,84 +693,7 @@ onMounted(() => {
       <!-- 贴纸系统 Tab -->
       <div v-show="activeTab === 'sticker'" class="tab-content sticker-tab-content">
         <div class="sticker-page">
-          <!-- 板块1：贴纸获取规则 -->
-          <div class="center">
-            <div class="center-content">
-              <div class="center-title">
-                <span>贴纸获取规则</span>
-              </div>
-              <div class="center-content-fl">
-                <div
-                  v-for="sticker in userStickerList"
-                  :key="sticker.stickerCode"
-                  class="center-content-fl-item"
-                  :class="{ 'clickable': isBoxSticker(sticker.stickerType) }"
-                  @click="handleStickerClick(sticker.stickerCode)"
-                >
-                  <div class="center-content-fl-item-name">
-                    <div>{{ sticker.stickerName }}</div>
-                    <div style="white-space: nowrap">
-                      {{ sticker.obtainMethod || stickerConfig[sticker.stickerCode]?.type || '未知' }}
-                    </div>
-                    <!-- 贴纸图片 -->
-                    <img 
-                      v-if="sticker.stickerImage" 
-                      :src="sticker.stickerImage" 
-                      :alt="sticker.stickerName"
-                      style="width: 80%; object-fit: contain;"
-                    />
-                    <div v-else style="font-size: 60px; margin: 10px 0;">
-                      {{ stickerConfig[sticker.stickerCode]?.icon || '❓' }}
-                    </div>
-                  </div>
-                  
-                  <!-- 连续登录贴纸领取按钮 -->
-                  <BaseButton 
-                    v-if="sticker.stickerCode === 'purple' && loginProgress.canClaim" 
-                    @click.stop="handleClaimLogin" 
-                    class="btn_n ungetted" 
-                    font-size="13px" 
-                    :name="`领取 (${loginProgress.days}/7天)`"
-                  />
-                  <BaseButton 
-                    v-else-if="sticker.stickerCode === 'purple'" 
-                    :is-gray="true" 
-                    class="btn_n" 
-                    font-size="13px" 
-                    :name="`进度：${loginProgress.days}/7天`" 
-                    style="color: #b9b9b9;"
-                  />
-                  
-                  <!-- 连续充值贴纸领取按钮 -->
-                  <BaseButton 
-                    v-if="sticker.stickerCode === 'orange' && rechargeProgress.canClaim" 
-                    @click.stop="handleClaimRecharge" 
-                    class="btn_n ungetted" 
-                    font-size="13px" 
-                    :name="`领取 (${rechargeProgress.days}/7天)`"
-                  />
-                  <BaseButton 
-                    v-else-if="sticker.stickerCode === 'orange'" 
-                    :is-gray="true" 
-                    class="btn_n" 
-                    font-size="13px" 
-                    :name="`进度：${rechargeProgress.days}/7天`" 
-                    style="color: #b9b9b9;"
-                  />
-                  
-                  <!-- 其他贴纸显示拥有数量 -->
-                  <div 
-                    v-if="sticker.stickerCode !== 'purple' && sticker.stickerCode !== 'orange'"
-                    class="sticker-quantity-info"
-                  >
-                    拥有：{{ getUserStickerQuantity(sticker.stickerCode) }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 板块2：贴纸兑换奖励（中间推荐区域） -->
+          <!-- 板块1：贴纸兑换奖励（中间推荐区域） -->
           <div class="center">
             <div class="center-content">
               <div class="center-title">
@@ -863,6 +786,83 @@ onMounted(() => {
                       name="查看详情"
                       @click.stop="handleViewRewardDetail(reward)"
                     />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 板块2：贴纸获取规则 -->
+          <div class="center">
+            <div class="center-content">
+              <div class="center-title">
+                <span>贴纸获取规则</span>
+              </div>
+              <div class="center-content-fl">
+                <div
+                  v-for="sticker in userStickerList"
+                  :key="sticker.stickerCode"
+                  class="center-content-fl-item"
+                  :class="{ 'clickable': isBoxSticker(sticker.stickerType) }"
+                  @click="handleStickerClick(sticker.stickerCode)"
+                >
+                  <div class="center-content-fl-item-name">
+                    <div>{{ sticker.stickerName }}</div>
+                    <div style="white-space: nowrap">
+                      {{ sticker.obtainMethod || stickerConfig[sticker.stickerCode]?.type || '未知' }}
+                    </div>
+                    <!-- 贴纸图片 -->
+                    <img 
+                      v-if="sticker.stickerImage" 
+                      :src="sticker.stickerImage" 
+                      :alt="sticker.stickerName"
+                      style="width: 80%; object-fit: contain;"
+                    />
+                    <div v-else style="font-size: 60px; margin: 10px 0;">
+                      {{ stickerConfig[sticker.stickerCode]?.icon || '❓' }}
+                    </div>
+                  </div>
+                  
+                  <!-- 连续登录贴纸领取按钮 -->
+                  <BaseButton 
+                    v-if="sticker.stickerCode === 'purple' && loginProgress.canClaim" 
+                    @click.stop="handleClaimLogin" 
+                    class="btn_n ungetted" 
+                    font-size="13px" 
+                    :name="`领取 (${loginProgress.days}/7天)`"
+                  />
+                  <BaseButton 
+                    v-else-if="sticker.stickerCode === 'purple'" 
+                    :is-gray="true" 
+                    class="btn_n" 
+                    font-size="13px" 
+                    :name="`进度：${loginProgress.days}/7天`" 
+                    style="color: #b9b9b9;"
+                  />
+                  
+                  <!-- 连续充值贴纸领取按钮 -->
+                  <BaseButton 
+                    v-if="sticker.stickerCode === 'orange' && rechargeProgress.canClaim" 
+                    @click.stop="handleClaimRecharge" 
+                    class="btn_n ungetted" 
+                    font-size="13px" 
+                    :name="`领取 (${rechargeProgress.days}/7天)`"
+                  />
+                  <BaseButton 
+                    v-else-if="sticker.stickerCode === 'orange'" 
+                    :is-gray="true" 
+                    class="btn_n" 
+                    font-size="13px" 
+                    :name="`进度：${rechargeProgress.days}/7天`" 
+                    style="color: #b9b9b9;"
+                  />
+                  
+                  <!-- 其他贴纸显示拥有数量 -->
+                  <div 
+                    v-if="sticker.stickerCode !== 'purple' && sticker.stickerCode !== 'orange'"
+                    class="sticker-quantity-info"
+                  >
+                    拥有：{{ getUserStickerQuantity(sticker.stickerCode) }}
                   </div>
                 </div>
               </div>

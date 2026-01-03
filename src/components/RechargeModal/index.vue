@@ -20,7 +20,7 @@ const props = defineProps({
 
 const visible = ref(false);
 const curIndex = ref(0);
-const selectPayType = ref("alipay");
+const selectPayType = ref("alipay"); // 默认支付宝
 const selectPayChannel = ref(null);
 const qrCode = ref("");
 const showQrPopup = ref(false);
@@ -54,8 +54,8 @@ const enableRechargeList = computed(() => {
 
 // 支付方式
 const payTypes = ref([
-  // { id: '20', name: '微信', icon: 'wechat-icon' },
-  { id: "30", name: "支付宝", icon: iPay },
+  { id: "alipay", name: "支付宝", icon: iPay },
+  { id: "wxpay", name: "微信", icon: iPay }, // 暂时使用支付宝图标，后续可替换为微信图标
   // { id: "card", name: "卡密支付", icon: cardPay }, // 已隐藏
 ]);
 
@@ -64,11 +64,56 @@ const { isPC } = useDeviceType();
 
 // 选择金额
 const selectAmount = (item, index) => {
+  // 如果已经显示二维码，则不允许切换金额
+  if (showQrPopup.value) {
+    return;
+  }
   curIndex.value = index;
 };
 
+// 选择支付方式
+const selectPayTypeHandler = (typeId) => {
+  // 如果已经显示二维码，则不允许切换支付方式
+  if (showQrPopup.value) {
+    return;
+  }
+  selectPayType.value = typeId;
+};
+
+// 根据支付方式过滤支付通道
+const filteredPayChannels = computed(() => {
+  if (!payConfigList.value || payConfigList.value.length === 0) {
+    return [];
+  }
+  
+  // 根据选择的支付方式过滤通道
+  return payConfigList.value.filter((channel) => {
+    // 只显示启用状态的通道
+    if (channel.status !== 0 || !channel.payTag || channel.payTag.length === 0) {
+      return false;
+    }
+    
+    // 如果通道名称包含支付方式信息，进行匹配
+    const channelName = channel.payName || "";
+    const payTypeName = selectPayType.value === "alipay" ? "支付宝" : selectPayType.value === "wxpay" ? "微信" : "";
+    
+    // 匹配规则：
+    // 1. 通道名称包含对应的支付方式名称
+    // 2. 或者通道的payType字段匹配（1=支付宝，2=微信）
+    const nameMatch = payTypeName && channelName.includes(payTypeName);
+    const typeMatch = selectPayType.value === "alipay" && channel.payType === 1 ||
+                      selectPayType.value === "wxpay" && channel.payType === 2;
+    
+    return nameMatch || typeMatch;
+  });
+});
+
 // 选择支付通道
 const selectChannel = (channel) => {
+  // 如果已经显示二维码，则不允许切换支付通道
+  if (showQrPopup.value) {
+    return;
+  }
   selectPayChannel.value = channel;
 };
 
@@ -79,6 +124,22 @@ watch(selectPayType, (newType) => {
     selectPayChannel.value = null; // 卡密支付不需要支付通道
   } else {
     showCardForm.value = false;
+    // 自动选择匹配的通道
+    const matchedChannels = filteredPayChannels.value;
+    if (matchedChannels.length === 1) {
+      // 如果只有一个匹配的通道，自动选择
+      selectPayChannel.value = matchedChannels[0];
+    } else if (matchedChannels.length > 1) {
+      // 如果有多个，优先选择名称包含支付方式的
+      const exactMatch = matchedChannels.find(ch => {
+        const payTypeName = newType === "alipay" ? "支付宝" : "微信";
+        return ch.payName && ch.payName.includes(payTypeName);
+      });
+      selectPayChannel.value = exactMatch || matchedChannels[0];
+    } else {
+      // 如果没有匹配的，清空选择
+      selectPayChannel.value = null;
+    }
   }
 });
 
@@ -144,7 +205,7 @@ const submitPay = async () => {
       // 兼容不同的响应格式
       const orderId = res.data.orderId || res.data.orderNo;
       const outTradeNo = res.data.outTradeNo || res.data.outTradeNo;
-      const payUrl = res.data.payUrl || res.data.payUrl;
+      const payUrl = res.data.payUrl || res.data.qrcode || res.data.payurl;
       
       order.value = {
         orderNo: orderId,
@@ -445,7 +506,10 @@ defineExpose({
           <div class="recharge-select tw-flex">
             <div
               class="recharge-item tw-flex tw-items-center"
-              :class="curIndex === index ? 'active' : ''"
+              :class="[
+                curIndex === index ? 'active' : '',
+                showQrPopup ? 'disabled' : ''
+              ]"
               v-for="(item, index) in enableRechargeList"
               :key="'default-' + item.id"
               @click="selectAmount(item, index)"
@@ -462,38 +526,42 @@ defineExpose({
           <div class="pay-type-select tw-flex">
             <div
               class="pay-type-item tw-flex tw-items-center"
-              :class="selectPayType === type.id ? 'active' : ''"
+              :class="[
+                selectPayType === type.id ? 'active' : '',
+                showQrPopup ? 'disabled' : ''
+              ]"
               v-for="type in payTypes"
               :key="type.name"
-              @click="selectPayType = type.id"
+              @click="selectPayTypeHandler(type.id)"
             >
               <img class="pay-icon" :src="type.icon" alt="" />
               <div class="pay-text">{{ type.name }}</div>
             </div>
           </div>
           <template
-            v-if="!showCardForm && payConfigList && payConfigList.length > 0"
+            v-if="!showCardForm && filteredPayChannels && filteredPayChannels.length > 0"
           >
             <div class="tip pay-select">选择支付通道</div>
             <div class="pay-channel-select tw-flex-col">
               <div
                 class="pay-channel-item"
-                :class="
+                :class="[
                   selectPayChannel && selectPayChannel.id === channel.id
                     ? 'active'
-                    : ''
-                "
-                v-for="channel in payConfigList"
+                    : '',
+                  showQrPopup ? 'disabled' : ''
+                ]"
+                v-for="channel in filteredPayChannels"
                 :key="channel.id"
                 @click="selectChannel(channel)"
-                v-show="
-                  channel.status === 0 &&
-                  channel.payTag &&
-                  channel.payTag.length > 0
-                "
               >
                 {{ channel.payName }}
               </div>
+            </div>
+          </template>
+          <template v-else-if="!showCardForm && payConfigList && payConfigList.length > 0">
+            <div class="tip pay-select" style="color: #f14848;">
+              暂无可用的支付通道，请选择其他支付方式
             </div>
           </template>
           <template v-if="showCardForm">
@@ -690,6 +758,11 @@ defineExpose({
               no-repeat;
             background-size: 100% 100%;
           }
+          &.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+          }
           .coin-icon {
             margin-left: 8px;
             margin-bottom: 5px;
@@ -738,6 +811,11 @@ defineExpose({
             background: url("@/assets/images/recharge/pay-active-bg.png")
               no-repeat;
             background-size: 100% 100%;
+          }
+          &.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
           }
           .pay-icon {
             margin-left: 22px;
@@ -791,6 +869,11 @@ defineExpose({
             background: url("@/assets/images/recharge/pay-channel-active-bg.png")
               no-repeat;
             background-size: 100% 100%;
+          }
+          &.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
           }
         }
       }

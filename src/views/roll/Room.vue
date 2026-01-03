@@ -32,29 +32,33 @@ const myPrize = ref(null)
 const pwd = ref()
 const loading = ref(false)
 
-const defaultForm = {
+// 使用函数返回 defaultForm，确保每次获取时都是最新的 route.params.id
+const getDefaultForm = () => ({
   page: 1,
   rollId: route.params.id,
   size: 20
-}
+})
 const baseDialogRef = ref()
 const pwdRef = ref()
 
 
 const getDetails = () => {
-  checkId()
+  if (!route.params.id) {
+    checkId()
+    return
+  }
   getRollDetailsApi(route.params.id).then(res => {
     data.value = res.data
-    if (store.isLogin) {
+    if (store.isLogin && route.params.id) {
       getInRollApi(route.params.id).then(res => {
         console.log(res)
         if (res.data) {
-          getOpenPrizeList(JSON.parse(JSON.stringify(defaultForm)))
+          getOpenPrizeList(JSON.parse(JSON.stringify(getDefaultForm())))
         }
       })
     }
 
-    getPrizeList(JSON.parse(JSON.stringify(defaultForm)))
+    getPrizeList(JSON.parse(JSON.stringify(getDefaultForm())))
     if (data.value && data.value.endTime) {
       let now = new Date().getTime()
       let end = new Date(data.value.endTime).getTime()
@@ -92,11 +96,11 @@ const navList = ref([{
 const changeActive = (val) => {
   active.value = val
   if (active.value === 0) {
-    getPrizeList(JSON.parse(JSON.stringify(defaultForm)))
+    getPrizeList(JSON.parse(JSON.stringify(getDefaultForm())))
   } else if (active.value === 1) {
-    getPlayersList(JSON.parse(JSON.stringify(defaultForm)))
+    getPlayersList(JSON.parse(JSON.stringify(getDefaultForm())))
   } else if (active.value === 2) {
-    getOpenPrizeList(JSON.parse(JSON.stringify(defaultForm)))
+    getOpenPrizeList(JSON.parse(JSON.stringify(getDefaultForm())))
   }
 
 }
@@ -157,7 +161,7 @@ const getOpenPrizeList = (data) => {
   loading.value = true
   getRollOpenPrizeApi(data).then(res => {
     if (res.data === null || res.data.length === 0) {
-      if (store.isLogin) {
+      if (store.isLogin && route.params.id) {
         getInRollApi(route.params.id).then(res => {
           if (res.data) {
             if (openPrize.value != null && openPrize.value.length > 0) {
@@ -222,9 +226,9 @@ onUnmounted(() => {
 })
 onMounted(() => {
   console.log(baseDialogRef.value)
+  // 在 onMounted 中调用，确保路由参数已经加载完成
+  getDetails()
 })
-
-getDetails()
 
 </script>
 

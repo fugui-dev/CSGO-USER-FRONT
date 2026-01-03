@@ -45,6 +45,9 @@ export const joinRollApi=(data)=>{
 }
 
 export const getInRollApi=(rollId)=>{
+  if (!rollId) {
+    return Promise.reject(new Error('rollId is required'))
+  }
   return request({
     url: "/api/roll/inRoll?rollId="+rollId,
   })

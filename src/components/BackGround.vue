@@ -7,6 +7,7 @@ import userBg from '@/assets/images/roll/bg.png';
 import userStorageBg from '@/assets/images/user/storage_bg.png';
 import smeltBg from '@/assets/images/smelt/bg.png';
 import luckyBg from '@/assets/images/upgrade/lucky_bg.webp';
+import homeBg from '@/assets/images/home/bg.png';
 
 const props = defineProps({
   path: {
@@ -38,6 +39,9 @@ const BackgroundImg = computed(() => {
   if (props.path.startsWith("/user/inventory") || props.path.startsWith("/user/record") || props.path.startsWith("/user/log") || props.path.startsWith("/user/mail") || props.path.startsWith("/user/benefits")) {
     return userStorageBg;
   }
+  if (props.path === "/user-agreement" || props.path === "/privacy-agreement" || props.path === "/faq" || props.path === "/about-us" || props.path === "/probability-fairness" || props.path === "/anti-money-laundering" || props.path === "/decomposition-notice") {
+    return luckyBg;
+  }
 
   return "";
 });
@@ -53,7 +57,8 @@ const BackgroundImg = computed(() => {
   <img
     :src="BackgroundImg"
     class="tw-absolute md:tw-block tw-hidden tw-w-[100vw] tw-z-[-1]"
-    v-if="path.startsWith('/upgrade/open') || path === '/upgrade' || path.startsWith('/user') || path.startsWith('/smelt')"
+    :class="{'tw-h-auto tw-min-h-[100vh]': path === '/user-agreement'}"
+    v-if="path.startsWith('/upgrade/open') || path === '/upgrade' || path.startsWith('/user') || path.startsWith('/smelt') || path === '/user-agreement' || path === '/privacy-agreement' || path === '/faq' || path === '/about-us' || path === '/probability-fairness' || path === '/anti-money-laundering' || path === '/decomposition-notice'"
     loading="eager"
     decoding="async"
   />

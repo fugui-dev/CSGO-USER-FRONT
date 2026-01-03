@@ -63,12 +63,12 @@ const enterList2 = [
   {
     img: item2,
     text: "武道会",
-    path: "",
+    path: "/dailyFlowRanking",
   },
   {
     img: item3,
     text: "活动",
-    path: "/center",
+    path: "/center?tab=sticker",
   },
   {
     img: item4,

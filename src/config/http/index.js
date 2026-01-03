@@ -15,7 +15,7 @@ export let baseUrl = (import.meta.env.PROD ? api.prod : api.prod)
 let instance = axios.create({
     // baseURL: import.meta.env.VITE_APP_URL, //接口统一域名
     baseURL: baseUrl,
-    timeout: 6000, //设置超时
+    timeout: 30000, //设置超时30秒（之前6秒太短，导致接口响应慢时频繁超时）
     headers: {
         'Content-Type': 'application/json;charset=UTF-8;',
         'Referrer-Policy': 'no-referrer'

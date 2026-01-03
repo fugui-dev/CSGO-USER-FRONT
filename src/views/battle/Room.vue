@@ -9,6 +9,7 @@ import { useStore } from "@/store";
 import { ElMessage } from 'element-plus';
 import RoomCard from './components/RoomCard.vue'
 import CountdownModal from './components/CountdownModal.vue'
+import FightResultModal from './components/FightResultModal.vue'
 import useWebSocketHeartbeat from '../../composables/useWebSocketHeartbeat'
 import bgm from "@/assets/music/main_battle.mp3";
 import { useUserInfo } from "@/composables/useUesrInfo.js";
@@ -33,6 +34,7 @@ const router = useRouter()
 const store = useStore()
 const { fetchUserInfo } = useUserInfo()
 const currRound = computed(() => store.currRound)
+const currUserId = computed(() => store.userInfo.userId)
 const roomData = ref({})
 const fightBoxVOList = ref([])
 const fightResult = ref([])
@@ -42,6 +44,10 @@ const autoStartTimer = ref(null) // 自动开始游戏的定时器
 const CountdownModalRef = ref(null)
 const winnerIds = ref([])
 const musica = new Audio(bgm)
+
+// 对战结果弹窗
+const fightResultModalVisible = ref(false)
+const currentPlayerId = ref(null) // 当前登录用户对应的playerId
 
 const playerIds = computed(() => roomData.value.seatList.map(item => item.playerId))
 const statusColor = computed(() => {
@@ -76,6 +82,17 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
     console.log(data)
     if (data.data !== 'pong') {
       if (data.code === 200 && data.data) {
+        // 【重要】验证消息中的fightId是否与当前路由的fightId一致
+        // 防止收到其他房间的消息
+        const currentFightId = Number(route.params.id)
+        if (data.data.fight && data.data.fight.id) {
+          const messageFightId = Number(data.data.fight.id)
+          if (messageFightId !== currentFightId) {
+            console.warn(`收到其他房间的消息，当前房间ID：${currentFightId}，消息房间ID：${messageFightId}，忽略此消息`)
+            return
+          }
+        }
+        
         // 处理对战结束事件
         if (data.type === 'FIGHT_END') {
           ElMessage.info('房主已结束对战')
@@ -93,6 +110,10 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
         roomData.value = data.data.fight
         fightBoxVOList.value = data.data.fightBoxVOList
         winnerIds.value = data.data.winnerIds
+        
+        // 如果状态变为已结束(2)，不在这里显示弹窗
+        // 弹窗只在调用 endFightApi 成功后显示，确保每个对战只弹出一次
+        
         // 检查是否所有座位都已准备就绪
         const newAllReady = data.data.fight.seatList && data.data.fight.seatList.every(seat => seat.status === 2)
         
@@ -112,7 +133,24 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
         isAllReady.value = newAllReady
         
         const currentRound = data.data.currentRound
-        fightResult.value = data.data.fightResult
+        
+        // 【重要】更新对战结果时，确保数据属于当前房间
+        // 后端应该返回完整的对战结果，但为了安全，我们仍然验证fightId
+        if (data.data.fightResult && Array.isArray(data.data.fightResult)) {
+          // 验证所有结果记录的fightId是否与当前房间一致
+          const currentFightId = Number(route.params.id)
+          const validResults = data.data.fightResult.filter(record => {
+            const recordFightId = record.fightId ? Number(record.fightId) : null
+            if (recordFightId !== null && recordFightId !== currentFightId) {
+              console.warn(`过滤掉不属于当前房间的对战结果记录，记录fightId：${recordFightId}，当前房间ID：${currentFightId}`)
+              return false
+            }
+            return true
+          })
+          fightResult.value = validResults
+        } else {
+          fightResult.value = []
+        }
         
         // 检查房间状态是否从等待中(0)变为进行中(1)，说明游戏刚开始
         const isGameJustStarted = previousStatus === 0 && currentStatus === 1
@@ -148,7 +186,8 @@ const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
         // 如果currentRound < 0，表示对战已结束
         if (currentRound < 0) {
           store.setCurrRound(data.data.fight.roundNumber)
-          // 对战已结束
+          // 对战已结束，不在这里显示弹窗
+          // 弹窗只在调用 endFightApi 成功后显示，确保每个对战只弹出一次
           disconnect()
           return
         }
@@ -271,9 +310,24 @@ const reCalcBoxList = () => {
 const createWs = () => {
   const userId = store.userInfo.userId;
   const fightId = route.params.id;
-  if (!userId || !fightId) return
+  if (!userId || !fightId) {
+    console.warn('无法创建WebSocket连接：userId或fightId为空', { userId, fightId })
+    return
+  }
+  
+  // 【重要】确保断开之前的连接（如果存在）
+  disconnect()
+  
+  // 验证fightId是否为有效数字
+  const fightIdNum = Number(fightId)
+  if (isNaN(fightIdNum) || fightIdNum <= 0) {
+    console.error('无效的fightId:', fightId)
+    return
+  }
+  
+  console.log(`创建WebSocket连接：用户${userId}，房间${fightIdNum}`)
   // 连接ws
-  connect(getWebSocketUrl(`/ws/fight/room/${userId}/${fightId}`))
+  connect(getWebSocketUrl(`/ws/fight/room/${userId}/${fightIdNum}`))
 }
 
 // 获取历史对战信息
@@ -304,6 +358,16 @@ const handleFightEnd = () => {
   disconnect()
   // 返回对战列表页面
   router.push('/battle')
+}
+
+// 处理对战结果弹窗关闭
+const handleFightResultModalClose = () => {
+  fightResultModalVisible.value = false
+}
+
+// 处理对战结果分解成功
+const handleFightResultDecomposeSuccess = () => {
+  fetchUserInfo()
 }
 
 // 定义一个响应式引用，用于存储所有组件实例的引用
@@ -345,6 +409,15 @@ const handleStartGame = () => {
 }
 
 onBeforeMount(() => {
+  // 【重要】进入房间时，先清空之前的数据，避免显示上一个房间的数据
+  roomData.value = {}
+  fightBoxVOList.value = []
+  fightResult.value = []
+  winnerIds.value = []
+  isAllReady.value = false
+  previousAllReady.value = false
+  currentPlayerId.value = null
+  
   // 进入房间时，先重置回合数为1，避免显示上一个房间的回合数
   store.setCurrRound(1)
   store.clearCurrRoundFlag()
@@ -373,6 +446,16 @@ onUnmounted(() => {
     clearTimeout(autoStartTimer.value)
     autoStartTimer.value = null
   }
+  // 【重要】离开房间时，断开WebSocket连接，避免收到旧房间的消息
+  disconnect()
+  // 离开房间时，清空所有数据，避免影响下一个房间
+  roomData.value = {}
+  fightBoxVOList.value = []
+  fightResult.value = []
+  winnerIds.value = []
+  isAllReady.value = false
+  previousAllReady.value = false
+  currentPlayerId.value = null
   // 离开房间时，重置回合数和回合标志，避免影响下一个房间
   store.setCurrRound(1)
   store.clearCurrRoundFlag()
@@ -448,6 +531,42 @@ const ownerCall = () => {
         }
         // 更新用户信息（因为对战结束可能会有奖励或结算）
         fetchUserInfo()
+        // 找到当前登录用户对应的playerId并显示结果弹窗
+        // 这里是在 endFightApi 调用成功后，确保每个对战只弹出一次
+        const currentSeat = roomData.value.seatList?.find(seat => seat.playerId === currUserId.value)
+        console.log('endFightApi 成功，检查弹窗显示条件:', {
+          currentSeat,
+          currUserId: currUserId.value,
+          fightResult: fightResult.value,
+          fightResultLength: fightResult.value?.length,
+          roomData: roomData.value
+        })
+        if (currentSeat && currentSeat.playerId) {
+          // 检查是否有该用户的物品（只要有物品就显示，让用户决定是否分解）
+          const hasItems = fightResult.value && fightResult.value.some(item => {
+            const match = item.holderUserId === currentSeat.playerId && item.ornamentId
+            if (match) {
+              console.log('找到用户物品:', item)
+            }
+            return match
+          })
+          console.log('是否有用户物品:', hasItems)
+          if (hasItems) {
+            currentPlayerId.value = currentSeat.playerId
+            fightResultModalVisible.value = true
+            console.log('设置弹窗显示:', {
+              currentPlayerId: currentPlayerId.value,
+              fightResultModalVisible: fightResultModalVisible.value
+            })
+          } else {
+            console.log('没有用户物品，不显示弹窗')
+          }
+        } else {
+          console.log('未找到当前用户座位，不显示弹窗', {
+            seatList: roomData.value.seatList,
+            currUserId: currUserId.value
+          })
+        }
         disconnect()
       }
     })
@@ -566,6 +685,16 @@ const ownerCall = () => {
       </div>
     </template>
   </Layout>
+  
+  <!-- 对战结果弹窗 -->
+  <FightResultModal
+    v-model:visible="fightResultModalVisible"
+    :fightResult="fightResult"
+    :fightBoxVOList="fightBoxVOList"
+    :currPlayerId="currentPlayerId"
+    :fightId="roomData?.id"
+    @decomposeSuccess="handleFightResultDecomposeSuccess"
+    @close="handleFightResultModalClose" />
   
   <!-- 饰品列表弹窗 -->
   <van-popup class="ornament-dialog no-scrollbar" v-model:show="ornamentListVisible" :close-on-click-overlay="false" teleport="body">

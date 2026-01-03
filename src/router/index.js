@@ -197,6 +197,14 @@ const routes = [
         },
       },
       {
+        path: "/dailyFlowRanking",
+        component: () => import("../views/dailyFlowRanking/Index.vue"),
+        name: "DailyFlowRanking",
+        meta: {
+          title: "日流水排行榜",
+        },
+      },
+      {
         path: "/center",
         component: () => import("../views/center/Index.vue"),
         name: "Center",
@@ -232,6 +240,62 @@ const routes = [
         path: "/sticker",
         redirect: (to) => {
           return { path: "/center", query: { tab: "sticker" } };
+        },
+      },
+      {
+        path: "/user-agreement",
+        component: () => import("../views/UserAgreement.vue"),
+        name: "UserAgreement",
+        meta: {
+          title: "用户协议",
+        },
+      },
+      {
+        path: "/privacy-agreement",
+        component: () => import("../views/PrivacyAgreement.vue"),
+        name: "PrivacyAgreement",
+        meta: {
+          title: "隐私协议",
+        },
+      },
+      {
+        path: "/faq",
+        component: () => import("../views/FAQ.vue"),
+        name: "FAQ",
+        meta: {
+          title: "常见问题",
+        },
+      },
+      {
+        path: "/about-us",
+        component: () => import("../views/AboutUs.vue"),
+        name: "AboutUs",
+        meta: {
+          title: "关于我们",
+        },
+      },
+      {
+        path: "/probability-fairness",
+        component: () => import("../views/ProbabilityFairness.vue"),
+        name: "ProbabilityFairness",
+        meta: {
+          title: "概率公平性",
+        },
+      },
+      {
+        path: "/anti-money-laundering",
+        component: () => import("../views/AntiMoneyLaundering.vue"),
+        name: "AntiMoneyLaundering",
+        meta: {
+          title: "反洗钱协议",
+        },
+      },
+      {
+        path: "/decomposition-notice",
+        component: () => import("../views/DecompositionNotice.vue"),
+        name: "DecompositionNotice",
+        meta: {
+          title: "申请分解通知",
         },
       },
     ],

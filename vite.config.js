@@ -44,16 +44,16 @@ export default defineConfig({
     },
     proxy: {
 		  '/prod-api': {
-             //target: 'http://8.136.42.105:80', //目标源，目标服务器，真实请求地址
-        target: 'http://121.229.204.223:8090/',
+            target: 'http://8.136.42.105:80', //目标源，目标服务器，真实请求地址
+        //target: 'http://121.229.204.223:8090/',
         changeOrigin: true //支持跨域
         // ws: false,        //如果要代理 websockets，配置这个参数
         // secure: false,// 如果是https接口，需要配置这个参数
       },
       // WebSocket 代理配置
       '/ws': {
-         //target: 'http://8.136.42.105:80',
-        target: 'http://121.229.204.223:8090/',
+         target: 'http://8.136.42.105:80',
+        //target: 'http://121.229.204.223:8090/',
         changeOrigin: true,
         ws: true, // 启用 WebSocket 代理
         secure: false

@@ -57,6 +57,10 @@ const itemsPercentage = computed(() => {
   // 计算百分比，限制最大值为70%，并取整
   return Math.min(Math.round((selectedBagTotalPrice.value / boxData.value.usePrice) * 100), 70)
 })
+// 是否可以升级（必须选择了背包饰品）
+const canUpgrade = computed(() => {
+  return selectedBagIds.value.length > 0 && isLogin.value
+})
 
 const handleOpenBagConfirm = ({ selectedIds, totalPrice, selectedItems, selectedItem }) => {
   selectedBagIds.value = selectedIds
@@ -157,14 +161,11 @@ const startSpinAnimation = () => {
 
 // 修改handleOpen函数
 const handleOpen = () => {
-  if (!isLogin.value) {
-    ElMessage.warning('请先登录')
-    return
-  }
+  if (!canUpgrade.value) return
   const end = Number((boxData.value.usePrice * (sliderValue.value - itemsPercentage.value) / 100).toFixed(2))
   postOpenUpgrade({
     price: end,
-    packageOrnamentId: selectedBagIds.value[0] || null,
+    packageOrnamentId: selectedBagIds.value[0],
     probability: sliderValue.value,
     upgradeOrnamentId: boxData.value.id
   }).then(res => {
@@ -351,8 +352,11 @@ onUnmounted(() => {
     </div>
     <div class="tw-px-5 tw-py-10 md:tw-pt-0 tw-flex tw-justify-center tw-flex-col tw-items-center tw-gap-5 tw-relative tw-z-10">
       <UpgradeSider v-model="sliderValue" :min="0" :max="100" :fixedValue="itemsPercentage" />
-      <div @click="handleOpen"
-        class="boxshadowBtn tw-mt-[10px] md:tw-w-[14.75rem] tw-w-[13.75rem]  tw-duration-300 tw-transform tw-py-1.5 md:tw-py-3  tw-flex tw-text-xl tw-items-center tw-cursor-pointer tw-bg-[#2E110B] tw-justify-center">
+      <div @click="canUpgrade && handleOpen()"
+        :class="[
+          'boxshadowBtn tw-mt-[10px] md:tw-w-[14.75rem] tw-w-[13.75rem] tw-duration-300 tw-transform tw-py-1.5 md:tw-py-3 tw-flex tw-text-xl tw-items-center tw-justify-center',
+          canUpgrade ? 'tw-cursor-pointer tw-bg-[#2E110B]' : 'tw-cursor-not-allowed tw-opacity-50 tw-grayscale'
+        ]">
         <span class="tw-flex tw-items-center tw-gap-2 md:tw-text-base tw-text-2xl"><img :src="Money"
             class="tw-h-[2rem] md:tw-h-[2.3rem] tw-mr-[4px]"/> {{
               endPrice }}
