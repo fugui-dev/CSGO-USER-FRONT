@@ -1,7 +1,7 @@
 <script setup>
 
 import {computed, ref, watch} from "vue";
-import {deliverPackSackApi, getExtractPackSackApi, getPackSackApi, getPackSackGlobalDataApi, transferOrnamentApi, getTransferRecordsApi, getUserInfoByIdApi} from "@/api";
+import {deliverPackSackApi, getExtractPackSackApi, getPackSackApi, getPackSackGlobalDataApi, transferOrnamentApi, getTransferRecordsApi, getUserInfoByIdApi, verifyPasswordApi} from "@/api";
 import {useThrottleFn} from "@vueuse/core";
 import {ElMessage, ElIcon} from "element-plus";
 import {Loading} from "@element-plus/icons-vue";
@@ -223,10 +223,13 @@ const totalDecomposePrice = computed(() => {
 
 // 转增相关
 const transferDialogRef = ref(null)
+const passwordDialogRef = ref(null)
 const transferUserId = ref('')
 const transferUserInfo = ref(null)
 const transferConfirmChecked = ref(false)
 const queryingUser = ref(false)
+const password = ref('')
+const verifyingPassword = ref(false)
 
 const store = useStore();
 const isPC = computed(()=>{
@@ -315,6 +318,47 @@ const confirmTransfer = () => {
     return
   }
   
+  // 先弹出密码验证弹窗
+  password.value = ''
+  passwordDialogRef.value?.open()
+}
+
+// 验证密码
+const verifyPassword = () => {
+  if (!password.value || password.value.trim() === '') {
+    ElMessage({
+      message: '请输入密码',
+      type: 'warning'
+    })
+    return
+  }
+  
+  verifyingPassword.value = true
+  verifyPasswordApi({
+    password: password.value
+  }).then(res => {
+    if (res.code === 200) {
+      // 密码验证成功，关闭密码弹窗，提交转增请求
+      passwordDialogRef.value?.close()
+      submitTransfer()
+    } else {
+      ElMessage({
+        message: res.msg || '密码验证失败',
+        type: 'error'
+      })
+    }
+  }).catch(err => {
+    ElMessage({
+      message: err.message || '密码验证失败，请重试',
+      type: 'error'
+    })
+  }).finally(() => {
+    verifyingPassword.value = false
+  })
+}
+
+// 提交转增请求
+const submitTransfer = () => {
   const ids = list.value.filter(item => item.choosed).map(item => item.id)
   transferOrnamentApi({
     packSackIds: ids,
@@ -329,6 +373,7 @@ const confirmTransfer = () => {
       transferUserId.value = ''
       transferUserInfo.value = null
       transferConfirmChecked.value = false
+      password.value = ''
       form.value.page = 1
       list.value = []
       getTotal()
@@ -569,6 +614,31 @@ const selectedOrnaments = computed(() => {
         </div>
       </template>
     </BaseDialog>
+
+    <!-- 密码验证对话框 -->
+    <BaseDialog ref="passwordDialogRef" title="密码验证" :show-cancel="true" :show-confirm="true" @confirm="verifyPassword">
+      <template #default>
+        <div class="password-dialog-content">
+          <div class="password-tip" style="margin-bottom: 20px; color: #666; font-size: 14px;">
+            为了您的账户安全，请先验证密码
+          </div>
+          <div class="password-input-section" style="display: flex; flex-direction: row; align-items: center; gap: 10px; justify-content: center;">
+            <el-input
+              v-model="password"
+              type="password"
+              placeholder="请输入登录密码"
+              clearable
+              class="password-input"
+              style="width: 250px; height: 40px;"
+              :disabled="verifyingPassword"
+              @keyup.enter="verifyPassword"
+              show-password
+            >
+            </el-input>
+          </div>
+        </div>
+      </template>
+    </BaseDialog>
   </div>
 
 </template>
@@ -795,6 +865,30 @@ $primary-color-user: rgb(138, 15, 198);
       --el-input-focus-border: rgba(255, 255, 255, 0.2);
       height: 45px;
       border-radius: 5px;
+    }
+  }
+
+  // 密码验证对话框样式
+  .password-dialog-content {
+    padding: 20px;
+    .password-input-section {
+      .password-input {
+        :deep(.el-input__wrapper) {
+          background: #74705E;
+          border: none;
+          border-radius: 5px;
+          height: 40px !important;
+          min-height: 40px !important;
+        }
+        :deep(.el-input__inner) {
+          color: #ffffff;
+          height: 40px !important;
+          line-height: 40px !important;
+        }
+        :deep(.el-input__inner::placeholder) {
+          color: rgba(255, 255, 255, 0.6);
+        }
+      }
     }
   }
 

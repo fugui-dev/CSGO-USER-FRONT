@@ -94,6 +94,14 @@ export const getExtractPackSackApi = (data) => {
     })
 }
 
+export const verifyPasswordApi = (data) => {
+    return request({
+        url: '/api/user/verifyPassword',
+        method: 'post',
+        data: data
+    })
+}
+
 export const transferOrnamentApi = (data) => {
     return request({
         url: '/api/userPackSack/transferOrnament',

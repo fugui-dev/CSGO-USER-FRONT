@@ -36,7 +36,7 @@
             alt=""
           />
         </div>
-        <div class="name">{{ item.userName }}</div>
+        <div class="name">{{ item.nickName || item.userName }}</div>
         <div class="amount tw-flex tw-items-center tw-justify-center">
           <img
             src="@/assets/images/battle/battle-coin.png"

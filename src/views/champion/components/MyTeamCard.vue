@@ -52,7 +52,7 @@ const handleInvite = () => {
                 <img :src="item.userAvatar" alt="">
                 <div class="captain" v-if="item.isCaptain">队</div>
               </div>
-              <div class="user-name">{{ item.userName }}</div>
+              <div class="user-name">{{ item.nickName || item.userName }}</div>
             </div>
           </div>
         </div>

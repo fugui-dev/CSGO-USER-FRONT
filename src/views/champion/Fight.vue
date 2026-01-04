@@ -803,7 +803,7 @@ import bgImg from "@/assets/images/champion/bg.webp";
             :key="item.userId"
             :data="{
               avatar: item.userAvatar,
-              name: item.userName,
+              name: item.nickName || item.userName,
               rate: (item.animationEnd && item.data) || 0,
               score: (item.animationEnd && item.score) || 0,
               isCurrent:
@@ -938,7 +938,7 @@ import bgImg from "@/assets/images/champion/bg.webp";
             :key="item.userId"
             :data="{
               avatar: item.userAvatar,
-              name: item.userName,
+              name: item.nickName || item.userName,
               rate: (item.animationEnd && item.data) || 0,
               score: (item.animationEnd && item.score) || 0,
               isCurrent:

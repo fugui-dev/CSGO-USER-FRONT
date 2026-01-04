@@ -68,7 +68,7 @@ import bgImg from "@/assets/images/champion/cheer-bg.webp";
                   alt=""
                 />
               </div>
-              <span class="mini">{{ item.userName }}</span>
+              <span class="mini">{{ item.nickName || item.userName }}</span>
             </div>
             <div class="stage-name tw-flex tw-items-center tw-justify-center">
               {{ item.stageName || '未知阶段' }}
