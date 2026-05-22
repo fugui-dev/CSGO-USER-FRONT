@@ -1,7 +1,7 @@
 <script setup>
 import Layout from "@/components/Layout.vue";
 import {onMounted, ref} from "vue";
-import {getBattleBoxListApi, getBattleBoxDetailApi, getBattleRankingApi, getMyOwnFightListApi} from "@/api/battle";
+import {getBattleBoxListApi, getBattleBoxDetailApi, getBattleRankingApi, getMyOwnFightListApi, getMyTopTenFightsApi} from "@/api/battle";
 import {getBoxInfo} from "@/views/openBox/server/api";
 import {requireImg, deepClone, getWebSocketUrl} from "@/utils/common";
 import {useDebounceFn} from "@vueuse/core";
@@ -48,7 +48,12 @@ const navList = ref([{
 }, {
   'name': '我参与的',
   'value': 1
+}, {
+  'name': '十佳记录',
+  'value': 2
 }])
+const topTenList = ref([])
+const topTenLoading = ref(false)
 const tempList = ref([])
 
 const { ws, isConnected, connect, disconnect } = useWebSocketHeartbeat({
@@ -172,6 +177,8 @@ const changeActive = (val) => {
     list.value = []
     isComplete.value = false
     getList()
+  } else if (active.value === 2) {
+    getTopTenList()
   }
 }
 
@@ -195,6 +202,17 @@ const getList = () => {
     }
   }).finally(() => {
     loading.value = false
+  })
+}
+
+const getTopTenList = () => {
+  topTenLoading.value = true
+  getMyTopTenFightsApi().then(res => {
+    if (res.code === 200) {
+      topTenList.value = res.data || []
+    }
+  }).finally(() => {
+    topTenLoading.value = false
   })
 }
 
@@ -309,11 +327,37 @@ onMounted(() => {
                 </div> -->
               </div>
               <!-- 列表数据 -->
-              <div class="battle-list" v-loading="loading" style="flex: 1">
+              <div class="battle-list" v-loading="loading" style="flex: 1" v-show="active !== 2">
                 <div class="content">
                   <el-scrollbar max-height="800px" @scroll="onScroll" ref="scrollRef">
                     <div ref="listRef" class="battle-list-container">
                       <BattleCard :cardData="i" v-for="(i,index) in list" :key="index" @click="handleClickBattleCard(i)"/>
+                    </div>
+                  </el-scrollbar>
+                </div>
+              </div>
+              <!-- 十佳记录列表 -->
+              <div class="battle-list" v-show="active === 2" v-loading="topTenLoading" style="flex: 1">
+                <div class="content">
+                  <el-scrollbar max-height="800px">
+                    <div class="battle-list-container top-ten-list">
+                      <div v-if="topTenList.length === 0 && !topTenLoading" class="top-ten-empty">暂无十佳记录</div>
+                      <div
+                        v-for="(item, index) in topTenList"
+                        :key="index"
+                        class="top-ten-item"
+                        @click="handleClickBattleCard({ id: item.fightId, status: '2' })"
+                      >
+                        <div class="top-ten-rank">{{ index + 1 }}</div>
+                        <div class="top-ten-info">
+                          <div class="top-ten-price">获得总价值：<span>{{ item.myTotalPrice }}</span></div>
+                          <div class="top-ten-meta">
+                            <span>模式：{{ item.model === '0' ? '欧皇模式' : '非酬模式' }}</span>
+                            <span>人数：{{ item.playerNum }}</span>
+                            <span>时间：{{ item.createTime }}</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </el-scrollbar>
                 </div>
@@ -822,5 +866,77 @@ onMounted(() => {
 
 .group:hover .tw-animate-spin-once {
     animation-play-state: running;
+}
+
+// 十佳记录样式
+.top-ten-list {
+  padding: 10px 0;
+}
+
+.top-ten-empty {
+  text-align: center;
+  padding: 60px 0;
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+}
+
+.top-ten-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  margin: 6px 0;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(255, 60, 42, 0.15);
+    border-color: rgba(255, 60, 42, 0.4);
+  }
+
+  .top-ten-rank {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FF3C2A, #FF952A);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    color: #fff;
+    flex-shrink: 0;
+    margin-right: 16px;
+  }
+
+  .top-ten-info {
+    flex: 1;
+
+    .top-ten-price {
+      color: rgba(255,255,255,0.85);
+      font-size: 14px;
+      margin-bottom: 6px;
+
+      span {
+        color: #FFC43C;
+        font-weight: bold;
+        font-size: 16px;
+      }
+    }
+
+    .top-ten-meta {
+      display: flex;
+      gap: 20px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+
+      @include mobile {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+    }
+  }
 }
 </style>

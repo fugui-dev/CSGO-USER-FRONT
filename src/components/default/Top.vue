@@ -16,6 +16,13 @@ const menus = ref([
     icoActive: requireImg("/nav/a1a.png", false),
   },
   {
+    name: "彩虹",
+    routeName: "Rainbow",
+    path: "/rainbow",
+    ico: requireImg("/nav/a2.png", false),
+    icoActive: requireImg("/nav/a2a.png", false),
+  },
+  {
     name: "Roll福利",
     routeName: "Roll",
     path: "/roll",

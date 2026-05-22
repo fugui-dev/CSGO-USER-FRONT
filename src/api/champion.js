@@ -142,3 +142,20 @@ export const getHistoryMatchListApi = (data) => {
         data: data
     })
 }
+
+// 获取用户可领取的奖励列表
+export const getUserRewardListApi = () => {
+    return request({
+        url: "/api/match/reward/list",
+        method: "get"
+    })
+}
+
+// 领取奖励（开箱）
+export const claimRewardApi = (data) => {
+    return request({
+        url: "/api/match/reward/claim",
+        method: "post",
+        data: data
+    })
+}

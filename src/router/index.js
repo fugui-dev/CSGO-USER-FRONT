@@ -76,6 +76,14 @@ const routes = [
         },
       },
       {
+        path: "/rainbow",
+        component: () => import("../views/rainbow/RainbowGame.vue"),
+        name: "Rainbow",
+        meta: {
+          title: "彩虹",
+        },
+      },
+      {
         path: "/roll",
         component: () => import("../views/roll/Index.vue"),
         name: "Roll",
@@ -170,6 +178,14 @@ const routes = [
         name: "Cheer",
         meta: {
           title: "助威记录",
+        },
+      },
+      {
+        path: "/match-reward",
+        component: () => import("../views/champion/RewardClaim.vue"),
+        name: "RewardClaim",
+        meta: {
+          title: "奖励领取",
         },
       },
       {

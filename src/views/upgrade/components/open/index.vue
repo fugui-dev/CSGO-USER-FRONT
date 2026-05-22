@@ -6,7 +6,7 @@ import { useUpgrade } from '../../sever/useUpgrade.js'
 import OpenBagModal from '@/views/openBox/components/OpenBagModal.vue'
 import { useUserInfo } from '@/composables/useUesrInfo'
 import { ElMessage } from 'element-plus'
-import { postOpenUpgrade } from '../../sever/api.js'
+import { postOpenUpgrade, postOpenUpgradeSimple } from '../../sever/api.js'
 import UpGradeModal from '../UpGradeModal.vue'
 import question from '@/assets/upgrade/open/question.png'
 import silderBg from '@/assets/upgrade/open/silderBg.png'
@@ -49,6 +49,10 @@ const selectedBagIds = ref([])
 const selectedBagTotalPrice = ref(0)
 const selectedItemsData = ref({})
 const endPrice = computed(() => {
+  if (selectedBagIds.value.length === 0) {
+    // 直接升级模式：无背包饰品，endPrice = usePrice * sliderValue / 100
+    return Number((boxData.value.usePrice * sliderValue.value / 100).toFixed(2))
+  }
   return Number((boxData.value.usePrice * (sliderValue.value - itemsPercentage.value) / 100).toFixed(2))
 })
 // 计算物品总价百分比
@@ -57,9 +61,9 @@ const itemsPercentage = computed(() => {
   // 计算百分比，限制最大值为70%，并取整
   return Math.min(Math.round((selectedBagTotalPrice.value / boxData.value.usePrice) * 100), 70)
 })
-// 是否可以升级（必须选择了背包饰品）
+// 是否可以升级（登录即可，不需要选择背包饰品）
 const canUpgrade = computed(() => {
-  return selectedBagIds.value.length > 0 && isLogin.value
+  return isLogin.value
 })
 
 const handleOpenBagConfirm = ({ selectedIds, totalPrice, selectedItems, selectedItem }) => {
@@ -162,21 +166,40 @@ const startSpinAnimation = () => {
 // 修改handleOpen函数
 const handleOpen = () => {
   if (!canUpgrade.value) return
-  const end = Number((boxData.value.usePrice * (sliderValue.value - itemsPercentage.value) / 100).toFixed(2))
-  postOpenUpgrade({
-    price: end,
-    packageOrnamentId: selectedBagIds.value[0],
-    probability: sliderValue.value,
-    upgradeOrnamentId: boxData.value.id
-  }).then(res => {
-    if (res.code === 200) {
-      Object.assign(openEnd, res.data)
-      startSpinAnimation() // 开始动画
-      setTimeout(() => {
-        OpenModalRef.value.open() // 延迟显示结果弹窗
-      }, ANIMATION_CONFIG.modalDelay)
-    }
-  })
+  const hasPackSack = selectedBagIds.value.length > 0
+  const end = endPrice.value
+  if (hasPackSack) {
+    // 有背包饰品：调用 upgrade2
+    postOpenUpgrade({
+      price: end,
+      packageOrnamentId: selectedBagIds.value[0],
+      probability: sliderValue.value,
+      upgradeOrnamentId: boxData.value.id
+    }).then(res => {
+      if (res.code === 200) {
+        Object.assign(openEnd, res.data)
+        startSpinAnimation()
+        setTimeout(() => {
+          OpenModalRef.value.open()
+        }, ANIMATION_CONFIG.modalDelay)
+      }
+    })
+  } else {
+    // 直接升级模式：调用 upgrade（不需要背包饰品）
+    postOpenUpgradeSimple({
+      price: end,
+      probability: sliderValue.value,
+      upgradeOrnamentId: boxData.value.id
+    }).then(res => {
+      if (res.code === 200) {
+        Object.assign(openEnd, res.data)
+        startSpinAnimation()
+        setTimeout(() => {
+          OpenModalRef.value.open()
+        }, ANIMATION_CONFIG.modalDelay)
+      }
+    })
+  }
 }
 
 // 修改弹窗关闭监听函数

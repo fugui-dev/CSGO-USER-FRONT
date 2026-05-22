@@ -32,7 +32,7 @@ const totalPrice = ref(0)
 const form = ref({
   model: '',
   playerNumber: 0,
-  boxIdAndNumber: {}
+  boxIds: []
 })
 // 饰品列表弹窗相关
 const ornamentListVisible = ref(false)
@@ -88,7 +88,7 @@ const initData = () => {
   form.value = {
     model: '',
     playerNumber: 0,
-    boxIdAndNumber: {}
+    boxIds: []
   }
 }
 
@@ -136,15 +136,7 @@ const handleClickChoosedBoxItem = (item, index) => {
 const handleClickCreateRoom = () => {
   form.value.model = activeModel.value.toString()
   form.value.playerNumber = activePersonNum.value
-  const obj = {}
-  choosedBoxData.value.forEach(item => {
-    if (obj[item.boxId]) {
-      obj[item.boxId]++
-    } else {
-      obj[item.boxId] = 1
-    }
-  })
-  form.value.boxIdAndNumber = {...obj}
+  form.value.boxIds = choosedBoxData.value.map(item => item.boxId)
   createRoomApi(form.value).then(res => {
     if (res.code === 200) {
       ElMessage.success('房间创建成功')
@@ -265,7 +257,7 @@ defineExpose({
                         <div class="room-line">
                           <h3>房间人数</h3>
                           <div class="room-line-options">
-                            <div v-for="i in 3" :key="i" :class="{'active-btn': activePersonNum === i + 1}" @click="handleChangeActivePersonNum(i + 1)">
+                            <div v-for="i in 2" :key="i" :class="{'active-btn': activePersonNum === i + 1}" @click="handleChangeActivePersonNum(i + 1)">
                               {{ i + 1 }}
                             </div>
                           </div>

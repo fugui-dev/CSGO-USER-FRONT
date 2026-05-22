@@ -227,6 +227,8 @@ const handleOpen = () => {
   openBoxBind({ boxId, num: active.value })
     .then((res) => {
       if (res.code === 200) {
+        // 开箱成功后立即刷新余额，防止前端显示旧余额
+        fetchUserInfo();
         // 替换为正确的方式处理返回数据
         if (Array.isArray(res.data)) {
           // 如果是数组，直接清空并添加新元素
@@ -236,10 +238,15 @@ const handleOpen = () => {
           // 如果没有数据，设置为空数组
           openEnd.value = [];
         }
+      } else {
+        // 开箱失败也刷新余额（确保显示真实值）
+        fetchUserInfo();
+        ElMessage.error(res.msg || '开箱失败，请重试');
       }
     })
     .catch((err) => {
       ElMessage.error("请求繁忙，请重试");
+      fetchUserInfo(); // 异常时也刷新余额
     })
     .finally(() => {
       isLoading.value = false; // 结束loading
@@ -273,6 +280,8 @@ const injectOpen = () => {
   })
     .then((res) => {
       if (res.code === 200) {
+        // 注入开箱成功后立即刷新余额
+        fetchUserInfo();
         // 替换为正确的方式处理返回数据
         if (Array.isArray(res.data)) {
           // 如果是数组，直接清空并添加新元素
@@ -282,11 +291,16 @@ const injectOpen = () => {
           // 如果没有数据，设置为空数组
           openEnd.value = [];
         }
+      } else {
+        // 开箱失败也刷新余额
+        fetchUserInfo();
+        ElMessage.error(res.msg || '注入开箱失败，请重试');
       }
       console.log(res.data);
     })
     .catch((err) => {
       ElMessage.error("请求繁忙，请重试");
+      fetchUserInfo(); // 异常时也刷新余额
       // 重置摇动状态
     });
 };

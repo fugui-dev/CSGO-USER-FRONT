@@ -147,7 +147,10 @@ onMounted(() => {
           <el-scrollbar max-height="800px" @scroll="onScroll" ref="scrollRef">
             <div ref="listRef" class="list">
               <div class="list-item" v-for="(i,index) in list" :key="index">
-                <div class="title">{{ i.rollName }}</div>
+                <div class="title">
+                  {{ i.rollName }}
+                  <span v-if="i.isJoined" class="joined-tag">已参与</span>
+                </div>
                 <div class="enter">
                   <div class="enter-time">
                     <el-countdown
@@ -345,8 +348,20 @@ onMounted(() => {
         .title {
           font-size: 15px;
           color: #fff;
+          display: flex;
+          align-items: center;
+          gap: 8px;
           @include mobile {
             font-size: 14px;
+          }
+
+          .joined-tag {
+            font-size: 11px;
+            padding: 1px 8px;
+            border-radius: 10px;
+            background: linear-gradient(to right, #175e64, #508594);
+            color: #fff;
+            white-space: nowrap;
           }
         }
 

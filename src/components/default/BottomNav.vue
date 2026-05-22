@@ -16,6 +16,12 @@ const list = ref([{
   icon: requireImg('nav/wanfa.png'),
   activeIcon: requireImg('nav/wanfa-active.png'),
 }, {
+  name: '彩虹',
+  path: '/rainbow',
+  routeName: 'Rainbow',
+  icon: requireImg('nav/wanfa.png'),
+  activeIcon: requireImg('nav/wanfa-active.png'),
+}, {
   name: 'Roll',
   path: '/roll',
   routeName:'Roll',

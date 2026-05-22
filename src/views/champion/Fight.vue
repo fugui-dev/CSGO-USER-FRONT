@@ -425,9 +425,10 @@ const setCurrFightResult = (userResult) => {
       console.log(33)
       teamUserList[index] = userResult
       currTeamPlayer.value.data = userResult
-      currTeamScore.value = teamUserList.reduce((prev, next) => {
-        return new Decimal(next.score || '0').plus(prev).toNumber()
-      }, 0)
+      // 不立即更新总积分，等待动画结束后再更新
+      // currTeamScore.value = teamUserList.reduce((prev, next) => {
+      //   return new Decimal(next.score || '0').plus(prev).toNumber()
+      // }, 0)
     }
   });
   opponentTeamUserList.forEach((item, index) => {
@@ -435,9 +436,10 @@ const setCurrFightResult = (userResult) => {
       console.log(44)
       opponentTeamUserList[index] = userResult
       currOpponentTeamPlayer.value.data = userResult
-      currOpponentTeamScore.value = opponentTeamUserList.reduce((prev, next) => {
-        return new Decimal(next.score || '0').plus(prev).toNumber()
-      }, 0)
+      // 不立即更新总积分，等待动画结束后再更新
+      // currOpponentTeamScore.value = opponentTeamUserList.reduce((prev, next) => {
+      //   return new Decimal(next.score || '0').plus(prev).toNumber()
+      // }, 0)
     }
   });
 }
@@ -695,6 +697,12 @@ const handleScrollEnd = (type) => {
     // 设置动画结束标志
     const index = currTeamPlayer.value.index
     fightData.value.team.stageRecordStartList[index].animationEnd = true
+    
+    // 动画结束后，更新队伍总积分
+    const teamUserList = fightData.value.team?.stageRecordStartList || []
+    currTeamScore.value = teamUserList.reduce((prev, next) => {
+      return new Decimal(next.score || '0').plus(prev).toNumber()
+    }, 0)
 
     if (currRound.value < totalRound.value) {
       currTeamWaitingNextRoundText.value = '等待下一回合开始...'
@@ -706,6 +714,13 @@ const handleScrollEnd = (type) => {
     fightData.value.opponentTeam.stageRecordStartList[index].animationEnd = true
 
     currOpponentTeamPlayer.value.data.animationEnd = true;
+    
+    // 动画结束后，更新对手队伍总积分
+    const opponentTeamUserList = fightData.value.opponentTeam?.stageRecordStartList || []
+    currOpponentTeamScore.value = opponentTeamUserList.reduce((prev, next) => {
+      return new Decimal(next.score || '0').plus(prev).toNumber()
+    }, 0)
+    
     if (currRound.value < totalRound.value) {
       currOpponentTeamWaitingNextRoundText.value = '等待下一回合开始...'
     } else {

@@ -31,6 +31,14 @@ export const postOpenUpgrade = (data) => {
   });
 };
 
+export const postOpenUpgradeSimple = (data) => {
+  return request({
+    url: "/api/luckyUpgrade/upgrade",
+    method: "post",
+    data: data,
+  });
+};
+
 // 获取幸运升级可用的类型列表
 export const getAvailableTypeList = () => {
   return request({

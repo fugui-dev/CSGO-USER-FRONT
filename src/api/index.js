@@ -53,6 +53,13 @@ export const updateUserInfoApi = (data) => {
     })
 }
 
+export const getAvatarListApi = () => {
+    return request({
+        url: "/api/user/avatarList",
+        method: "get"
+    })
+}
+
 
 export const getBoxRecordApi = (data) => {
     return request({
@@ -413,5 +420,30 @@ export const accessorySalvageApi = (data) => {
         url: "/api/userPackSack/decompose",
         method: "post",
         data: data,
+    });
+};
+
+// 分解记录
+export const getDecomposeLogApi = (data) => {
+    return request({
+        url: "/api/userPackSack/decomposeLog",
+        method: "post",
+        data: data,
+    });
+};
+
+// 我的对战十佳记录
+export const getMyTopTenFightsApi = () => {
+    return request({
+        url: "/api/fight/myTopTen",
+        method: "get",
+    });
+};
+
+// 我的推广返佣记录
+export const getMyPromotionRecordApi = (page, size) => {
+    return request({
+        url: `/api/promotinoLevel/myPromotionRecord?page=${page}&size=${size}`,
+        method: "get",
     });
 };

@@ -1,12 +1,16 @@
 <script setup>
 import Layout from "@/components/Layout.vue";
-import { computed, onBeforeMount, ref } from "vue";
-import { useRoute } from "vue-router";
+import { computed, onBeforeMount, ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { getMatchInfoApi } from "@/api/champion";
+import { ElMessage } from "element-plus";
 import activeTypeBg from "@/assets/images/champion/tab-active-bg.png";
 import typeBg from "@/assets/images/champion/tab-bg.png";
 
 const route = useRoute();
+const router = useRouter();
 const active = ref(0);
+const matchData = ref({});
 const navList = ref([
   {
     name: "报名",
@@ -24,8 +28,13 @@ const navList = ref([
     path: ["/match-cheer"],
   },
   {
-    name: "往期记录",
+    name: "奖励领取",
     value: 3,
+    path: ["/match-reward"],
+  },
+  {
+    name: "往期记录",
+    value: 4,
     path: ["/match-history", "/match-history-detail"],
   },
 ]);
@@ -34,9 +43,55 @@ const changeActive = (val) => {
   active.value = val;
 };
 
+// 检查是否可以进入
+const checkCanEnter = () => {
+  if (!matchData.value || !matchData.value.status) {
+    return false;
+  }
+  
+  // 如果状态是1（进行中），可以进入
+  if (matchData.value.status === 1) {
+    return true;
+  }
+  
+  // 如果状态是2（已结束），检查是否到了关闭时间
+  if (matchData.value.status === 2) {
+    if (!matchData.value.closeTime) {
+      // 如果没有设置关闭时间，默认不允许进入
+      return false;
+    }
+    const now = new Date();
+    const closeTime = new Date(matchData.value.closeTime);
+    // 如果当前时间还没到关闭时间，可以进入
+    return now < closeTime;
+  }
+  
+  // 其他状态不允许进入
+  return false;
+};
+
 onBeforeMount(() => {
   const currNav = navList.value.find((item) => item.path.includes(route.path));
   active.value = currNav ? currNav.value : 0;
+});
+
+onMounted(() => {
+  // 获取比赛信息并检查是否可以进入
+  getMatchInfoApi()
+    .then((res) => {
+      if (res.code === 200 && res.data) {
+        matchData.value = res.data;
+        if (!checkCanEnter()) {
+          ElMessage.warning("比赛已关闭，无法进入");
+          router.push("/");
+        }
+      }
+    })
+    .catch((err) => {
+      console.error("获取比赛信息失败:", err);
+      ElMessage.error("获取比赛信息失败");
+      router.push("/");
+    });
 });
 import bgImg from "@/assets/images/champion/level-bg.webp";
 const props = defineProps({

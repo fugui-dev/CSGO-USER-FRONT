@@ -115,3 +115,11 @@ export const ownerEndFightApi = (data) => {
       data: data
   })
 }
+
+// 我的对战十佳记录（本人获得饰品总价值TOP10）
+export const getMyTopTenFightsApi = () => {
+  return request({
+      url: "/api/fight/myTopTen",
+      method: "get"
+  })
+}

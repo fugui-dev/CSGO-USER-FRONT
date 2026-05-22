@@ -14,7 +14,8 @@ import {
   getPromotionRechargeRecordsApi,
   getAvailableBalanceApi,
   generateCardInfoApi,
-  createGenerateCardApi
+  createGenerateCardApi,
+  getMyPromotionRecordApi
 } from "@/api";
 import BaseButton from "@/components/Btn/BaseButton.vue";
 import {useStore} from "@/store";
@@ -40,9 +41,10 @@ const summarize=ref({
 })
 
 // Tab页控制
-const activeTab = ref(0) // 0: 基本信息, 1: 推广用户列表, 2: 充值记录
+const activeTab = ref(0) // 0: 基本信息, 1: 推广用户列表, 2: 充値记录, 3: 推广记录
 const promotionUsers = ref([])
 const rechargeRecords = ref([])
+const promotionRecords = ref([])
 const availableBalance = ref(0)
 const loading = ref(false)
 const pageNum = ref(1)
@@ -50,6 +52,10 @@ const pageSize = ref(20)
 const isComplete = ref(false)
 const rechargePageNum = ref(1)
 const rechargeIsComplete = ref(false)
+const promotionRecordPageNum = ref(1)
+const promotionRecordPageSize = ref(10)
+const promotionRecordTotal = ref(0)
+const promotionRecordLoading = ref(false)
 const promotionUsersScrollRef = ref()
 const promotionUsersListRef = ref()
 const rechargeRecordsScrollRef = ref()
@@ -280,11 +286,34 @@ const handleTabChange = (tab) => {
       getPromotionUsers()
     }
   } else if (tab === 2) {
-    // 充值记录
+    // 充値记录
     if (rechargeRecords.value.length === 0) {
       getRechargeRecords()
     }
+  } else if (tab === 3) {
+    // 推广返佣记录
+    if (promotionRecords.value.length === 0) {
+      getPromotionRecords()
+    }
   }
+}
+
+// 获取推广返佣记录
+const getPromotionRecords = () => {
+  promotionRecordLoading.value = true
+  getMyPromotionRecordApi(promotionRecordPageNum.value, promotionRecordPageSize.value).then(res => {
+    if (res.code === 200) {
+      promotionRecords.value = res.rows || []
+      promotionRecordTotal.value = res.total || 0
+    }
+  }).finally(() => {
+    promotionRecordLoading.value = false
+  })
+}
+
+const handlePromotionRecordPageChange = (page) => {
+  promotionRecordPageNum.value = page
+  getPromotionRecords()
 }
 
 // 监听是否为主播
@@ -301,13 +330,19 @@ getS()
 
 <template>
   <div class="promotion">
-    <!-- 按钮切换组 -->
+    <!-- 按鈕切换组 -->
     <div class="nav">
       <div 
         class="nav-item" 
         :class="{ 'active': activeTab === 0 }" 
         @click="handleTabChange(0)">
         <span>基本信息</span>
+      </div>
+      <div 
+        class="nav-item" 
+        :class="{ 'active': activeTab === 3 }" 
+        @click="handleTabChange(3)">
+        <span>推广记录</span>
       </div>
       <!-- 已隐藏：推广用户列表 -->
       <!-- <div 
@@ -464,6 +499,40 @@ getS()
             </el-scrollbar>
           </div>
       </div> -->
+    </div>
+    
+    <!-- Tab 3: 推广返佣记录 -->
+    <div v-show="activeTab === 3" class="tab-content-wrapper" v-loading="promotionRecordLoading">
+      <div class="records">
+        <div class="records-item">
+          <div class="item prec-subordinate">下级用户ID</div>
+          <div class="item prec-recharge">充値金额</div>
+          <div class="item prec-rebate">返佣金额</div>
+          <div class="item prec-time">时间</div>
+        </div>
+        <el-scrollbar height="400px">
+          <div class="records-list">
+            <div v-if="promotionRecords.length === 0 && !promotionRecordLoading" class="empty-records">暂无返佣记录</div>
+            <div class="records-item" v-for="(record, index) in promotionRecords" :key="index">
+              <div class="item prec-subordinate">{{ record.subordinateUserId || '-' }}</div>
+              <div class="item prec-recharge">{{ record.rechargePrice || 0 }}</div>
+              <div class="item prec-rebate">{{ record.rebate || 0 }}</div>
+              <div class="item prec-time">{{ record.createTime || '-' }}</div>
+            </div>
+          </div>
+        </el-scrollbar>
+        <!-- 分页 -->
+        <el-pagination
+          v-if="promotionRecordTotal > 0"
+          style="margin-top: 12px; justify-content: center; display: flex;"
+          background
+          layout="prev, pager, next"
+          :total="promotionRecordTotal"
+          :page-size="promotionRecordPageSize"
+          :current-page="promotionRecordPageNum"
+          @current-change="handlePromotionRecordPageChange"
+        />
+      </div>
     </div>
     
     <!-- CDK生成弹窗 -->
@@ -904,6 +973,16 @@ $records-border-color: #B3B586;
       align-items: center;
       justify-content: center;
     }
+  }
+}
+
+// 推广记录列宽
+.records .records-item {
+  .item {
+    &.prec-subordinate { width: 25% !important; }
+    &.prec-recharge    { width: 25% !important; }
+    &.prec-rebate      { width: 25% !important; }
+    &.prec-time        { width: 25% !important; }
   }
 }
 

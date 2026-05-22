@@ -43,8 +43,9 @@ instance.interceptors.request.use((config) => {
     let token = localStorage.getItem("token")
     token && (config.headers.Authorization = token)
     
-    // 接口加密配置（可通过环境变量或配置控制）
-    const encryptEnabled = import.meta.env.VITE_ENCRYPT_ENABLED === 'true' || import.meta.env.VITE_ENCRYPT_ENABLED === true
+    // 临时关闭接口加密：先注释掉用户端前端加密逻辑（保留代码，便于后续恢复）
+    // const encryptEnabled = import.meta.env.VITE_ENCRYPT_ENABLED === 'true' || import.meta.env.VITE_ENCRYPT_ENABLED === true
+    const encryptEnabled = false
     const encryptUrls = import.meta.env.VITE_ENCRYPT_URLS || '/api/**'
     
     // 调试日志

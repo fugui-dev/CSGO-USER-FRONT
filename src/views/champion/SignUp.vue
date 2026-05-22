@@ -18,6 +18,8 @@ import Detail from './Detail.vue';
 import DraggableButton from "./components/DraggableButton.vue";
 import bgImg from "@/assets/images/champion/team/bg.webp";
 import TeamMember from "./components/teamMember.vue";
+import ChampoinTeam from "./components/championTeam.vue";
+import championTeamBg from "@/assets/images/champion/champion-team-bg.webp";
 
 const route = useRoute()
 const store = useStore()
@@ -43,6 +45,9 @@ const navList = ref([{
 }, {
   'name': '晋级图',
   'value': 2
+}, {
+  'name': '总冠军',
+  'value': 3
 }])
 const subActive = ref(0)
 const subNavList = ref([{
@@ -72,6 +77,7 @@ const targetDate = ref(0)
 const isShowAuditList = ref(false) // 是否展示待审批和已邀请列表（主播+队长权限）
 const isShowTeamInfo = ref(false) // 是否展示我的队伍卡片
 const levelData = ref([])
+const championTeamInfo = ref({}) // 总冠军队伍信息
 
 const userInfo = computed(() => store.userInfo)
 
@@ -103,8 +109,10 @@ const changeActive = (val) => {
     } else {
       getInvitedList(true)
     }
-  } else {
+  } else if (active.value === 2) {
     getMatchStageList()
+  } else if (active.value === 3) {
+    getChampionTeamInfo()
   }
 }
 
@@ -302,9 +310,40 @@ const getMatchStageList = () => {
   })
 }
 
+// 获取冠军队伍
+const getChampionTeamInfo = () => {
+  loading.value = true
+  getTeamListApi({
+    matchId: matchId.value,
+    champion: true
+  }).then(res => {
+    if (res.data && res.data.length) {
+      championTeamInfo.value = res.data[0]
+    } else {
+      championTeamInfo.value = {}
+    }
+  }).finally(() => {
+    loading.value = false
+  })
+}
+
 const handleStopCountdown = () => {
   getMatchInfo()
 }
+
+// 根据当前tab动态设置背景
+const specialBg = computed(() => {
+  if (active.value === 3) {
+    return {
+      img: championTeamBg,
+      height: "134.95vw",
+    };
+  }
+  return {
+    img: bgImg,
+    height: '187.5vw'
+  };
+})
 
 onMounted(() => {
   getList()
@@ -313,7 +352,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Detail :bg="{ img: bgImg, height: '187.5vw' }">
+  <Detail :bg="specialBg">
     <template #top v-if="matchData.status === 1 && targetDate > new Date()">
       <TeamCountdown
         :target-time="targetDate"
@@ -387,6 +426,8 @@ onMounted(() => {
         </div>
         <!-- 晋级图 -->
         <Level v-if="active === 2 && levelData.length" :data="levelData"/>
+        <!-- 总冠军 -->
+        <ChampoinTeam v-if="active === 3" :data="championTeamInfo" />
       </div>
     </div>
     <CreateTeamDialog ref="createTeammDialogRef" />

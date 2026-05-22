@@ -36,6 +36,7 @@ import item2 from "@/assets/images/home/item2.gif";
 import item3 from "@/assets/images/home/item3.gif";
 import item4 from "@/assets/images/home/item4.gif";
 import item5 from "@/assets/images/home/item5.gif";
+import rainbowImg from "@/assets/images/home/roll.gif";
 import luckyOpenBox from "@/assets/images/home/lucky_open_box.gif";
 const enterList = [
   {
@@ -64,6 +65,11 @@ const enterList2 = [
     img: item2,
     text: "武道会",
     path: "/dailyFlowRanking",
+  },
+  {
+    img: rainbowImg,
+    text: "彩虹玩法",
+    path: "/rainbow",
   },
   {
     img: item3,

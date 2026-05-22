@@ -18,6 +18,57 @@ const matchData = ref({});
 const targetDate = ref(0);
 const isGameOpen = computed(() => isNotEmptyObj(matchData.value));
 
+// 检查是否应该显示比赛内容（包括状态为2但还没到关闭时间的情况）
+const shouldShowContent = computed(() => {
+  if (!matchData.value || !matchData.value.status) {
+    return false;
+  }
+  
+  // 状态为0（未开始）或1（进行中）时显示
+  if (matchData.value.status === 0 || matchData.value.status === 1) {
+    return true;
+  }
+  
+  // 状态为2（已结束）时，检查是否到了关闭时间
+  if (matchData.value.status === 2) {
+    if (!matchData.value.closeTime) {
+      // 如果没有设置关闭时间，不显示
+      return false;
+    }
+    const now = new Date();
+    const closeTime = new Date(matchData.value.closeTime);
+    // 如果当前时间还没到关闭时间，显示内容
+    return now < closeTime;
+  }
+  
+  return false;
+});
+
+// 检查是否可以进入（状态为1，或状态为2但还没到关闭时间）
+const canEnter = computed(() => {
+  if (!matchData.value || !matchData.value.status) {
+    return false;
+  }
+  
+  // 状态为1（进行中）时可以进入
+  if (matchData.value.status === 1) {
+    return true;
+  }
+  
+  // 状态为2（已结束）时，检查是否到了关闭时间
+  if (matchData.value.status === 2) {
+    if (!matchData.value.closeTime) {
+      return false;
+    }
+    const now = new Date();
+    const closeTime = new Date(matchData.value.closeTime);
+    // 如果当前时间还没到关闭时间，可以进入
+    return now < closeTime;
+  }
+  
+  return false;
+});
+
 const getMatchInfo = () => {
   loading.value = true;
   return getMatchInfoApi()
@@ -88,7 +139,7 @@ onMounted(() => {
         <div
           class="match-content"
           :style="{ marginTop: matchData.status === 0 ? '-9.5vw' : '10vw' }"
-          v-if="matchData.status === 0 || matchData.status === 1"
+          v-if="shouldShowContent"
         >
           <div class="matching tw-flex">
             <div class="left">
@@ -126,7 +177,7 @@ onMounted(() => {
               </div>
               <div class="button-group">
                 <div
-                  v-if="matchData.status === 1"
+                  v-if="canEnter"
                   @click="handleEnter"
                   class="enter-btn"
                 >

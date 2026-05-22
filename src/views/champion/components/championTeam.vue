@@ -45,6 +45,23 @@
           />
           <div>{{ item.totalScore }}</div>
         </div>
+        <!-- 展示队员开出的饰品 -->
+        <div v-if="item.ornamentId && item.ornamentImage" class="ornament-wrapper">
+          <div class="ornament-label">开出饰品</div>
+          <div class="ornament-item">
+            <img
+              :src="item.ornamentImage"
+              :alt="item.ornamentName"
+              class="ornament-image"
+            />
+            <div class="ornament-info">
+              <div class="ornament-name" :title="item.ornamentName">{{ item.ornamentName }}</div>
+              <div v-if="item.ornamentPrice" class="ornament-price">
+                {{ parseFloat(item.ornamentPrice).toFixed(2) }}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div v-if="!data.matchUserList || data.matchUserList.length === 0" class="empty">
         暂无数据
@@ -148,13 +165,14 @@ const props = defineProps({
     &::-webkit-scrollbar {
       display: none;
     }
-    .user-list-item {
+      .user-list-item {
       padding-top: 22px;
+      padding-bottom: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
       width: 156px;
-      height: 215px;
+      min-height: 215px;
       background: url('@/assets/images/champion/champion-item-bg.png') no-repeat;
       background-size: 100% 100%;
       font-family: "PingFang Medium";
@@ -164,7 +182,8 @@ const props = defineProps({
       @include mobile {
         width: 30%;
         padding-top: 10px;
-        height: 140px;
+        padding-bottom: 8px;
+        min-height: 140px;
         font-size: 14px;
       }
       .avatar-wrapper {
@@ -223,6 +242,80 @@ const props = defineProps({
             width: 18px;
             height: 18px;
             margin-right: 4px;
+          }
+        }
+      }
+      .ornament-wrapper {
+        width: 100%;
+        margin-top: 10px;
+        padding: 0 8px;
+        border-top: 1px solid rgba(143, 237, 216, 0.3);
+        padding-top: 8px;
+        @include mobile {
+          margin-top: 6px;
+          padding: 0 4px;
+          padding-top: 6px;
+        }
+        .ornament-label {
+          font-size: 11px;
+          color: #8fedd8;
+          text-align: center;
+          margin-bottom: 6px;
+          font-weight: 500;
+          @include mobile {
+            font-size: 9px;
+            margin-bottom: 4px;
+          }
+        }
+        .ornament-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+          @include mobile {
+            gap: 2px;
+          }
+          .ornament-image {
+            width: 65px;
+            height: 48px;
+            object-fit: contain;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(143, 237, 216, 0.2);
+            padding: 2px;
+            @include mobile {
+              width: 50px;
+              height: 38px;
+            }
+          }
+          .ornament-info {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            .ornament-name {
+              font-size: 10px;
+              color: #ffffff;
+              text-align: center;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              width: 100%;
+              line-height: 1.2;
+              @include mobile {
+                font-size: 8px;
+              }
+            }
+            .ornament-price {
+              font-size: 10px;
+              color: #ffd700;
+              text-align: center;
+              font-weight: 600;
+              @include mobile {
+                font-size: 8px;
+              }
+            }
           }
         }
       }

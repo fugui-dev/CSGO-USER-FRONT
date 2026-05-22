@@ -1,7 +1,7 @@
 <script setup>
 
 import {computed, ref, watch} from "vue";
-import {deliverPackSackApi, getExtractPackSackApi, getPackSackApi, getPackSackGlobalDataApi, transferOrnamentApi, getTransferRecordsApi, getUserInfoByIdApi, verifyPasswordApi} from "@/api";
+import {deliverPackSackApi, getExtractPackSackApi, getPackSackApi, getPackSackGlobalDataApi, transferOrnamentApi, getTransferRecordsApi, getUserInfoByIdApi, verifyPasswordApi, getDecomposeLogApi} from "@/api";
 import {useThrottleFn} from "@vueuse/core";
 import {ElMessage, ElIcon} from "element-plus";
 import {Loading} from "@element-plus/icons-vue";
@@ -56,6 +56,10 @@ const tabs = ref([
     label: '转增记录',
     value: 3
   },
+  {
+    label: '分解记录',
+    value: 5
+  },
 ])
 
 const onChoose = (item) => {
@@ -75,9 +79,9 @@ const getList = () => {
   let requestForm = { ...form.value }
   
   if (active.value === 0) {
-    // 宝箱饰品库存：source = 1,2,4,5,7,8,9,21 (排除ROLL房source=3)
+    // 宝箱饰品库存：source = 1,2,4,5,7,8,9,11,21 (11=彩虹转盘，排除ROLL房source=3)
     api = getPackSackApi
-    requestForm.sourceList = [1, 2, 4, 5, 7, 8, 9, 21]
+    requestForm.sourceList = [1, 2, 4, 5, 7, 8, 9, 11, 21]
   } else if (active.value === 1) {
     // 商城饰品库存：source = 6 (商城兑换)
     api = getPackSackApi
@@ -90,6 +94,8 @@ const getList = () => {
     api = getExtractPackSackApi
   } else if (active.value === 3) {
     api = getTransferRecordsApi
+  } else if (active.value === 5) {
+    api = getDecomposeLogApi
   } else {
     loading.value = false
     return
@@ -544,6 +550,44 @@ const selectedOrnaments = computed(() => {
                 <span v-else>-</span>
                 <span v-if="i.auditRemark" style="margin-left: 5px; font-size: 12px; color: #909399;" :title="i.auditRemark">(备注)</span>
               </div>
+              <div class="item time">{{ i.createTime ? formatDate(i.createTime) : '-' }}</div>
+            </div>
+          </div>
+        </el-scrollbar>
+        <!-- 分页组件 -->
+        <div class="pagination-wrapper" v-if="pageTotal > 0">
+          <el-pagination
+            v-model:current-page="form.page"
+            v-model:page-size="form.size"
+            :page-sizes="[14, 28, 56, 112]"
+            :total="pageTotal"
+            layout="total, sizes, prev, pager, next"
+            @size-change="handleSizeChange"
+            @current-change="handlePageChange"
+            background
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- 分解记录 Tab -->
+    <div v-if="active === 5" v-loading="loading" class="content-wrapper">
+      <div class="transfer-records">
+        <div class="records-item header">
+          <div class="item image">饰品图片</div>
+          <div class="item name">饰品名称</div>
+          <div class="item price">分解价格</div>
+          <div class="item time">分解时间</div>
+        </div>
+        <el-scrollbar height="500px" v-loading="loading">
+          <div class="records-list" ref="listRef">
+            <div v-if="list.length === 0 && !loading" class="empty-records">暂无分解记录</div>
+            <div class="records-item" v-for="(i, index) in list" :key="index">
+              <div class="item image">
+                <img :src="i.ornamentImgUrl || i.imageUrl" alt="" v-if="i.ornamentImgUrl || i.imageUrl" />
+              </div>
+              <div class="item name">{{ i.ornamentName || '-' }}</div>
+              <div class="item price">{{ i.ornamentsPrice || 0 }}</div>
               <div class="item time">{{ i.createTime ? formatDate(i.createTime) : '-' }}</div>
             </div>
           </div>
@@ -1092,6 +1136,10 @@ $primary-color-user: rgb(138, 15, 198);
       padding: 40px;
       color: #999;
       font-size: 14px;
+    }
+  }
+}
+</style>
     }
   }
 }
